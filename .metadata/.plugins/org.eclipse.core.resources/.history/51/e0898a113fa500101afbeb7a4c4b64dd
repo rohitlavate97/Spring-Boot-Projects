@@ -1,0 +1,5 @@
+package com.alchemist.beans;
+
+public class CreditCardPayment {
+
+}

@@ -1,0 +1,12 @@
+package com.alchemist.beans;
+
+public class DebitCardPayment implements IPayment{
+
+	@Override
+	public boolean processPayment(double billAmt) {
+		// TODO Auto-generated method stub
+		System.out.println("Debit Card");
+		return true;
+	}
+
+}

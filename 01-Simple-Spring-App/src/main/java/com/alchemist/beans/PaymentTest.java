@@ -1,0 +1,14 @@
+package com.alchemist.beans;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class PaymentTest {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		ClassPathXmlApplicationContext ctxt = new ClassPathXmlApplicationContext("Beans.xml");
+		PaymentService service = ctxt.getBean(PaymentService.class);
+		service.doPayment(100);
+	}
+
+}
