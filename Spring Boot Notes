@@ -1,0 +1,87 @@
+Servers used for configuaration in Microservices development with Spring boot
+-Service Registry
+-Admin Server
+-API Gateway
+
+Development flow:
+-From backend to UI
+-API Gatewway acts as a mediator between FrontEnd and BackEnd
+
+-Spring Core provides IOC and DI, to develop classes with loosely coupling
+-Use Interface to provide common methods(increases readability)
+Dependency Injection: Injecting dependent object into target object using target class variable/setter/constructor
+-Different Types of Injection
+--Constructor Injection
+--Setter Injection
+--Field Injection
+
+What if we perform both constructor Injection and Setter Injection-->First construction injection will happen. then, it will
+initialize the variable then setter injection will happen and it will reinitialize the same variable so final value be setter injection value
+Note: Setter injection will override construction injection
+
+In Spring, IOC is responsible for Dependency Injection
+IOC manages and collaborate object(i.e Creating and injecting object). IOC is a principle which is used to manage and collaborate dependencies among the objects in the application
+For IOC container, we need to provide Java Classes as input as it don't know which is target class. Along with Java classes we have to provide configuration(through Xml or annotartions)
+IOC will load classes and then create object and will perform DI(i.e it provides spring beans-->Class which is managed by IOC)
+
+Ways to Start the IOC
+-BeanFactory(Outdated)
+-ApplicationContext(interface)
+
+Class managed by IOC is called as Spring Bean
+
+ApplicationContext ctx = new ClassPathXmlApplicationContext(String xmlFilePath);
+
+
+Beans.xml-----> should be created in src/main/java
+-----------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="credit" class="com.alchemist.beans.CreditCardPayment"/>
+    <bean id="debit" class="com.alchemist.beans.DebitCardPayment"/>
+    <bean id="payment" class="com.alchemist.beans.PaymentService">
+    <!-- to avoid Nullpointer exception as PaymentService don't have by default constructor-->
+       <!--constructor-arg name="payment" ref="debit"/-->----------------This is the constructor injection
+       <!--constructor-arg name="payment" ref="credit"/-->
+       <property name="iPayment" ref="credit"/>--------------------------- this is how settter injection done, property name should be interface referece variable
+     </bean>
+</beans>
+-----------------------------------------------------------------------------
+Note: 'ref' attribute represents which object should be injected
+-Field injection is only possible with Annotations
+
+Spring Bean Scope-->Decides how many objects should be crated for spring bean class
+-Singleton(Default)--> Every Spring Bean is Singleton, whenever we start IOC container, by default it will create objects for singlton bens and when we call getBean()(everytime it checks scope when we call this method) then it will create object for others(for memory management)
+-Prototype--->Every time new object will be created
+-Request
+-Session
+Note: Request and Session scopes are used in Spring web MVC
+
+Syntax:
+    <bean id="car" class="com.alchemist.beans.CarService" scope="prototype">
+       <constructor-arg name="car" ref="petrol"/>
+     </bean>
+
+Manual Wiring--> injecting dependent object into target objects with 'ref' attribute is Manual Wiring
+Autowiring-->To identify objects and injecting into the Target objects
+works on below modes
+-byName--->for setter injection--->based on bean id of bean matching with interface variable
+-byType--->for setter injection--->based on type of variable, dependent bean will be identified(bean id doesn't matter)
+-Constructor
+-none
+
+Syntax:
+--byName
+<bean id="car" class="com.alchemist.beans.CarService" autowire="byName">
+--When we write 'autowire' attribute in the bean definition, that bean will be considered as Target Class
+
+--byType
+    <bean id="engine" class="com.alchemist.beans.PetrolEngine" autowire-candidate="false"/>
+    <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
+    <bean id="car" class="com.alchemist.beans.CarService" autowire="byType">
+     </bean>

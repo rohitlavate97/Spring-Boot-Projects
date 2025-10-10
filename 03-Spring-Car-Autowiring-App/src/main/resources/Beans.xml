@@ -5,14 +5,10 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- bean definitions here -->
-    <bean id="engine" class="com.alchemist.beans.PetrolEngine"/>
+    <bean id="engine" class="com.alchemist.beans.PetrolEngine" autowire-candidate="false"/>
     <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
-    <bean id="car" class="com.alchemist.beans.CarService" autowire="byName">
-       <!--property name="iEngine" ref="petrol"/-->
-    <!-- to avoid Nullpointer exception as PaymentService don't have by default constructor-->
-       <!--constructor-arg name="car" ref="petrol"/-->
-       <!--constructor-arg name="payment" ref="credit"/-->
-       <!--property name="iEngine" ref="petrol"/-->
+    <!--bean id="car" class="com.alchemist.beans.CarService" autowire="byName"-->
+    <bean id="car" class="com.alchemist.beans.CarService" autowire="byType">
      </bean>
 
 </beans>
