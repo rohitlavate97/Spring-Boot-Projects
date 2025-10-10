@@ -91,3 +91,27 @@ Syntax:
     <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
     <!--bean id="car" class="com.alchemist.beans.CarService" autowire="byName"-->
     <bean id="car" class="com.alchemist.beans.CarService" autowire="byType">
+
+--constructor--->First it will check byName, then goes for byType, we can use primary="true" for any bean which we want to inject
+    <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
+    <bean id="car" class="com.alchemist.beans.CarService" autowire="constructor">
+     </bean>
+
+Spring Annotations: Annotations are used to provide metadata
+---------------------------------------------------------------------------
+@Configuration:->Instead of XML, java class can be marked as Configuration
+@Scope-->To represent scope of the bean
+@Autowired:-->used to enable auto-wiring in a class
+@Bean:-->The @Bean annotation in Spring Boot is used to declare a method that produces a bean to be managed by the Spring IoC (Inversion of Control) container. This annotation is typically used within a @Configuration class, which signifies that the class's primary purpose is to define bean definitions. @Component auto-detects your beans, @Bean explicitly 
+declares them.For third-party library classes or when you need custom instantiation logic
+@ComponentScan(basePackages={"com.alchemist","edu.scaler"})-->It is the process of identifying spring bean classes available in project based on base packages name
+-->Example name
+package com.alchemist;------->Always keep Appconfig.java in base package rather than config package
+@Configuration
+@ComponentScan(basePackages = "com.alchemist")
+public class AppConfig {
+
+}
+
+-eager loading-->IOC container creates object immediately from singleton beans
+-lazy loading-->For Prototype ban whebn you create object then only object created
