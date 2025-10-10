@@ -100,8 +100,11 @@ Syntax:
 Spring Annotations: Annotations are used to provide metadata
 ---------------------------------------------------------------------------
 @Configuration:->Instead of XML, java class can be marked as Configuration
+@Component,@Service,@Repository-->To represent java class as spring bean class
 @Scope-->To represent scope of the bean
+@Qualifier-->When multiple beans of same type, it is used to identity bean based on the given name for DI
 @Autowired:-->used to enable auto-wiring in a class
+@Primary-->To give priority for the bean for auto-wiring
 @Bean:-->The @Bean annotation in Spring Boot is used to declare a method that produces a bean to be managed by the Spring IoC (Inversion of Control) container. This annotation is typically used within a @Configuration class, which signifies that the class's primary purpose is to define bean definitions. @Component auto-detects your beans, @Bean explicitly 
 declares them.For third-party library classes or when you need custom instantiation logic
 @ComponentScan(basePackages={"com.alchemist","edu.scaler"})-->It is the process of identifying spring bean classes available in project based on base packages name
@@ -114,4 +117,19 @@ public class AppConfig {
 }
 
 -eager loading-->IOC container creates object immediately from singleton beans
--lazy loading-->For Prototype ban whebn you create object then only object created
+-lazy loading-->For Prototype ban when you create object then only object created
+
+Autowiring with Spring Annotation(@Autowired)-->
+@Autowired can be used at 3 places
+-Variable level--Field injection
+-Constructor level--Constructor injection
+-Setter Mehtod level--Setter Injection
+
+--Autowiring byName
+-@Service
+ public class ReportService {
+    @Autowired
+    private ReportDAO reportDAO;
+
+-@Repository("reportDAO")    //to do autowiring by name
+ public class OracleDBReportDAO implements ReportDAO {
