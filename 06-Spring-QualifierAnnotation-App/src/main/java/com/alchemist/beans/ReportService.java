@@ -9,7 +9,7 @@ import com.alchemist.repository.ReportDAO;
 @Service
 public class ReportService {
 	@Autowired
-	@Qualifier("oracleDBDAO")
+	/* @Qualifier("oracleDBDAO") */
 	private ReportDAO reportDAO;
 
 	public void generateReport() {

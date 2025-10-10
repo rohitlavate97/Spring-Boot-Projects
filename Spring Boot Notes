@@ -133,3 +133,58 @@ Autowiring with Spring Annotation(@Autowired)-->
 
 -@Repository("reportDAO")    //to do autowiring by name
  public class OracleDBReportDAO implements ReportDAO {
+
+--Using @Qualifier
+@Repository("mysqlDBDAO")
+public class MysqlDBDAO implements ReportDAO {
+
+@Repository("oracleDBDAO")
+public class OracleDBDAO implements ReportDAO {
+
+@Service
+public class ReportService {
+    @Autowired
+    @Qualifier("oracleDBDAO")
+    private ReportDAO reportDAO;
+
+--Using @Primary
+@Repository("oracleDBDAO")
+@Primary
+public class OracleDBDAO implements ReportDAO {
+
+@Service
+public class ReportService {
+    @Autowired
+    private ReportDAO reportDAO;
+
+--Autowiring with Setter
+
+@Service
+public class ReportService {
+    private ReportDAO reportDAO;
+    @Autowired
+    public void setReportDAO(@Qualifier("oracleDBDAO") ReportDAO reportDAO) {
+        this.reportDAO = reportDAO;
+    }
+
+    public void generateReport() {
+        System.out.println("ReportService - Generating Report");
+        reportDAO.getData();
+        System.out.println("ReportService - Report Generated");
+    }
+
+}
+Note: also we can use @Primary
+
+--Autowiring with Constructor
+
+@Service
+public class ReportService {
+    private ReportDAO reportDAO;
+    @Autowired
+    public ReportService(@Qualifier("mysqlDBDAO") ReportDAO reportDAO) {
+        this.reportDAO = reportDAO;
+    }
+
+Note: If we remove @Autowired here, still DI will happens as ReportService is Spring bean,i.e IOC should create object for ReportService when you have only one parameterized constructor in class @Autowired is optional. Wnen you have 2 constructors, DI will not happen withoult @Autowired
+If we have one no param constructor and one Param constructor, then by default it will call 0-param constructor and DI will not happen
