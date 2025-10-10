@@ -1862,3 +1862,646 @@ Binding(COMMAND+SHIFT+T,
 
 !ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 13:40:40.235
 !MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.880
+!MESSAGE [Info] Document is null for editor: CarService.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.881
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/src/main/java/com/alchemist/beans/CarService.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.900
+!MESSAGE [Info] Document is null for editor: CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.900
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/src/main/java/com/alchemist/beans/CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.924
+!MESSAGE [Info] Document is null for editor: pom.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.924
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/pom.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.950
+!MESSAGE [Info] Document is null for editor: Beans.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 13:46:57.950
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/src/main/resources/Beans.xml
+!SESSION 2025-10-10 15:46:12.175 -----------------------------------------------
+eclipse.buildId=4.36.0.202506052058
+java.version=21.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_IN
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4 -keyring /Users/rohit-mac/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.springframework.boot.ide.branding.sts4 -keyring /Users/rohit-mac/.eclipse_keyring
+
+!ENTRY ch.qos.logback.classic 1 0 2025-10-10 15:46:15.664
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY org.eclipse.lemminx.uber-jar 4 0 2025-10-10 15:46:15.838
+!MESSAGE bundle org.eclipse.lemminx.uber-jar:0.31.0 (329) Component descriptor entry 'OSGI-INF/*.xml' not found
+
+!ENTRY ch.qos.logback.classic 1 0 2025-10-10 15:47:48.924
+!MESSAGE Logback config file: /Volumes/Element/Projects/BackEnd/Spring Boot/.metadata/.plugins/org.eclipse.m2e.logback/logback.2.7.100.20250418-1315.xml
+
+!ENTRY org.eclipse.ui 2 0 2025-10-10 15:47:49.277
+!MESSAGE Warnings while parsing the commands from the 'org.eclipse.ui.commands' and 'org.eclipse.ui.actionDefinitions' extension points.
+!SUBENTRY 1 org.eclipse.ui 2 0 2025-10-10 15:47:49.277
+!MESSAGE Commands should really have a category: plug-in='org.springframework.tooling.boot.ls', id='spring.initializr.addStarters', categoryId='org.eclipse.lsp4e.commandCategory'
+
+!ENTRY org.eclipse.ui 2 0 2025-10-10 15:47:49.640
+!MESSAGE Warnings while parsing the commands from the 'org.eclipse.ui.commands' and 'org.eclipse.ui.actionDefinitions' extension points.
+!SUBENTRY 1 org.eclipse.ui 2 0 2025-10-10 15:47:49.640
+!MESSAGE Commands should really have a category: plug-in='org.springframework.tooling.boot.ls', id='spring.initializr.addStarters', categoryId='org.eclipse.lsp4e.commandCategory'
+
+!ENTRY org.eclipse.mylyn.tasks.ui 2 0 2025-10-10 15:47:55.129
+!MESSAGE No search provider was registered. Tasks search is not available.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 15:47:56.527
+!MESSAGE [Info] Starting language server with binary lsp agent.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 15:47:56.528
+!MESSAGE [Info] Found native binary in fragment bundle: com.microsoft.copilot.eclipse.core.agent.macosx.x64
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 15:47:56.833
+!MESSAGE [Info] Lsp agent started successfully.
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:47:59.596
+!MESSAGE [Info]	[lsp] GitHub Copilot Language Server 1.363.0 initialized
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:48:00.067
+!MESSAGE [Info]	[certificates] Removed 4 expired certificates
+
+!ENTRY org.eclipse.jface 2 0 2025-10-10 15:54:28.336
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2025-10-10 15:54:28.336
+!MESSAGE A conflict occurred for COMMAND+SHIFT+T:
+Binding(COMMAND+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(COMMAND+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolInWorkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolInWorkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 15:55:23.429
+!MESSAGE [Info] Language ID not found for extension: xml
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:24.864
+!MESSAGE [Info]	[default] Context provider relatedFilesShim exceeded time budget of 150ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:25.999
+!MESSAGE [Info]	[fetchCompletions] Request 22559053-97a4-4a8a-aea4-d2f832e4c30b at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 1130.6104739999864ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:26.139
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:27.106
+!MESSAGE [Info]	[fetchCompletions] Request d1f46ca2-62de-4950-84e7-9ef2d9e2ff21 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 910.3898869999684ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:27.468
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:27.957
+!MESSAGE [Info]	[fetchCompletions] Request 12526096-fca7-4455-ab42-27f8b916e1fc at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 438.425820000004ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:28.145
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:32.605
+!MESSAGE [Info]	[code-referencing] Calling Match
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:33.806
+!MESSAGE [Info]	[code-referencing] No match found
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:40.678
+!MESSAGE [Info]	[fetchCompletions] Request 1dce7fb2-a9bd-4c79-b2a8-38efbe3c9449 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 463.73779600003036ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:40.678
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:49.012
+!MESSAGE [Info]	[fetchCompletions] Request 1b5c255c-539c-4580-898c-761512891491 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 496.5903479999979ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:49.106
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:49.637
+!MESSAGE [Info]	[fetchCompletions] Request 2ca714f6-2ff8-4fb4-bd68-c6389df636ea at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 522.6064410000108ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:49.789
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:50.628
+!MESSAGE [Info]	[fetchCompletions] Request 2868bb2b-094e-40b0-aad5-6818666e1edf at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 763.3509330000379ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:50.695
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:51.102
+!MESSAGE [Info]	[fetchCompletions] Request c69807dc-03d9-4e40-9fdd-854c78c8500c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 399.156221000012ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:51.770
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:52.280
+!MESSAGE [Info]	[fetchCompletions] Request 3d3cc058-8aaa-4496-bfbf-7947d1933fc9 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 500.3168809999479ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:52.309
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:52.835
+!MESSAGE [Info]	[fetchCompletions] Request de8404f0-d1c9-4cb3-ae92-3172fba7e02d at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 451.1840170000214ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:52.993
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:54.451
+!MESSAGE [Info]	[code-referencing] Calling Match
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 15:55:54.919
+!MESSAGE [Info]	[code-referencing] No match found
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:23:25.860
+!MESSAGE [Info] Document is null for editor: pom.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:23:25.860
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/pom.xml
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:25:42.696
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:25:42.702
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:25:55.688
+!MESSAGE [Info] Document is null for editor: Beans.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:25:55.688
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/src/main/resources/Beans.xml
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:25:55.800
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:25:55.811
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:25:57.641
+!MESSAGE [Info] Document is null for editor: CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:25:57.641
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/src/main/java/com/alchemist/beans/CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:26:00.171
+!MESSAGE [Info] Document is null for editor: CarService.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:26:00.171
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/src/main/java/com/alchemist/beans/CarService.java
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:26:17.301
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:26:17.305
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:26:30.947
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:26:30.950
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:26:56.165
+!MESSAGE [Info]	[fetchCompletions] Request 556c06c8-d561-4190-bd3b-d4ed3d0e122f at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 1207.222968999762ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:26:57.449
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:26:58.320
+!MESSAGE [Info]	[fetchCompletions] Request 3311a339-d1a9-4a8c-8264-20c029d72a0d at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 634.0167919998057ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:26:58.321
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:27:01.339
+!MESSAGE [Info] Document is null for editor: pom.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:27:01.340
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/02-Spring-Car-App/pom.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:27:02.558
+!MESSAGE [Info] Document is null for editor: CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:27:02.558
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/src/main/java/com/alchemist/beans/CarTest.java
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:27:25.304
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:27:25.310
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:27:51.535
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:27:51.539
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:27:52.736
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:27:52.740
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:27:57.075
+!MESSAGE [Info] Document is null for editor: pom.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:27:57.075
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/pom.xml
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:01.630
+!MESSAGE [Info]	[fetchCompletions] Request 2b89f925-1eb8-41e4-8c77-009037644e01 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 978.9258039998822ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:01.923
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:03.237
+!MESSAGE [Info]	[fetchCompletions] Request ceecf1b4-4c79-48c5-9b4d-f734918ce2ed at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 956.4280079999007ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:03.240
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:05.016
+!MESSAGE [Info]	[fetchCompletions] Request bd52e7ba-8688-446a-a1c2-b7bbfe2aa229 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 1751.9237270001322ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:05.203
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:06.797
+!MESSAGE [Info]	[fetchCompletions] Request 4bc69f6c-f1c8-44f8-b21e-c0458838eeef at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 397.9782090000808ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:06.827
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:24.263
+!MESSAGE [Info]	[fetchCompletions] Request 20bab55e-bb06-4a38-861c-2265b0bf4016 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 423.863320000004ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:24.320
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:24.885
+!MESSAGE [Info]	[fetchCompletions] Request f5dbec48-df34-427a-b348-0e91845344e8 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 538.9311830000952ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:29:24.952
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:29.573
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:29.576
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:36.765
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:36.767
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:36.796
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:36.799
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:36.842
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:29:36.845
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:05.598
+!MESSAGE [Info]	[default] Context provider relatedFilesShim exceeded time budget of 150ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:06.755
+!MESSAGE [Info]	[fetchCompletions] Request f7a53e1b-b265-4cd9-8bac-b5e3d39527ee at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 1155.2682190001942ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:07.084
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:07.510
+!MESSAGE [Info]	[fetchCompletions] Request 38631ffc-52d7-4fc4-8237-cbf2122fc5e8 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 409.2419100003317ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:07.713
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:35.598
+!MESSAGE [Info]	[fetchCompletions] Request 20e1ef47-d8dc-49bb-adfc-62a87b0cce40 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 454.7636639997363ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:35.697
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:36.146
+!MESSAGE [Info]	[fetchCompletions] Request 560fb925-b52d-4b68-acac-05331e73a988 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 442.6011459999718ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:36.439
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:36.795
+!MESSAGE [Info]	[fetchCompletions] Request 3820b8db-2f84-45ad-946f-83aad8ba9e14 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 351.2806560001336ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:36.856
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:37.246
+!MESSAGE [Info]	[fetchCompletions] Request b763223b-025a-4efd-a5a9-6dacc9d3f68d at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 376.6399679998867ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:37.312
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:41.292
+!MESSAGE [Info]	[code-referencing] Calling Match
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:40:42.502
+!MESSAGE [Info]	[code-referencing] No match found
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:40:53.581
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:40:53.584
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:40:53.724
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:40:53.728
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:41:24.882
+!MESSAGE [Info]	[fetchCompletions] Request 8966d157-cb6b-4b13-94e4-cf5ddbeb147a at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 341.05970800016075ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:41:24.883
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:41:43.239
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:41:43.242
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:42:08.340
+!MESSAGE [Info]	[fetchCompletions] Request ad622d44-783b-4055-8278-59042a796524 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 348.8731900001876ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:42:08.390
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:42:08.748
+!MESSAGE [Info]	[fetchCompletions] Request 5904dc2a-1741-4c04-b43f-03cca66274a8 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 334.7872830000706ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:42:08.882
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:42:15.179
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:42:15.181
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:48:10.056
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:48:10.060
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:04.578
+!MESSAGE [Info]	[fetchCompletions] Request ac1f567f-1436-44a9-a58d-fbcb25117e93 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 847.1981020001695ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:04.660
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:05.023
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:05.023
+!MESSAGE [Info]	[fetchCompletions] Request ec56151b-72ae-49f7-be4d-dac5996cb961 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 350.11809300025925ms
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:49:15.381
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:49:15.384
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:29.255
+!MESSAGE [Info]	[fetchCompletions] Request af3443d5-f722-4fc3-8c3a-3a7add72995c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 356.2958839996718ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:29.259
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:29.626
+!MESSAGE [Info]	[fetchCompletions] Request 7ce89c2f-6030-4de4-8b5f-d84b54343395 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 353.7833199999295ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:49:29.627
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:50:11.877
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:50:11.881
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:51:03.817
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:51:03.819
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:24.527
+!MESSAGE [Info]	[fetchCompletions] Request 7c17f35b-b315-4b5d-83bf-de88d1c520d9 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 916.1161670000292ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:24.532
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:24.938
+!MESSAGE [Info]	[fetchCompletions] Request 6e3f7cca-f9da-497a-baac-619164d6d600 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 397.1779390000738ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:25.101
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:25.468
+!MESSAGE [Info]	[fetchCompletions] Request 2109a709-25e6-4f31-b934-55f72be188e1 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 353.4795359997079ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:25.470
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:30.773
+!MESSAGE [Info]	[fetchCompletions] Request 7d584e7d-7f69-4333-8a67-f8e135426729 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 336.7094799997285ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:30.790
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:36.917
+!MESSAGE [Info]	[fetchCompletions] Request a79952ce-c3f0-42d6-9778-b233f63e7d2e at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 376.3782259998843ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:36.973
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:39.962
+!MESSAGE [Info]	[fetchCompletions] Request b044386f-a7b0-4302-9b79-2ac201efd3b3 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 542.4247770002112ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:40.014
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:40.617
+!MESSAGE [Info]	[fetchCompletions] Request 86e45953-c31b-4308-883a-a9bff16da21e at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 590.5034480001777ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:52:40.723
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:52:48.593
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:52:48.595
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:53:07.232
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:53:07.235
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:53:07.261
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:53:07.264
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:53:07.290
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:53:07.294
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:00.976
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:00.981
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:01.180
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:01.182
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:01.219
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:01.224
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:32.263
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 16:54:32.265
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.627
+!MESSAGE [Info] Document is null for editor: CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.627
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/src/main/java/com/alchemist/beans/CarTest.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.646
+!MESSAGE [Info] Document is null for editor: CarService.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.646
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/src/main/java/com/alchemist/beans/CarService.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.661
+!MESSAGE [Info] Document is null for editor: DieselEngine.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.662
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/src/main/java/com/alchemist/beans/DieselEngine.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.672
+!MESSAGE [Info] Document is null for editor: PetrolEngine.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.672
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/src/main/java/com/alchemist/beans/PetrolEngine.java
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.696
+!MESSAGE [Info] Document is null for editor: Beans.xml
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:54:57.696
+!MESSAGE [Info] Completion handler is refreshed for the document: file:///Volumes/Element/Projects/BackEnd/Spring%20Boot/03-Spring-Car-Autowiring-App/src/main/resources/Beans.xml
+!SESSION 2025-10-10 16:55:06.444 -----------------------------------------------
+eclipse.buildId=4.36.0.202506052058
+java.version=21.0.7
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_IN
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4 -keyring /Users/rohit-mac/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.springframework.boot.ide.branding.sts4 -keyring /Users/rohit-mac/.eclipse_keyring
+
+!ENTRY ch.qos.logback.classic 1 0 2025-10-10 16:55:09.374
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY org.eclipse.lemminx.uber-jar 4 0 2025-10-10 16:55:09.537
+!MESSAGE bundle org.eclipse.lemminx.uber-jar:0.31.0 (329) Component descriptor entry 'OSGI-INF/*.xml' not found
+
+!ENTRY ch.qos.logback.classic 1 0 2025-10-10 16:55:22.888
+!MESSAGE Logback config file: /Volumes/Element/Projects/BackEnd/Spring Boot/.metadata/.plugins/org.eclipse.m2e.logback/logback.2.7.100.20250418-1315.xml
+
+!ENTRY org.eclipse.ui 2 0 2025-10-10 16:55:23.178
+!MESSAGE Warnings while parsing the commands from the 'org.eclipse.ui.commands' and 'org.eclipse.ui.actionDefinitions' extension points.
+!SUBENTRY 1 org.eclipse.ui 2 0 2025-10-10 16:55:23.178
+!MESSAGE Commands should really have a category: plug-in='org.springframework.tooling.boot.ls', id='spring.initializr.addStarters', categoryId='org.eclipse.lsp4e.commandCategory'
+
+!ENTRY org.eclipse.ui 2 0 2025-10-10 16:55:23.500
+!MESSAGE Warnings while parsing the commands from the 'org.eclipse.ui.commands' and 'org.eclipse.ui.actionDefinitions' extension points.
+!SUBENTRY 1 org.eclipse.ui 2 0 2025-10-10 16:55:23.500
+!MESSAGE Commands should really have a category: plug-in='org.springframework.tooling.boot.ls', id='spring.initializr.addStarters', categoryId='org.eclipse.lsp4e.commandCategory'
+
+!ENTRY org.eclipse.mylyn.tasks.ui 2 0 2025-10-10 16:55:27.952
+!MESSAGE No search provider was registered. Tasks search is not available.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:55:29.597
+!MESSAGE [Info] Starting language server with binary lsp agent.
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:55:29.599
+!MESSAGE [Info] Found native binary in fragment bundle: com.microsoft.copilot.eclipse.core.agent.macosx.x64
+
+!ENTRY com.microsoft.copilot.eclipse 1 0 2025-10-10 16:55:30.718
+!MESSAGE [Info] Lsp agent started successfully.
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:55:33.074
+!MESSAGE [Info]	[lsp] GitHub Copilot Language Server 1.363.0 initialized
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 16:55:33.517
+!MESSAGE [Info]	[certificates] Removed 4 expired certificates
+
+!ENTRY org.eclipse.jface 2 0 2025-10-10 16:55:45.767
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2025-10-10 16:55:45.767
+!MESSAGE A conflict occurred for COMMAND+SHIFT+T:
+Binding(COMMAND+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(COMMAND+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolInWorkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolInWorkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)

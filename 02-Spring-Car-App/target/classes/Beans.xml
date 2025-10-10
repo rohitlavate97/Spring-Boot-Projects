@@ -7,7 +7,8 @@
     <!-- bean definitions here -->
     <bean id="petrol" class="com.alchemist.beans.PetrolEngine"/>
     <bean id="diesel" class="com.alchemist.beans.DieselEngine"/>
-    <bean id="car" class="com.alchemist.beans.CarService">
+    <bean id="car" class="com.alchemist.beans.CarService" scope="prototype">
+       <property name="iEngine" ref="petrol"/>
     <!-- to avoid Nullpointer exception as PaymentService don't have by default constructor-->
        <constructor-arg name="car" ref="petrol"/>
        <!--constructor-arg name="payment" ref="credit"/-->

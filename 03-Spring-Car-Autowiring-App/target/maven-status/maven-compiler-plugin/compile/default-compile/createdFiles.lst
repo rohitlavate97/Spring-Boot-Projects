@@ -1,0 +1,5 @@
+com/alchemist/beans/PetrolEngine.class
+com/alchemist/beans/CarService.class
+com/alchemist/beans/DieselEngine.class
+com/alchemist/beans/CarTest.class
+com/alchemist/beans/IEngine.class
