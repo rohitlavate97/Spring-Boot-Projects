@@ -2592,3 +2592,258 @@ Binding(COMMAND+SHIFT+T,
 
 !ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:22:46.419
 !MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:14.129
+!MESSAGE [Info]	[fetchCompletions] Request 9a0e2145-7bd5-400b-bab0-85bdb31a06aa at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 978.5460139997303ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:14.130
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:14.507
+!MESSAGE [Info]	[fetchCompletions] Request 499d8bb2-f359-412d-931a-4cdaf9251b2a at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 343.4330609999597ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:14.517
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:14.870
+!MESSAGE [Info]	[fetchCompletions] Request 90c442fc-d4dc-4441-919e-c0792011b673 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 332.10230799997225ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:15.023
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:30.646
+!MESSAGE [Info]	[fetchCompletions] Request 47f00feb-b799-450f-ab1c-e1aa9ca8af26 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 341.6235800003633ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:30.721
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:43.408
+!MESSAGE [Info]	[fetchCompletions] Request bdc9915a-f22d-4bbd-99a4-ead21d87a48e at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 350.47883399995044ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:43.410
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:43.812
+!MESSAGE [Info]	[fetchCompletions] Request df6d88bb-1b52-455d-99be-a978c3f74c14 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 369.1448570000939ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:43.855
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:44.214
+!MESSAGE [Info]	[fetchCompletions] Request 48df8f2a-82c4-489c-a49b-2dc6199671a8 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 336.22939600003883ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:44.215
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:46.368
+!MESSAGE [Info]	[fetchCompletions] Request 1578f6af-b8ab-41b4-a2a6-3b83bc995435 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 331.76564800040796ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:46.423
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:46.778
+!MESSAGE [Info]	[fetchCompletions] Request cfb22a1f-eb04-4049-97a5-8602ce450385 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 329.4613970001228ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:46.821
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:47.149
+!MESSAGE [Info]	[fetchCompletions] Request 1866d737-e59d-4590-9b54-08ecd7667a4c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 322.5680360002443ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:47.193
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:47.801
+!MESSAGE [Info]	[fetchCompletions] Request 88eab9e7-0182-4d71-9613-2ef9c40003e0 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 383.5774739999324ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:47.802
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:51.976
+!MESSAGE [Info]	[fetchCompletions] Request 94d70502-dc98-4269-b17c-7fd5edc11ce2 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 394.65036199986935ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:52.021
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:52.462
+!MESSAGE [Info]	[fetchCompletions] Request d31fe7f0-ed85-469e-8a4b-5f8c8385932f at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 416.152915999759ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:52.463
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:52.862
+!MESSAGE [Info]	[fetchCompletions] Request 15bef8cb-3917-4834-8107-49aa5d7629c5 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 331.86418800009415ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:44:52.862
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:19.685
+!MESSAGE [Info]	[default] Context provider relatedFilesShim exceeded time budget of 150ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:20.045
+!MESSAGE [Info]	[fetchCompletions] Request 9c07bdbc-eaf7-4338-8c58-14b7abaf4f0b at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 355.5722580002621ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:20.196
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:20.691
+!MESSAGE [Info]	[fetchCompletions] Request 91264ea1-536a-4a4e-9a40-49dadefe2a53 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 476.5987539999187ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:20.832
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:36.869
+!MESSAGE [Info]	[fetchCompletions] Request 2eb3b4c7-eb6e-4464-a7e8-0575b6c9221a at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 354.6266239997931ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:45:36.912
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:45:41.079
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:45:41.081
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:46:27.115
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:46:27.118
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:48:15.727
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:48:15.730
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:48:41.618
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:48:41.621
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:49:44.384
+!MESSAGE [Info]	[fetchCompletions] Request 26da933f-7b6a-40e8-8314-5774f65e2ef0 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 938.3892630003393ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:49:44.507
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:49:44.872
+!MESSAGE [Info]	[fetchCompletions] Request 702e4c30-3533-40b4-ae5d-69a7d94ab1e1 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 350.04704599967226ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:49:45.041
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:12.054
+!MESSAGE [Info]	[fetchCompletions] Request 64ca5f70-afc2-495c-8505-b99bec58b213 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 338.8725169999525ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:12.100
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:12.448
+!MESSAGE [Info]	[fetchCompletions] Request 2f0a6070-7be8-472f-be54-ebce11be288f at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 333.9384409999475ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:12.449
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [null]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:13.111
+!MESSAGE [Info]	[fetchCompletions] Request 222ab48e-7e2c-4d06-a477-b51c30dcfd9a at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 331.61332800006494ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:13.415
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:13.770
+!MESSAGE [Info]	[fetchCompletions] Request 7c893d32-93f0-4b88-8515-dd289971a8bb at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 338.45429800031707ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:13.821
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:14.657
+!MESSAGE [Info]	[fetchCompletions] Request d2d106c7-8542-412d-b525-7cae921f1240 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 331.4147830000147ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:14.830
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:15.180
+!MESSAGE [Info]	[fetchCompletions] Request a531f4b1-5fb6-4d50-bb4f-035cdc844b7b at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 341.95838299999014ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:15.253
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:15.625
+!MESSAGE [Info]	[fetchCompletions] Request abb867fc-7c3a-4495-a55c-c3f647fb4b69 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 357.86535200010985ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:15.679
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:17.405
+!MESSAGE [Info]	[fetchCompletions] Request fa99c960-5096-49c9-8a5f-1979a7b35142 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 350.915379000362ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:17.494
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:17.883
+!MESSAGE [Info]	[fetchCompletions] Request 36fbc3a0-5dbc-42ec-a35c-eb1ed17d4251 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 376.2726470003836ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:17.927
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:26.725
+!MESSAGE [Info]	[code-referencing] Calling Match
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:27.851
+!MESSAGE [Info]	[code-referencing] No match found
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:37.105
+!MESSAGE [Info]	[fetchCompletions] Request 214df266-9ffc-48cc-b6e7-fd424211251c at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 401.71830399986356ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:37.172
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:37.579
+!MESSAGE [Info]	[fetchCompletions] Request 7f4cb2dc-b59f-43e8-8da4-df00c0fabe40 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 389.7482199999504ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:50:37.632
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:50:48.716
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:50:48.718
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:51:22.098
+!MESSAGE [Info]	[fetchCompletions] Request 3c9cb5fd-d1ad-47a4-aa67-455876ddfb06 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 403.7378500001505ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:51:22.099
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:51:34.674
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:51:34.677
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:52:04.193
+!MESSAGE [Info]	[fetchCompletions] Request 40451041-6703-42ba-a4c6-b97c38600872 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 393.97144699981436ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:52:04.257
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:52:12.698
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:52:12.701
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:54:38.595
+!MESSAGE [Info]	[fetchCompletions] Request bdde2aea-07d8-4742-8305-3eeb7b76f9e4 at <https://proxy.individual.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 3036.371360000223ms
+
+!ENTRY org.eclipse.lsp4e 1 0 2025-10-10 17:54:38.596
+!MESSAGE [Info]	[streamChoices] solution 0 returned. finish reason: [stop]
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:54:45.106
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2025-10-10 17:54:45.109
+!MESSAGE Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!

@@ -4,14 +4,17 @@ public class CarService {
 	
 	private IEngine engine;
 	
-	// Required setter method for byName autowiring
-    public void setEngine1(IEngine engine) {
-        this.engine = engine;
-    }
-
 	/*
-	 * public CarService(IEngine engine) { this.engine = engine; }
+	 * // Required setter method for byName autowiring public void
+	 * setEngine1(IEngine engine) { this.engine = engine; }
 	 */
+
+	
+	public CarService(IEngine engine) { this.engine = engine; } 
+	/*
+	 * public CarService() { System.out.println("CarService Constructor"); }
+	 */
+	 
 
 	public void startCar() {
 		int status=engine.start();

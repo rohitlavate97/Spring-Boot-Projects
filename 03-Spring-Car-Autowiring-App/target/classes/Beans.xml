@@ -5,10 +5,11 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- bean definitions here -->
-    <bean id="engine" class="com.alchemist.beans.PetrolEngine" primary="true"/>
+<!--    <bean id="engine" class="com.alchemist.beans.PetrolEngine"/>-->
     <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
     <!--bean id="car" class="com.alchemist.beans.CarService" autowire="byName"-->
-    <bean id="car" class="com.alchemist.beans.CarService" autowire="byType">
+    <!--bean id="car" class="com.alchemist.beans.CarService" autowire="byType"-->
+    <bean id="car" class="com.alchemist.beans.CarService" autowire="constructor">
      </bean>
 
 </beans>
