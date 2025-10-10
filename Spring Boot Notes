@@ -76,12 +76,18 @@ works on below modes
 -none
 
 Syntax:
---byName
+--byName--->identity dependent based on variable name matching with bean id
 <bean id="car" class="com.alchemist.beans.CarService" autowire="byName">
 --When we write 'autowire' attribute in the bean definition, that bean will be considered as Target Class
 
---byType
+--byType--->identity dependent bean based on variable type
+  autowire-candidate="false"
     <bean id="engine" class="com.alchemist.beans.PetrolEngine" autowire-candidate="false"/>
     <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
     <bean id="car" class="com.alchemist.beans.CarService" autowire="byType">
      </bean>
+  primary="true"
+    <bean id="engine" class="com.alchemist.beans.PetrolEngine" primary="true"/>
+    <bean id="engine1" class="com.alchemist.beans.DieselEngine"/>
+    <!--bean id="car" class="com.alchemist.beans.CarService" autowire="byName"-->
+    <bean id="car" class="com.alchemist.beans.CarService" autowire="byType">
