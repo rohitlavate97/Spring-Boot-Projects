@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="petrol" class="com.alchemist.beans.PetrolEngine"/>
+    <bean id="diesel" class="com.alchemist.beans.DieselEngine"/>
+    <bean id="car" class="com.alchemist.beans.CarService">
+    <!-- to avoid Nullpointer exception as PaymentService don't have by default constructor-->
+       <constructor-arg name="car" ref="petrol"/>
+       <!--constructor-arg name="payment" ref="credit"/-->
+       <!--property name="iEngine" ref="petrol"/-->
+     </bean>
+
+</beans>

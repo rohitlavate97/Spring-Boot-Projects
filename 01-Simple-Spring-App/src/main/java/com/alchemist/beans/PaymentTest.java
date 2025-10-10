@@ -8,6 +8,7 @@ public class PaymentTest {
 		// TODO Auto-generated method stub
 		ClassPathXmlApplicationContext ctxt = new ClassPathXmlApplicationContext("Beans.xml");
 		PaymentService service = ctxt.getBean(PaymentService.class);
+		//service.setiPayment(ctxt.getBean(IPayment.class));
 		service.doPayment(100);
 	}
 

@@ -8,7 +8,10 @@
     <bean id="credit" class="com.alchemist.beans.CreditCardPayment"/>
     <bean id="debit" class="com.alchemist.beans.DebitCardPayment"/>
     <bean id="payment" class="com.alchemist.beans.PaymentService">
-       <constructor-arg name="payment" ref="debit"/>
+    <!-- to avoid Nullpointer exception as PaymentService don't have by default constructor-->
+       <!--constructor-arg name="payment" ref="debit"/-->
+       <!--constructor-arg name="payment" ref="credit"/-->
+       <property name="iPayment" ref="credit"/>
      </bean>
 
 </beans>

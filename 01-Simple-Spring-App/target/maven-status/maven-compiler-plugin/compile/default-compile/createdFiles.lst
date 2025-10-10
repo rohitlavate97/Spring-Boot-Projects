@@ -1,0 +1,5 @@
+com/alchemist/beans/PaymentTest.class
+com/alchemist/beans/IPayment.class
+com/alchemist/beans/CreditCardPayment.class
+com/alchemist/beans/PaymentService.class
+com/alchemist/beans/DebitCardPayment.class
