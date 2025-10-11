@@ -194,5 +194,72 @@ Spring bean life-Cycle
 init(),getData,destroy()
 Bean life-Cycle methods can be executed in 3 ways
 -Declarative approach(Xml file to configure)
+    <!--Add attribute init-method and destroy-mehtod for Bean Lifecycle-->
+    <bean id="dao" class="com.alchemist.UserDAO"
+    init-method="init"
+    destroy-method="destroy"
+    />
+	
 -Programmatic approach(By using Interface)
+
+public class UserDAO implements InitializingBean,DisposableBean{
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("Getting db connection.....");
+	}
+	
+	public void getData() {
+		System.out.println("Getting the data from thd db...");
+	}
+	
+	public void destroy() throws Exception{
+		System.out.println("Closing db connection.....");
+	}
+
+}
+
 -Annotation approach
+@Component
+public class UserDAO{
+	
+	@PostConstruct
+	public void init() {
+		System.out.println("Getting db connection.....");
+	}
+	
+	public void getData() {
+		System.out.println("Getting the data from thd db...");
+	}
+	
+	@PreDestroy
+	public void destroy() throws Exception{
+		System.out.println("Closing db connection.....");
+	}
+
+}
+
+Main Class for all approaches
+package com.alchemist;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+
+public class Application {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");---->XML Approach
+		ApplicationContext context=new AnnotationConfigApplicationContext(AppConfig.class);----> annotation approach
+		UserDAO dao = context.getBean(UserDAO.class);
+		dao.getData();
+		/*If we add this much code-->destroy() will not be executed, as in in main method no code to 
+		 * to execute-->JVM shutdown i.e main method terminated--->IOC container have not got chance 
+		 * to remove the object. so in order to see execution of destroy() add following code */
+		ConfigurableApplicationContext ctxt = (ConfigurableApplicationContext)context;
+		ctxt.close();
+
+	}
+
+}
