@@ -188,3 +188,11 @@ public class ReportService {
 
 Note: If we remove @Autowired here, still DI will happens as ReportService is Spring bean,i.e IOC should create object for ReportService when you have only one parameterized constructor in class @Autowired is optional. Wnen you have 2 constructors, DI will not happen withoult @Autowired
 If we have one no param constructor and one Param constructor, then by default it will call 0-param constructor and DI will not happen
+
+Spring bean life-Cycle
+----------------------
+init(),getData,destroy()
+Bean life-Cycle methods can be executed in 3 ways
+-Declarative approach(Xml file to configure)
+-Programmatic approach(By using Interface)
+-Annotation approach
