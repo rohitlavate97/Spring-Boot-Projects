@@ -4,7 +4,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("userDao") //writing the name of the bean
 public class UserDao implements InitializingBean,DisposableBean{
 
 	@Override
