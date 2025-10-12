@@ -305,3 +305,30 @@ i.e., the repetitive stuff like getters, setters, constructors, toString(), and 
 | `@Value`                   | Creates an **immutable class** (like `final` + all fields `private final`)                   |
 | `@Slf4j`                   | Adds a logger instance automatically (`log.info("message")`)                                 |
 -----------------------------------------------------------------------------------------------------------------------------
+
+Spring Boot--->It is the Extension for Spring Framework
+It is one approach, to develop Spring Based application with less configuration-->Develops Standalone, Web and Distributed i.e Microservices
+We have following advantages-->
+-Starter POM-->Simplifies Maven/Graddle build configuaration
+It contains web-starter,datajpa-starter,Security-starter and mail-starter
+--Auto Configuration--->Whatever common configuaration required for Spring boot will be taken care by Spring boot
+e.g-->Creating db connection pool,Deploy Web Application in embeded server, Start IOC container, Component Scanning etc
+
+pom.xml------------>Add the following dependency
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+@Service
+public class ReportService {
+	
+	public ReportService() {
+		/*
+		 * this class is added to showcase that object is created by IOC when @Service
+		 * annotation is added on the top of the class
+		 */
+		System.out.println("Report Service :: Constructor");
+	}
+
+}
