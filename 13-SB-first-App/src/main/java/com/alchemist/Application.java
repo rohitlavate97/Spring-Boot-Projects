@@ -16,7 +16,6 @@ public class Application {
 	@GetMapping("/welcome")
 	public String welcome() {
 		return "Welcome";
-		
 	}
 
 }
