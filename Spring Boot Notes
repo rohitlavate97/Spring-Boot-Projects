@@ -263,3 +263,45 @@ public class Application {
 	}
 
 }
+
+@DependsOn:-->Wnen one bean dependent on another bean, we specify that DependsOn. (also this can be used in XML also)
+We can specify single or multiple beans
+@DependsOn("dao") 
+@DependsOn(value={"dao","service"})
+
+Ex-->Class A and Class B, Class B should fetch data from db and store into redis, then Class A will fetch data from redis. It will increase performance.
+so here Class A dependent on Class B
+In some cases, for creating object scanning happens according to alphabetical order--->Causes isssue
+
+@Component("userDao") //writing the name of the bean
+public class UserDao implements InitializingBean,DisposableBean{
+
+@Service
+@DependsOn("userDao")
+public class UserService {
+	public UserService() {
+		System.out.println("Getting data from Redis...");
+	}
+----------------------------------------Spring Core Completed----------------------------------------------------------------------------------------------
+Project Lombok-->Project Lombok is a Java library that helps you reduce boilerplate code,
+i.e., the repetitive stuff like getters, setters, constructors, toString(), and equals() methods — by generating them automatically during compilation.
+<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.38</version>
+</dependency>
+
+| Annotation                 | Purpose                                                                                      |
+| -------------------------- | -------------------------------------------------------------------------------------------- |
+| `@Getter` / `@Setter`      | Creates getters and setters                                                                  |
+| `@ToString`                | Generates `toString()`                                                                       |
+| `@EqualsAndHashCode`       | Generates `equals()` and `hashCode()`                                                        |
+| `@NoArgsConstructor`       | Generates a no-argument constructor                                                          |
+| `@AllArgsConstructor`      | Generates a constructor with all fields                                                      |
+| `@RequiredArgsConstructor` | Generates a constructor for final fields                                                     |
+| `@Data`                    | Combines `@Getter`, `@Setter`, `@ToString`, `@EqualsAndHashCode`, `@RequiredArgsConstructor` |
+| `@Builder`                 | Enables the **Builder pattern**                                                              |
+| `@Value`                   | Creates an **immutable class** (like `final` + all fields `private final`)                   |
+| `@Slf4j`                   | Adds a logger instance automatically (`log.info("message")`)                                 |
+-----------------------------------------------------------------------------------------------------------------------------
