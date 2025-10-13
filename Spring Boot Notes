@@ -108,6 +108,10 @@ Spring Annotations: Annotations are used to provide metadata
 @Bean:-->The @Bean annotation in Spring Boot is used to declare a method that produces a bean to be managed by the Spring IoC (Inversion of Control) container. This annotation is typically used within a @Configuration class, which signifies that the class's primary purpose is to define bean definitions. @Component auto-detects your beans, @Bean explicitly 
 declares them.For third-party library classes or when you need custom instantiation logic
 @ComponentScan(basePackages={"com.alchemist","edu.scaler"})-->It is the process of identifying spring bean classes available in project based on base packages name
+Note:--Class that communicates with db is called Persistence Class/DAO Class. Whatever Exception getting from DB i.e SQLException will be truncated into our java side
+--Classes which are utility like sending mail. generateReport are represented by @Component
+--interfaces which has business logic get implementation class @Service annotation
+
 -->Example name
 package com.alchemist;------->Always keep Appconfig.java in base package rather than config package
 @Configuration
@@ -642,4 +646,122 @@ SpringApplication.run(MyApp.class, args)
 │   └─ listeners.finished(context, null)
 │       └─ Publish ApplicationReadyEvent
 
+Spring Boot Runners:--->
+They are special interfaces that allow you to execute code once the application context is fully loaded 
+but before the application starts accepting requests. They're perfect for initialization tasks, data setup, or validation checks.
+Ex;-->In db their is static data, to get that data one time only when we start application is starting and save in the app.
+UseCases-->Load Static table data when application starts, Delete data from staging tables(i.e Temporary table), Send notification regarding application startup
+Two runners in the spring boot-->
+--ApplicationRunner---->run()
+--CommandLineRunner---->run()
+Note: Both are functional interface, only one abstract method is available i.e run()
+Key Point: Runners execute after the application context is fully refreshed but before the application is marked as fully ready (before ApplicationReadyEvent).
+Spring Boot Startup:
+├── Context Refresh (Bean creation, Dependency Injection)
+├── Web Server Starts
+├── ApplicationStartedEvent Published
+├── 🏃 Runners Execute (in @Order sequence)
+│   ├── CommandLineRunner @Order(1)
+│   ├── ApplicationRunner @Order(2)
+│   └── Other runners...
+└── ApplicationReadyEvent Published (App is READY!)
 
+@Component
+public class MyApplicationRunner implements ApplicationRunner{
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		// TODO Auto-generated method stub
+		System.out.println("ApplicationRunner run().. method");
+	}
+
+}
+
+spring-boot-autoconfigure-x.x.x.jar---->
+It contains all the pre-written configuration classes that Spring Boot uses to automatically set up:
+-Data sources (JDBC, JPA, MongoDB)
+-Web servers (Tomcat, Jetty, Undertow)
+-Spring MVC
+-Security
+-Actuator
+-Mail, Kafka, Redis, Quartz, etc.
+
+META-INF/spring-factories---->Contains initializers and listeners
+In the run()-->createBootStrapContext() and getRunListeners(args)-->From factories file they load classes available, they will create object and they
+will call methods. These classes load configuration required for our application
+SpringApplication.run()
+        │
+        ├── createBootstrapContext()
+        │      └── DefaultBootstrapContext created
+        │      └── Initializers registered (for logging, env)
+        │
+        ├── getRunListeners(args)
+        │      └── Load EventPublishingRunListener
+        │      └── Prepare lifecycle event handlers
+        │
+        ├── listeners.starting()
+        │      └── Fire ApplicationStartingEvent
+        │
+        ├── prepareEnvironment()
+        │      └── Load application.properties / YAML
+        │
+        ├── createApplicationContext()
+        │      └── Instantiate main ApplicationContext
+        │
+        ├── refreshContext()
+        │      └── Load all beans
+        │
+        └── callRunners()
+               └── Execute CommandLineRunner / ApplicationRunner
+public ConfigurableApplicationContext run(String... args) {
+    long startTime = System.nanoTime();
+
+    // 1️⃣ Create initial context
+    DefaultBootstrapContext bootstrapContext = createBootstrapContext();
+
+    ConfigurableApplicationContext context = null;
+    configureHeadlessProperty();
+
+    // 2️⃣ Create listeners for startup events
+    SpringApplicationRunListeners listeners = getRunListeners(args);
+    listeners.starting(bootstrapContext, this.mainApplicationClass);
+
+    try {
+        // 3️⃣ Prepare environment
+        ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+        ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+
+        // 4️⃣ Create and refresh ApplicationContext
+        context = createApplicationContext();
+        prepareContext(bootstrapContext, context, environment, listeners, applicationArguments);
+        refreshContext(context);
+
+        // 5️⃣ Call CommandLineRunners / ApplicationRunners
+        afterRefresh(context, applicationArguments);
+        listeners.started(context);
+        callRunners(context, applicationArguments);
+    }
+    catch (Throwable ex) {
+        handleRunFailure(context, ex, listeners);
+    }
+
+    listeners.ready(context);
+    return context;
+}
+
+Spring Data JPA--->used to develop Persistence layer logic, Simplifies CRUD operations implemenations in project
+--Java JDBC,Spring JDBC, Hibernate Framework,Spring ORM, Spring Data JPA-->Ways to develop persistence logic
+--In Spring Data JPA, we need to write 0 methods to perform CRUD operations, uses Hibernate framework internally.(If performance is crucial for application,
+then directly go with JDBC as it will execute query directly on db)
+Java App--->Spring Data JPA(Hibrenate ORM-->JDBC)-->DB
+--If you want everything in object format, then go with Hibernate framework/Spring Data JPA
+Note: If we have 5000 DB tables then, we have to create 5000 DAO classes. Every dao class should contains 4 common methods so it will become 20000 methods 
+with same logic(This is not recommended--->To avoid boilerplate code we use Spring Data JPA)
+--In Spring Data JPA-->DAO is called as Repository, and it provided Repository interfaces as follows
+CrudRepository(CRUD operations method)
+JpaRepository(CRUD operations method + Pagination + Sorting + QBE)
+--data-jpa-starter
+Driver will be loaded
+Connection will be created
+SessionFactory will be created
+Transaction will be happening
