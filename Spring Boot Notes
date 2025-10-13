@@ -308,11 +308,14 @@ i.e., the repetitive stuff like getters, setters, constructors, toString(), and 
 
 Spring Boot--->It is the Extension for Spring Framework
 It is one approach, to develop Spring Based application with less configuration-->Develops Standalone, Web and Distributed i.e Microservices
+Spring Boot = Spring - XML configuration + Auto Configuration + Embedded Servers + Actuator
 We have following advantages-->
 -Starter POM-->Simplifies Maven/Graddle build configuaration
 It contains web-starter,datajpa-starter,Security-starter and mail-starter
 --Auto Configuration--->Whatever common configuaration required for Spring boot will be taken care by Spring boot
 e.g-->Creating db connection pool,Deploy Web Application in embeded server, Start IOC container, Component Scanning etc
+
+Note: As Spring Boot executes from main(), war or jar doesn't matters
 
 pom.xml------------>Add the following dependency
         <dependency>
@@ -332,3 +335,311 @@ public class ReportService {
 	}
 
 }
+
+--@SpringBootApplication--->@SpringBootConfiguration(-->@Configuration) + @EnableAutoConfiguration(-->AppConfig.java need not to write) + @ComponentScan
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+[32m :: Spring Boot :: [39m             [2m (v3.4.10)[0;39m
+
+[2m2025-10-12T22:01:40.746+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mcom.alchemist.Application               [0;39m [2m:[0;39m Starting Application using Java 17.0.16 with PID 9772 (D:\Projects\Spring-Boot-Projects\13-SB-first-App\target\classes started by Admin in D:\Projects\Spring-Boot-Projects\13-SB-first-App)
+[2m2025-10-12T22:01:40.749+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mcom.alchemist.Application               [0;39m [2m:[0;39m No active profile set, falling back to 1 default profile: "default"
+[2m2025-10-12T22:01:41.406+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port 8080 (http)
+[2m2025-10-12T22:01:41.419+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
+[2m2025-10-12T22:01:41.419+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mo.apache.catalina.core.StandardEngine   [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/10.1.46]
+[2m2025-10-12T22:01:41.452+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
+[2m2025-10-12T22:01:41.453+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 657 ms
+Report Service :: Constructor
+[2m2025-10-12T22:01:41.738+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mr$InitializeUserDetailsManagerConfigurer[0;39m [2m:[0;39m Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+[2m2025-10-12T22:01:41.855+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port 8080 (http) with context path '/'
+[2m2025-10-12T22:01:41.864+05:30[0;39m [32m INFO[0;39m [35m9772[0;39m [2m--- [13-SB-first-App] [           main] [0;39m[36mcom.alchemist.Application               [0;39m [2m:[0;39m Started Application in 1.469 seconds (process running for 1.852)
+
+Here in the console we can see IOC container started autoconfiguration,
+Tomcat Started,Component scanning done by default,Security provided automatically
+
+Spring Boot Actuator:---->It is a built-in module that exposes a set of production-ready endpoints (called Actuator Endpoints) to let you:
+-Monitor application health
+-Check configurations and environment properties
+-View metrics (CPU, memory, threads, requests, etc.)
+-Manage log levels at runtime
+-View application beans and mappings
+-Integrate with monitoring tools like Prometheus, Grafana, New Relic, etc.
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+Default Endpoint-->http://localhost:8080/actuator
+Common Endpoints
+| Endpoint             | Description                                               |
+| -------------------- | --------------------------------------------------------- |
+| `/actuator/health`   | Shows application health (e.g., "UP" or "DOWN").          |
+| `/actuator/info`     | Displays custom app info (version, name, etc.).           |
+| `/actuator/metrics`  | Shows performance metrics like memory, CPU, GC, etc.      |
+| `/actuator/beans`    | Lists all Spring Beans loaded in the context.             |
+| `/actuator/env`      | Shows environment variables and configuration properties. |
+| `/actuator/mappings` | Displays all HTTP mappings (useful for debugging).        |
+| `/actuator/loggers`  | View and change log levels at runtime.                    |
+
+---->application.properties
+# Expose all endpoints
+management.endpoints.web.exposure.include=*
+
+# Change base path (optional)
+management.endpoints.web.base-path=/manage
+
+# Custom info endpoint data
+info.app.name=PayrollApp
+info.app.version=1.0.0
+info.app.owner=Rohit Lavate
+
+🧩 Use Case Example
+In a real app (like your payroll or compliance system at Morningstar 👔):
+-/actuator/health → used by a load balancer to check if service is alive
+-/actuator/metrics/jvm.memory.used → used by Grafana to monitor memory
+-/actuator/loggers → allows changing log level without restarting app
+
+--Embedded servers
+Apache Tomcat, Jetty, and Netty
+| Feature             | Tomcat              | Jetty                         | Netty                          |
+| ------------------- | ------------------- | ----------------------------- | ------------------------------ |
+| Type                | Servlet container   | Servlet container             | NIO framework                  |
+| Spring Boot default | ✅ Yes               | ❌ No                          | ❌ No                           |
+| Performance         | Good                | Very good                     | Excellent                      |
+| Concurrency         | Medium              | High                          | Very high                      |
+| Blocking model      | Blocking            | Async (supports non-blocking) | Fully non-blocking             |
+| Footprint           | Moderate            | Small                         | Small                          |
+| Reactive support    | ❌                   | Partial                       | ✅ Full                         |
+| Ideal for           | REST APIs, web apps | Microservices                 | Reactive, event-driven systems |
+
+Class containing main() called as Start/Execution class/Main Class of spring boot.
+Entry point for Spring boot application is run()-->It is static method(ClassName.methodName() to call).Starts IOC Container, IOC container object is return type of this method(i.e ConfigurableApplicationContext),
+and also perform Component scanning
+  ConfigurableApplicationContext context = SpringApplication.run(Application.class,args);
+  Car c = context.getBean(Car.class);
+ 
+--ConfigurableApplicationContext is an interface,it will provide implementation class of that class hold into variable
+@SpringBootApplication
+@RestController
+public class Application {
+
+	public static void main(String[] args) {
+		ConfigurableApplicationContext context=SpringApplication.run(Application.class, args);---->Contains logic to start the IOC
+		System.out.println(context.getClass().getName());
+	}
+}
+--When we use 'web-starter'(i.e web-apps + REST API) in pom.xml----->AnnotationConfig'ServletWebServer'ApplicationContext class will be used to create object for IOC container
+--For StandAlone application i.e boot-starter--->AnnotationConfigApplicationContext
+--For Reactive Applications ie starter-webflux---->AnnotationConfig'ReactiveWebServer;ApplicationContext class
+--If pom.xml contains--> web-starter + webflux-->Priority given to web-starter i.e among 3 web-starter gets priority
+
+SpringBoot Banner-->3 modes as following
+--Console(default)-->prints on the console
+--log-->Prints on the log file
+--off-->don't print banner
+
+create a file-->src/main/resources/banner.txt
+  ____             _             _       
+ / ___| _ __  _ __(_)_ __  _   _| |_ ___ 
+ \___ \| '_ \| '__| | '_ \| | | | __/ _ \
+  ___) | |_) | |  | | | | | |_| | ||  __/
+ |____/| .__/|_|  |_|_| |_|\__,_|\__\___|
+       |_|        ${spring-boot.version}
+
+Application: ${spring.application.name}------>You can use Spring placeholders:
+Profile: ${spring.profiles.active}
+
+--application.properties
+spring.main.banner-mode=off--->To disable the banner
+spring.main.banner-mode=log---->Setting to log file
+
+@SpringBootApplication
+public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(MyApplication.class);
+        app.setBannerMode(Banner.Mode.OFF);
+        app.run(args);
+    }
+}
+
+-Dynamic custom Banner via Java Class
+@SpringBootApplication
+public class MyApp {
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(MyApp.class);
+        app.setBanner(new Banner() {
+            @Override
+            public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+                out.println("🌼 Custom Dynamic Banner 🌼");
+                out.println("Active Profile: " + environment.getActiveProfiles()[0]);
+            }
+        });
+        app.run(args);
+    }
+}
+
+-->Internals of SpringApplication.run() step by step — 
+
+⚙️ 1️⃣ Entry Point
+SpringApplication.run(MyApp.class, args);
+
+you’re actually calling a 'static helper' method that does this:
+
+public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
+    return new SpringApplication(primarySource).run(args);
+}
+
+
+So there are two main phases:
+new SpringApplication(primarySource) → sets up the Spring Boot launcher.
+.run(args) → starts the full lifecycle.
+
+⚙️ 2️⃣ Phase 1: new SpringApplication()
+This constructor prepares metadata about your application.
+Key internals:
+Detects Application type:
+SERVLET → for web apps using Tomcat/Jetty.
+REACTIVE → for WebFlux.
+NONE → for CLI apps.
+
+Registers ApplicationContext class to use (like AnnotationConfigServletWebServerApplicationContext).
+Loads SpringApplicationRunListeners → these are “listeners” that react to lifecycle events (e.g., starting, environmentPrepared, etc.).
+Initializes the main class (from the one having @SpringBootApplication).
+
+⚙️ 3️⃣ Phase 2: run(args)
+Here’s the internal flow simplified (core sequence):
+🔹 Step 1: prepareEnvironment()
+Creates or loads the Spring Environment (ConfigurableEnvironment)
+Reads all property sources:
+application.properties / application.yml
+System environment variables
+Command-line arguments
+Applies profiles and merges configurations.
+
+🔹 Step 2: printBanner()
+Loads and prints the banner.txt (if spring.main.banner-mode ≠ off).
+Uses BannerPrinter internally.
+
+🔹 Step 3: createApplicationContext()
+Creates an ApplicationContext instance based on app type:
+For web apps → AnnotationConfigServletWebServerApplicationContext.
+For reactive → AnnotationConfigReactiveWebServerApplicationContext.
+For non-web → AnnotationConfigApplicationContext.
+
+🔹 Step 4: prepareContext()
+Loads ApplicationContextInitializers (custom setup before beans load).
+Sets up environment in the context.
+Publishes an event: ApplicationContextInitializedEvent.
+
+🔹 Step 5: refreshContext()
+This is the heart of Spring — triggers the entire bean creation lifecycle:
+Scans packages (@ComponentScan)
+Registers beans (@Bean, @Configuration, @Component)
+Resolves dependency injection
+Applies AOP proxies
+Triggers @PostConstruct
+Publishes ContextRefreshedEvent
+Essentially, this is where IoC container starts and your app beans become live.
+
+🔹 Step 6: afterRefresh()
+Starts embedded web servers (Tomcat, Jetty, etc.) if it’s a web app.
+Calls any ApplicationRunner or CommandLineRunner beans.
+
+🔹 Step 7: runListeners.finished() and Context ready
+Fires final events like ApplicationReadyEvent.
+Returns a fully initialized ConfigurableApplicationContext.
+
+🧠 Summary (in Simple Terms)
+
+Here’s the flow as a quick visual:
+
+SpringApplication.run()
+│
+├── Create SpringApplication object
+├── Prepare Environment
+├── Print Banner
+├── Create ApplicationContext
+├── Prepare Context
+├── Refresh Context (Bean creation)
+├── Run CommandLineRunner / ApplicationRunner
+└── Application is READY ✅
+
+🧩 Bonus: Key Interfaces Inside run()
+| Component                                 | Purpose                                                    |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| `SpringApplicationRunListener`            | Gets lifecycle events (startup, environmentPrepared, etc.) |
+| `ApplicationContextInitializer`           | Customizes the context before beans load                   |
+| `ApplicationRunner` / `CommandLineRunner` | Runs after app startup                                     |
+| `SmartLifecycle`                          | Manages start/stop hooks                                   |
+
+----->Spring Boot Startup Call Tree
+SpringApplication.run(MyApp.class, args)
+│
+├─> SpringApplication.<init>(primarySource)
+│   ├─ Detect application type (SERVLET / REACTIVE / NONE)
+│   ├─ Set ApplicationContext class
+│   └─ Load SpringApplicationRunListeners
+│
+├─> SpringApplication.run(args)
+│   ├─ getRunListeners(args)
+│   │   └─ Instantiate listeners from META-INF/spring.factories
+│   │
+│   ├─ listeners.starting()
+│   │   └─ ApplicationStartingEvent
+│   │
+│   ├─ prepareEnvironment(listeners, args)
+│   │   ├─ Create ConfigurableEnvironment (StandardEnvironment / WebEnvironment)
+│   │   ├─ Load property sources:
+│   │   │    ├─ application.properties / .yml
+│   │   │    ├─ System env variables
+│   │   │    └─ Command-line args
+│   │   ├─ Apply profiles
+│   │   └─ listeners.environmentPrepared(environment)
+│   │
+│   ├─ printBanner(environment)
+│   │   └─ BannerPrinter.print(environment, sourceClass)
+│   │
+│   ├─ createApplicationContext()
+│   │   ├─ AnnotationConfigServletWebServerApplicationContext (Web)
+│   │   ├─ AnnotationConfigReactiveWebServerApplicationContext (Reactive)
+│   │   └─ AnnotationConfigApplicationContext (Non-web)
+│   │
+│   ├─ prepareContext(context, environment, listeners)
+│   │   ├─ context.setEnvironment(environment)
+│   │   ├─ context.setId(...)
+│   │   ├─ Apply ApplicationContextInitializers
+│   │   └─ listeners.contextPrepared(context)
+│   │
+│   ├─ refreshContext(context)
+│   │   └─ AbstractApplicationContext.refresh()
+│   │       ├─ prepareBeanFactory()
+│   │       ├─ postProcessBeanFactory()
+│   │       ├─ invokeBeanFactoryPostProcessors()
+│   │       ├─ registerBeanPostProcessors()
+│   │       ├─ initMessageSource()
+│   │       ├─ initApplicationEventMulticaster()
+│   │       ├─ onRefresh() (hook for subclasses)
+│   │       ├─ registerListeners()
+│   │       ├─ finishBeanFactoryInitialization()
+│   │       │    ├─ Instantiate singleton beans
+│   │       │    ├─ Resolve DI
+│   │       │    ├─ Apply @PostConstruct
+│   │       │    └─ Apply AOP proxies
+│   │       └─ finishRefresh()
+│   │            └─ Publish ContextRefreshedEvent
+│   │
+│   ├─ afterRefresh(context, args)
+│   │   ├─ Start embedded web server (if Web app)
+│   │   ├─ Run ApplicationRunner beans
+│   │   └─ Run CommandLineRunner beans
+│   │
+│   └─ listeners.finished(context, null)
+│       └─ Publish ApplicationReadyEvent
+
+
