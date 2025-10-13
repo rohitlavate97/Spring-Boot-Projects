@@ -765,3 +765,31 @@ Driver will be loaded
 Connection will be created
 SessionFactory will be created
 Transaction will be happening
+
+--CrudRepository 
+| Method                  | Signature                                                 | Description                                                   | Example                               |
+| :---------------------- | :-------------------------------------------------------- | :------------------------------------------------------------ | :------------------------------------ |
+| **save**                | `<S extends T> S save(S entity)`                          | Saves a single entity. Inserts if new, updates if ID exists.  | `repo.save(emp);`                     |
+| **saveAll**             | `<S extends T> Iterable<S> saveAll(Iterable<S> entities)` | Saves all entities in batch. Inserts new, updates existing.   | `repo.saveAll(listOfEmployees);`      |
+| **findById**            | `Optional<T> findById(ID id)`                             | Retrieves entity by ID. Returns `Optional` to avoid nulls.    | `repo.findById(1L);`                  |
+| **existsById**          | `boolean existsById(ID id)`                               | Checks if an entity with the given ID exists.                 | `repo.existsById(5L);`                |
+| **findAll**             | `Iterable<T> findAll()`                                   | Retrieves all entities in the repository.                     | `repo.findAll();`                     |
+| **findAllById**         | `Iterable<T> findAllById(Iterable<ID> ids)`               | Retrieves all entities for the given IDs.                     | `repo.findAllById(List.of(1L,2L));`   |
+| **count**               | `long count()`                                            | Returns the total number of entities in the repository.       | `repo.count();`                       |
+| **deleteById**          | `void deleteById(ID id)`                                  | Deletes the entity with the given ID.                         | `repo.deleteById(3L);`                |
+| **delete**              | `void delete(T entity)`                                   | Deletes the given entity.                                     | `repo.delete(emp);`                   |
+| **deleteAllById**       | `void deleteAllById(Iterable<? extends ID> ids)`          | Deletes all entities for the given IDs.                       | `repo.deleteAllById(List.of(1L,2L));` |
+| **deleteAll(entities)** | `void deleteAll(Iterable<? extends T> entities)`          | Deletes all given entities in batch.                          | `repo.deleteAll(listOfEmployees);`    |
+| **deleteAll()**         | `void deleteAll()`                                        | Deletes **all entities** in the repository. Use with caution. | `repo.deleteAll();`                   |
+
+🔹 Notes:
+save():If entity ID is null or not in DB → insert.(First Select Query then insert query)-->Polymorphic method
+If entity ID exists in DB → update.
+findById() returns Optional<T> → helps avoid NullPointerException.
+findAll() and count() → useful for pagination & reporting.
+Deletion methods are safe, but deleteAll() removes everything — be careful.
+While executing findAll()-->It executing select query
+                            Retrieving records in form of ResultSet
+							Moving Cursor of ResultSet
+							Taking each row from ResultSet and setting it to Entity Object
+							Adding Entity object to Collection and Returning
