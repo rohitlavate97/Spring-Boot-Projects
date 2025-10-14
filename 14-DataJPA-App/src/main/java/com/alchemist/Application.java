@@ -42,6 +42,7 @@ public class Application {
 		 * System.out.println("Book By ID 1: " + bookById.get());
 		 */
 		
+		
 		/*
 		 * Book b1 =new Book(); b1.setBookName("Python"); b1.setBookPrice(300.0);
 		 * 
@@ -49,7 +50,8 @@ public class Application {
 		 * 
 		 * Book b3 =new Book(); b3.setBookName("Rust"); b3.setBookPrice(200.0);
 		 * bookRepository.saveAll( List.of(b1,b2,b3) );
-		 */  // 3 select and 3 insert queries will be executed
+		 */
+		   // 3 select and 3 insert queries will be executed
 		 boolean existsById = bookRepository.existsById(2);
 		 System.out.println(existsById);
 		 System.out.println("-----------------");

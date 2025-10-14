@@ -766,6 +766,27 @@ Connection will be created
 SessionFactory will be created
 Transaction will be happening
 
+Repository (I)
+   ↑
+   └── CrudRepository (I)        --> (12 methods)
+           ↑
+           └── PagingAndSortingRepository (I)
+                   ↑
+                   └── JpaRepository (I)
+                           ↑
+                           └── QueryByExampleExecutor (I)
+
+JpaRepository is grandchild of CrudRepository
+| Interface                      | Extends From                                       | Purpose                                                                               |
+| ------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Repository**                 | —                                                  | Marker interface (root of Spring Data hierarchy).                                     |
+| **CrudRepository**             | Repository                                         | Provides CRUD operations like `save()`, `findById()`, `delete()`, etc. (≈12 methods). |
+| **PagingAndSortingRepository** | CrudRepository                                     | Adds pagination and sorting support (`findAll(Pageable)`, `findAll(Sort)`).           |
+| **JpaRepository**              | PagingAndSortingRepository, QueryByExampleExecutor | Adds JPA-specific methods like `flush()`, `saveAndFlush()`, and batch operations.     |
+| **QueryByExampleExecutor**     | —                                                  | Provides methods for Query by Example (QBE) functionality.                            |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 --CrudRepository 
 | Method                  | Signature                                                 | Description                                                   | Example                               |
 | :---------------------- | :-------------------------------------------------------- | :------------------------------------------------------------ | :------------------------------------ |
@@ -807,6 +828,13 @@ findBy methods
 | `findBySalary(Double salary)`  | `WHERE salary = ?` | Finds by salary           |
 | `findByActive(boolean active)` | `WHERE active = ?` | Finds by boolean column   |
 ----------------------------------------------------------------------------------
+| Interface                      | Extends From                                       | Purpose                                                                               |
+| ------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Repository**                 | —                                                  | Marker interface (root of Spring Data hierarchy).                                     |
+| **CrudRepository**             | Repository                                         | Provides CRUD operations like `save()`, `findById()`, `delete()`, etc. (≈12 methods). |
+| **PagingAndSortingRepository** | CrudRepository                                     | Adds pagination and sorting support (`findAll(Pageable)`, `findAll(Sort)`).           |
+| **JpaRepository**              | PagingAndSortingRepository, QueryByExampleExecutor | Adds JPA-specific methods like `flush()`, `saveAndFlush()`, and batch operations.     |
+| **QueryByExampleExecutor**     | —                                                  | Provides methods for Query by Example (QBE) functionality.                            |
 --findBy methods are used to perfrom only select operations
 --Using non primary key columns we can select records
 --In findBy methods, method name is very important-->based on method name JPA will construct the query for execution
@@ -892,3 +920,125 @@ selct book_name from book=====select bookName form Book
 | -------------- | -------------------------------------------- | ----------------- | -------------- | ----------------------------------- |
 | **Selection**  | Filters specific **rows** based on condition | Number of rows    | `WHERE`        | `SELECT * FROM emp WHERE dept='HR'` |
 | **Projection** | Selects specific **columns** from a table    | Number of columns | `SELECT`       | `SELECT name, salary FROM emp`      |
+
+--JpaRepository:-->
+| **Aspect**                    | **Description / Example**                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Definition**                | `JpaRepository` is an interface in Spring Data JPA that provides **CRUD operations + JPA-specific methods**. It extends `PagingAndSortingRepository` and CrudRepository`.                                                                                                                                                                  |
+| **Basic Syntax**              | `java<br>@Repository<br>public interface BookRepository extends JpaRepository<Book, Integer> { }<br>`<br>Book = entity class, Integer = primary key type                                                                                                                                                                                    |
+| **Built-in Methods**          | `save(entity)`, `findById(id)`, `findAll()`, `delete(entity)`, `count()`, `existsById(id)`                                                                                                                                                                                                                                                  |
+| **Derived Query Methods**     | Spring generates queries from method names:<br>`List<Book> findByBookName(String name);`<br>`List<Book> findByBookPriceGreaterThan(Double price);`<br>`List<Book> findByBookNameContaining(String keyword);`                                                                                                                                |
+| **Custom Queries (`@Query`)** | JPQL: <br>`java<br>@Query("SELECT b FROM Book b WHERE b.bookPrice > :price")<br>List<Book> findExpensiveBooks(@Param("price") Double price);<br>`<br>Native SQL: <br>`java<br>@Query(value = "SELECT * FROM book WHERE book_price > :price", nativeQuery = true)<br>List<Book> findExpensiveBooksNative(@Param("price") Double price);<br>` |
+| **Paging & Sorting**          | Inherited from `PagingAndSortingRepository`:<br>`Page<Book> findAll(Pageable pageable);`<br>`List<Book> findAll(Sort sort);`<br>Example:<br>`Pageable pageable = PageRequest.of(0, 5, Sort.by("bookPrice").descending());`<br>`Page<Book> page = bookRepository.findAll(pageable);`                                                         |
+| **Key Interfaces**            | `CrudRepository` → basic CRUD<br>`PagingAndSortingRepository` → pagination & sorting<br>`JpaRepository` → JPA-specific methods + all above                                                                                                                                                                                                  |
+| **Advantages**                | ✅ No implementation needed — Spring generates it<br>✅ Supports derived queries<br>✅ Supports custom JPQL/native queries<br>✅ Built-in pagination and sorting                                                                                                                                                                                |
+
+Note:
+findAll()---->Retrieves all the records
+Page<Book> findAll(Pageable pageable)------>Retrieves record with pagination
+List<Book> findAll(Sort sort)----->Retrieves records wit sorting
+
+Example.of() lets you build dynamic queries without writing JPQL or method names.
+You create a probe (sample entity) with some fields set, and Spring Data JPA finds matching records.
+
+@SpringBootApplication
+public class Application {
+
+    private final EmpRepository empRepository;
+
+    Application(EmpRepository empRepository) {
+        this.empRepository = empRepository;
+    }
+
+	public static void main(String[] args) {
+		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+		EmpRepository empRepo = context.getBean(EmpRepository.class);
+		System.out.println("EmpRepository Bean is: " + empRepo.getClass().getName());
+
+		/*
+		 * Employee e1 = new Employee();
+		 * 
+		 * e1.setEmpName("John Doe"); e1.setEmpSalary(50000.0); e1.setEmpGender("Male");
+		 * e1.setEmpDept("IT"); empRepo.save(e1);
+		 * 
+		 * e1.setEmpName("Jane Smith"); e1.setEmpSalary(30000.0);
+		 * e1.setEmpGender("Female"); e1.setEmpDept("HR");
+		 * 
+		 * Employee e2 = new Employee(); e2.setEmpName("Alice Johnson");
+		 * e2.setEmpSalary(35000.0); e2.setEmpGender("Female"); e2.setEmpDept("HR");
+		 * 
+		 * Employee e3 = new Employee(); e3.setEmpName("Bob Brown");
+		 * e3.setEmpSalary(40000.0); e3.setEmpGender("Male"); e3.setEmpDept("IT");
+		 * 
+		 * empRepo.saveAll( java.util.List.of(e1, e2, e3) );
+		 * System.out.println("Employees saved successfully!");
+		 */
+
+		List<Employee> listbySalaryDesc = empRepo.getEmployeeBySalaryDesc();
+		listbySalaryDesc.forEach(System.out::println);
+		System.out.println("-----------------------------------------------------");
+		
+		// ascending order by bookName
+		Sort sortByNameAsc = Sort.by("empName").ascending();
+		//List<Employee> empAsc = empRepo.findAll(Sort.by("empName").ascending());
+		List<Employee> empAsc = empRepo.findAll(sortByNameAsc);
+		empAsc.forEach(System.out::println);
+		System.out.println("------------------------------------------------------");
+		
+		//Sort sortByDeptDesc = Sort.by("empDept").descending();
+		Sort sortByDeptDesc = Sort.by(Sort.Direction.DESC, "empDept");
+		List<Employee> empDeptDesc = empRepo.findAll(sortByDeptDesc);
+		empDeptDesc.forEach(System.out::println);
+		System.out.println("------------------------------------------------------");
+		
+		//sorting based on multiple fields
+		//Sort sortByDeptAscAndSalaryDesc = Sort.by("empDept","empSalary").ascending();
+		Sort sortByDeptAscAndSalaryDesc = Sort.by("empDept").ascending()
+                .and(Sort.by("empSalary").descending());
+		List<Employee> empDeptAscAndSalaryDesc = empRepo.findAll(sortByDeptAscAndSalaryDesc);
+		empDeptAscAndSalaryDesc.forEach(System.out::println);
+		System.out.println("------------------------------------------------------");
+		
+		int pageNumber = 0; // first page
+		PageRequest page = PageRequest.of(pageNumber, 2);
+		Page<Employee> empPage = empRepo.findAll(page);
+		List<Employee> empList = empPage.getContent();
+		empList.forEach(System.out::println);
+		System.out.println("------------------------------------------------------");
+		
+		int peNum = 0; // first page
+		PageRequest pg = PageRequest.of(peNum, 3, Sort.by("empName").ascending());
+		Page<Employee> empPg = empRepo.findAll(pg);
+		List<Employee> empLst = empPg.getContent();
+		empLst.forEach(System.out::println);
+		System.out.println("------------------------------------------------------");
+		
+		//to filter according to the column name--->i.e where clause
+		 Employee emp = new Employee();
+		 emp.setEmpDept("IT");   // We want to find all employees from IT dept
+		 Example<Employee> example = Example.of(emp);
+		 List<Employee> result = empRepo.findAll(example);
+		 result.forEach(System.out::println);
+		 System.out.println("------------------------------------------------------");
+		 
+		 Employee e =new Employee();
+		 e.setEmpDept("HR");
+		 e.setEmpGender("Male");
+		 Example ex = Example.of(e);
+		 List<Employee> res = empRepo.findAll(ex);
+		 res.forEach(System.out::println);
+		 System.out.println("------------------------------------------------------");
+		 
+		 ExampleMatcher matcher = ExampleMatcher.matching()
+			        .withIgnoreCase("empName")
+			        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+			Employee e2 = new Employee();
+			e2.setEmpName("swapnil"); // will match "Swaobuk", "Swapnila", "Mr. Swapnil" etc.
+			Example<Employee> exemp = Example.of(e2, matcher);
+			List<Employee> output = empRepo.findAll(exemp);
+			output.forEach(System.out::println);
+	
+	}
+
+}
+
