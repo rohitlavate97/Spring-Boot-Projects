@@ -24,11 +24,11 @@ public class Application {
 		BookRepository bookRepository = context.getBean(BookRepository.class);
 		System.out.println("BookRepository Bean: " + bookRepository.getClass().getName());
 		
-		/*
-		 * Book b =new Book(); b.setBookName("Java"); b.setBookPrice(500.0);
-		 * bookRepository.save(b); System.out.println("Book saved with ID: " +
-		 * b.getId());
-		 */
+		
+		  Book b =new Book(); b.setBookName("Java"); b.setBookPrice(500.0);
+		  bookRepository.save(b); System.out.println("Book saved with ID: " +
+		  b.getId());
+		 
 		 
 		
 		/*
