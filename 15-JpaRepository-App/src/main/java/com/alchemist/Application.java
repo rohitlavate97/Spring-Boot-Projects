@@ -28,24 +28,24 @@ public class Application {
 		EmpRepository empRepo = context.getBean(EmpRepository.class);
 		System.out.println("EmpRepository Bean is: " + empRepo.getClass().getName());
 
-		/*
-		 * Employee e1 = new Employee();
-		 * 
-		 * e1.setEmpName("John Doe"); e1.setEmpSalary(50000.0); e1.setEmpGender("Male");
-		 * e1.setEmpDept("IT"); empRepo.save(e1);
-		 * 
-		 * e1.setEmpName("Jane Smith"); e1.setEmpSalary(30000.0);
-		 * e1.setEmpGender("Female"); e1.setEmpDept("HR");
-		 * 
-		 * Employee e2 = new Employee(); e2.setEmpName("Alice Johnson");
-		 * e2.setEmpSalary(35000.0); e2.setEmpGender("Female"); e2.setEmpDept("HR");
-		 * 
-		 * Employee e3 = new Employee(); e3.setEmpName("Bob Brown");
-		 * e3.setEmpSalary(40000.0); e3.setEmpGender("Male"); e3.setEmpDept("IT");
-		 * 
-		 * empRepo.saveAll( java.util.List.of(e1, e2, e3) );
-		 * System.out.println("Employees saved successfully!");
-		 */
+		
+		  Employee e1 = new Employee();
+		  
+		  e1.setEmpName("John Doe"); e1.setEmpSalary(50000.0); e1.setEmpGender("Male");
+		  e1.setEmpDept("IT"); empRepo.save(e1);
+		  
+		  e1.setEmpName("Jane Smith"); e1.setEmpSalary(30000.0);
+		  e1.setEmpGender("Female"); e1.setEmpDept("HR");
+		  
+		  Employee e4 = new Employee(); e4.setEmpName("Alice Johnson");
+		  e4.setEmpSalary(35000.0); e4.setEmpGender("Female"); e4.setEmpDept("HR");
+		  
+		  Employee e3 = new Employee(); e3.setEmpName("Bob Brown");
+		  e3.setEmpSalary(40000.0); e3.setEmpGender("Male"); e3.setEmpDept("IT");
+		  
+		  empRepo.saveAll( java.util.List.of(e1, e4, e3) );
+		  System.out.println("Employees saved successfully!");
+		 
 
 		List<Employee> listbySalaryDesc = empRepo.getEmployeeBySalaryDesc();
 		listbySalaryDesc.forEach(System.out::println);
@@ -110,6 +110,9 @@ public class Application {
 			Example<Employee> exemp = Example.of(e2, matcher);
 			List<Employee> output = empRepo.findAll(exemp);
 			output.forEach(System.out::println);
+			System.out.println("------------------------------------------------------");
+			
+			//empRepo.deleteAll();
 	
 	}
 
