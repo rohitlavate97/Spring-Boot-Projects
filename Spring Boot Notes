@@ -793,3 +793,102 @@ While executing findAll()-->It executing select query
 							Moving Cursor of ResultSet
 							Taking each row from ResultSet and setting it to Entity Object
 							Adding Entity object to Collection and Returning
+							
+Requirement:-->Retrieve books whose price>=200-->Non Primary key columns
+Solution--> findBy methods
+        --> Custom Quries
+		
+findBy methods	
+| Method                         | Generated SQL      | Description               |
+| :----------------------------- | :----------------- | :------------------------ |
+| `findByName(String name)`      | `WHERE name = ?`   | Finds all with exact name |
+| `findByRole(String role)`      | `WHERE role = ?`   | Finds by role             |
+| `findById(Long id)`            | `WHERE id = ?`     | Finds by ID               |
+| `findBySalary(Double salary)`  | `WHERE salary = ?` | Finds by salary           |
+| `findByActive(boolean active)` | `WHERE active = ?` | Finds by boolean column   |
+----------------------------------------------------------------------------------
+--findBy methods are used to perfrom only select operations
+--Using non primary key columns we can select records
+--In findBy methods, method name is very important-->based on method name JPA will construct the query for execution
+Note:findBy method should represent Entity class variables
+
+Custom Queries--> If we want to execute our own query, we can write in 2 ways-->@Query annotation
+-HQL Queries(Hibernate Query Language)--->Independent of db i.e can't execute on db directly
+-Native SQL Queries(Ex--> select * from book)
+Note:-->We can write custom query to update and delete,but not insert(direct insert not supported). Insert from one table to other table is supported.
+| Type            | Annotation                      | Description                         | Example                                              |
+| --------------- | ------------------------------- | ----------------------------------- | ---------------------------------------------------- |
+| Derived Query   | —                               | Auto-generated based on method name | `findByName(String name)`                            |
+| JPQL Query      | `@Query`                        | Uses entity and field names         | `@Query("SELECT e FROM Employee e WHERE e.id=:id")`  |
+| Native Query    | `@Query(..., nativeQuery=true)` | Uses table and column names         | `@Query("SELECT * FROM employee", nativeQuery=true)` |
+| Modifying Query | `@Modifying` + `@Transactional` | For UPDATE/DELETE/INSERT            | `@Query("DELETE FROM Employee e WHERE e.id=:id")`    |
+| Named Query     | `@NamedQuery`                   | Predefined query inside Entity      | Defined in entity, used in repo                      |
+| Projection      | `@Query` with interface         | Select specific columns only        | `SELECT e.name, e.salary`                            |
+| Dynamic Query   | SpEL + `@Query`                 | Evaluate expressions at runtime     | `:#{#param}`                                         |
+| Joins           | `@Query`                        | For relational fetching             | `JOIN e.department d`                                |
+--------------------------------------------------------------------------------------------------------------------------------------------------
+--HQL vs SQL
+| **Feature**                      | **HQL (Hibernate Query Language)**                    | **SQL (Structured Query Language)**                      |
+| -------------------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
+| **Full Form**                    | Hibernate Query Language                              | Structured Query Language                                |
+| **Works On**                     | Java **entities and their properties**                | **Database tables and columns**                          |
+| **Abstraction Level**            | Object-oriented (ORM layer)                           | Relational (Database layer)                              |
+| **Language Type**                | Object-based query language                           | Database query language                                  |
+| **Dependency on Database**       | Independent (portable across databases)               | Dependent (vendor-specific syntax may vary)              |
+| **Return Type**                  | Entity objects or projections                         | ResultSet (raw database rows)                            |
+| **Mapping**                      | Automatically mapped to entity classes                | Manual mapping needed (unless ORM used)                  |
+| **Case Sensitivity**             | Entity names and field names are case-sensitive       | Table/column names depend on DB vendor                   |
+| **Joins**                        | Uses entity relationships (e.g., `JOIN e.department`) | Uses explicit joins (e.g., `JOIN department ON ...`)     |
+| **Data Retrieval**               | Returns persistent objects                            | Returns raw data (rows and columns)                      |
+| **Query Example**                | `FROM Employee e WHERE e.salary > 50000`              | `SELECT * FROM employee WHERE salary > 50000`            |
+| **Updates & Deletes**            | Supported (`UPDATE`, `DELETE`) but on entities        | Fully supported (`UPDATE`, `DELETE`) on tables           |
+| **Aggregations**                 | Supported (`COUNT`, `SUM`, etc.)                      | Supported (`COUNT`, `SUM`, etc.)                         |
+| **Named Parameters**             | Supported (`:paramName`)                              | Positional parameters (`?`) mostly used                  |
+| **Automatic Conversion**         | Yes — Hibernate converts HQL to SQL internally        | No — SQL executes as written                             |
+| **Portability**                  | High — works with any DB supported by Hibernate       | Low — syntax may differ across DBs                       |
+| **Performance Tuning**           | Controlled by Hibernate                               | Controlled by database directly                          |
+| **Use Case**                     | Ideal for standard CRUD, entity-based queries         | Ideal for complex, DB-specific queries and optimizations |
+| **Supports Native DB Functions** | Limited                                               | Fully supported                                          |
+| **Relationship Navigation**      | Easy (uses mapped associations)                       | Manual joins required                                    |
+| **Ease of Use**                  | Easier and cleaner for ORM-based apps                 | Requires SQL and schema knowledge                        |
+| **Example in Hibernate**         | `session.createQuery("FROM Employee").list();`        | `session.createNativeQuery("SELECT * FROM employee");`   |
+
+--When to use
+| **Scenario**                                       | **Recommended Query Type** |
+| -------------------------------------------------- | -------------------------- |
+| CRUD operations using entities                     | HQL                        |
+| Complex joins using entity relationships           | HQL                        |
+| Vendor-specific SQL functions or stored procedures | SQL                        |
+| Reporting and analytics queries                    | SQL                        |
+| Cross-database portability required                | HQL                        |
+| Heavy performance tuning or DB optimizations       | SQL                        |
+
+
+public interface BookRepository extends CrudRepository<Book, Integer> {
+	
+	public List<Book> findByBookPriceGreaterThan(Double price);
+	
+	//nateive query
+	@Query(value="select * from book", nativeQuery=true)
+	public List<Book> getAllBooks();
+	
+	//HQL Query
+	@Query("from Book")
+	public List<Book> getBooks();
+
+}
+-Dialect class converts HQL queries to SQL Queries i.e maintenance wise HQL queries are good-->Every DB have it's own dialect class
+Ex:==OracleDialect,MySQLDialect,DB2Dialect,PostgresDialect etc...
+Note: Dialect class will be loaded along with DB driver class
+1000 HQL Queries--->MysQL dialect-->MysQLDB
+1000 HQL Queries--->Oracle dialect-->OracleDB
+i.e we can change db effortlessely.
+Example
+=======
+select * from book(Table in db)==========from Book(Entity Class)
+select * from book where book_price=200(book_price is column name)====from book where bookPrice=200(here bookPrice is variable)
+selct book_name from book=====select bookName form Book
+| **Term**       | **Meaning**                                  | **Affects**       | **SQL Clause** | **Example**                         |
+| -------------- | -------------------------------------------- | ----------------- | -------------- | ----------------------------------- |
+| **Selection**  | Filters specific **rows** based on condition | Number of rows    | `WHERE`        | `SELECT * FROM emp WHERE dept='HR'` |
+| **Projection** | Selects specific **columns** from a table    | Number of columns | `SELECT`       | `SELECT name, salary FROM emp`      |

@@ -1,6 +1,5 @@
 package com.alchemist;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,13 +68,31 @@ public class Application {
 		 System.out.println("-----------------");
 		 
 		 
-		 if(bookRepository.existsById(6)) {
+		 if(bookRepository.existsById(6)) {   //to avoid EmptyResultDataAccessException
 			 bookRepository.deleteById(6);
 		 }else {
 			 System.out.println("Book with ID 6 not found");
 		 }
+		 System.out.println("-----------------");
 		 
+		 List<Book> byBookPriceGreaterThan = bookRepository.findByBookPriceGreaterThan(200.0);
+		 byBookPriceGreaterThan.forEach(System.out::println);
+		 
+		  System.out.println("-----------------");
 		  System.out.println("Total number of books: " + bookRepository.count());
+		  
+		  System.out.println("-----------------");
+		  List<Book> allBooks = bookRepository.getAllBooks();
+		  allBooks.forEach(System.out::println);
+		  
+		  System.out.println("-----------------");
+		  bookRepository.getBooks().forEach(System.out::println);
+		  
+		  System.out.println("-----------------");
+		  bookRepository.getBookNames().forEach(System.out::println);
+		  
+		  System.out.println("-----------------");
+		  bookRepository.getBooksGreaterThenPrice(250.0).forEach(System.out::println);
 
 		}
 
