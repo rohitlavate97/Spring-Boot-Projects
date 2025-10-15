@@ -1100,3 +1100,56 @@ Why Use Wrapper Classes Instead of Primitive Types
 
 Custom Generator---->We should implement Generator interface which has generate().
 eg:-->OD1,OD2,OD3,....--->Prefix(Fixed=OD) + Suffix(Number-->Variable and increment by 1)
+
+public class OrderIdGenerator implements IdentifierGenerator{
+
+	@Override
+	public Serializable generate(SharedSessionContractImplementor session, Object object) {
+		
+		String prefix = "OD";
+		String suffix = "";
+		try {
+			Connection connection = session.getJdbcConnectionAccess().obtainConnection();
+			Statement statement = connection.createStatement();
+			String query = "SELECT ORDER_ID_SEQ.NEXTVAL as nextval FROM DUAL";
+			ResultSet result = statement.executeQuery(query);
+			if(result.next()) {
+				int seqVal = result.getInt(1);
+				suffix = String.valueOf(seqVal);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return prefix + suffix;
+	}
+
+}
+
+Composite Primary Key--->
+@Data
+@Embeddable
+public class AccountPK {
+	
+	private String accNum;
+	
+	private String accType;
+
+}
+
+@Entity
+@Table(name = "account_tbl")
+@Data
+public class Account {
+	
+	private String holderName;
+	
+	private String branch;
+	
+	@EmbeddedId
+	private AccountPK accountPK;
+
+}
+
+public interface AccountRepository extends JpaRepository<Account, AccountPK> {
+
+}
