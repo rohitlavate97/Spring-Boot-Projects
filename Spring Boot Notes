@@ -1153,3 +1153,18 @@ public class Account {
 public interface AccountRepository extends JpaRepository<Account, AccountPK> {
 
 }
+
+Note:Generators are not applicable for composite primary key. If you have composite primary key, you have to set values manually.
+The Class which is representing composite keys should implement Serializable interface(Marker interface-->Used to give special instructions to JVM)
+
+Profiles in Spring Boot-->
+Every project will have multiple environments(Platform which used to run our application)-->DEV ENV,STG ENV, SIT ENV, PROD ENV
+Environment contains-->Server(Linux VM),DB Server,Log Server etc. Every environment has its own DB and every DB will have seperate configuartion properties(uname,password,url etc)
+If we want to deploy our code to multiple environments then we have to change datasource properties in the application.prooperties file-->Chance of mistake
+So to avoid mistakes, concept of profile comes in spring boot-->Profiles are used to configure environment specific properties
+application.properties contains--->DB Properties,SMTP properties,Kafka properties,Redis properties,REST API endpoint URLs
+src/main/resources/
+ ├── application.properties              # Default (active if no profile set)
+ ├── application-dev.properties           # For dev
+ ├── application-test.properties          # For testing
+ └── application-prod.properties          # For production

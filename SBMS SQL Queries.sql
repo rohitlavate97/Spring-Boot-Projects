@@ -24,3 +24,7 @@ select * from employee;
 
 select * from account_tbl
 
+create database devDb;
+
+create database stageDb;
+
