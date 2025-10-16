@@ -32,18 +32,18 @@
 				<td>
 					<form:select path="course">
 						<form:option value="">-Select-</form:option>
-						<form:option value="JAVA">JAVA</form:option>
-						<form:option value="PYTHON">PYTHON</form:option>
-						<form:option value="DEVOPS">DEVOPS</form:option>
+						<form:options items="${courses}"/>
+<!--					<form:option value="PYTHON">PYTHON</form:option>
+						<form:option value="DEVOPS">DEVOPS</form:option>-->
 					</form:select>
 				</td>
 			</tr>
 			<tr>
 				<td>Timings</td>
 				<td>
-						<form:checkbox path="timings" value="morning"/>Morning
-						<form:checkbox path="timings" value="noon"/>Afternoon
-						<form:checkbox path="timings" value="evening"/>Evening
+						<form:checkboxes path="timings" items="${prefTimings}"/>
+						<!--<form:checkbox path="timings" value="noon"/>Afternoon
+						<form:checkbox path="timings" value="evening"/>Evening-->
 				</td>
 			</tr>
 			<tr>
