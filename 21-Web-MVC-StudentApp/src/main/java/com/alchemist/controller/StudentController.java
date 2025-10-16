@@ -33,9 +33,11 @@ public class StudentController {
 	//Endpoint to save student record
 	@PostMapping("/save")
 	public String SaveStudent(Student s, Model model) {
+		service.saveStudent(s);
 		System.out.println(s);
 		model.addAttribute("msg","Data Saved....");
 		init(model);
+		System.out.println(s);
 		return "index";
 	}
 
