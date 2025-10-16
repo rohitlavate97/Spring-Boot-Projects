@@ -1379,3 +1379,60 @@ Controllers and Services are initialized
 
 modelAttribute--->maps form data to class mapping(Entity class is different)
 Path Attribute--->Map fields to class variables
+
+When you first load the page, you don’t have user input yet. So, you give Spring an empty object — like a placeholder — for the form to bind to.
+@Controller
+public class StudentController {
+	
+	@GetMapping("/")
+	public String loadIndexPage(Model model) {
+		Student sObj = new Student();
+		model.addAttribute("student",sObj);
+		return null;
+	}
+
+}
+
+For every HTTP request, Spring MVC creates a new Model object.
+This is by design for thread safety and request isolation
+Static data (like dropdown options) should be reused via constants
+Dynamic data (like form objects) should be created fresh each time
+HTTP Request → DispatcherServlet → Controller Method → NEW Model → Response
+      ↓               ↓                   ↓            ↓         ↓
+   Request 1       HandlerMapping      @GetMapping   Model 1   Response 1
+   Request 2       HandlerMapping      @GetMapping   Model 2   Response 2
+   Request 3       HandlerMapping      @GetMapping   Model 3   Response 3
+   
+Model is map(key-value pair). From first method once, whatever data you passing to model, view ill be accessing that data in view page, once view page is 
+loaded, that model object will be deleted from container. so we have to set those 3 lines of code in 2nd method. But it is not recommended to write it in 
+2 places. so write it in 1 method and call it in two places
+
+@Controller
+public class StudentController {
+	@Autowired
+	private StudentService service;
+	
+	@GetMapping("/")
+	public String loadIndexPage(Model model) {
+		init(model);
+		return "index";
+	}
+	
+	//@InitBinder-->not working
+	@ModelAttribute
+	public void init(Model model) {
+		model.addAttribute("student",new Student());
+		model.addAttribute("courses", service.getCourses());
+		model.addAttribute("prefTimings", service.getTimings());
+	}
+	
+	//Endpoint to save student record
+	@PostMapping("/save")
+	public String SaveStudent(Student s, Model model) {
+		System.out.println(s);
+		model.addAttribute("msg","Data Saved....");
+		init(model);
+		return "index";
+	}
+
+}
