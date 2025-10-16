@@ -1168,3 +1168,177 @@ src/main/resources/
  ├── application-dev.properties           # For dev
  ├── application-test.properties          # For testing
  └── application-prod.properties          # For production
+ 
+--->Spring WebMVC----->simplifies Web Application Development process
+ Dependency--->spring-boot-starter-web-->provides support for MVC based web application, RESTFul Services, Embedded container(Tomcat)
+ Advantages-->It supports form binding(Form Data binds to Java Object)
+              Flexibility in Form Binding(Type conversion-->convert data in particular data type)
+			  Multiple presentation technologies(JSP and Thymeleaf)
+			  Form tag library(Ready Made tag supports)
+			  
+MVC Architecture Flow
+Client Request → DispatcherServlet → Controller → Service → DAO → Database
+       ↑                                              ↓
+Client Response ← View ← Model ← Controller ← Service ←
+
+---->Detailed Flow
+CLIENT REQUEST
+    ↓
+DispatcherServlet (Front Controller/Framework Servelet)---->Responsible for performing Pre-Processing and Post-Processing
+    ↓
+Handler Mapping (Finds appropriate controller)---->As multiple controllers, DispatcherServlet doesn't know which method responsible to handle request, so it will give request to HandlerMapper it will scans url mapping and give that detail back to DispatcherServlet. DispatcherServelet will go to that Controller class and Controller method
+    ↓
+Controller (Processes request)
+    ↓
+Service Layer (Business logic)
+    ↓
+DAO/Repository (Data access)
+    ↓
+Database
+    ↑
+Controller ← Service ← DAO (Return data)
+    ↓
+Model (Adds data)
+    ↓
+View Resolver (Finds view template)
+    ↓
+View (JSP/Thymeleaf) + Model
+    ↓
+CLIENT RESPONSE
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            CLIENT BROWSER                               │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ HTTP Request (URL, Form Data, Parameters)
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        DispatcherServlet                                │
+│  (Front Controller - Single entry point for all requests)               │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │
+                                ↓ Delegates to appropriate components
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Handler Mapping                                 │
+│  (Maps request to appropriate Controller)                               │
+│  - @RequestMapping, @GetMapping, @PostMapping etc.                     │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Returns HandlerExecutionChain
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Controller                                      │
+│  (Processes business logic)                                             │
+│  - @Controller, @RestController                                         │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Calls Service Layer
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Service Layer                                   │
+│  (Business logic implementation)                                        │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Calls DAO/Repository
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    DAO/Repository Layer                                 │
+│  (Data access operations)                                               │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Interacts with Database
+                                ↓
+                          ┌───────────┐
+                          │ DATABASE  │
+                          └───────────┘
+                                ↑
+                                │ Returns data
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Controller                                      │
+│  (Prepares Model data)                                                  │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Returns ModelAndView or ResponseEntity(Model-->Represents data in key-value format, View-->Logical File Name)
+								|(Note -->Controllers are loosely coupled with Presentation technology as Multiple presentation techniques are their-->To identify presentation technology it will talk to view resolver)
+								| (ViewResolver identifies where is the view file in the project and what is the view technology(i.e Presentation Technology)
+                                ↓
+								
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         View Resolver                                   │
+│  (Resolves view name to actual view template)                           │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Returns View object
+								| (After Identifying it will give that info to DispatcherServelet, which will send model data to View Component)
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            View                                         │
+│  (Renders response using template + model data)                         │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ Rendered HTML/JSON/XML(i.e render model data in the view file and give it to DispatcherServelet)
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        DispatcherServlet                                │
+│  (Sends response to client)                                             │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ HTTP Response
+                                ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            CLIENT BROWSER                               │
+└─────────────────────────────────────────────────────────────────────────┘
+-------------------------------------------------------------------------------------
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENT                               │
+│                                                             │
+│                    HTTP Request  →→→→→→→→→→→→→→→→→→→→→→→→   │
+│                                                             │
+│                    ←←←←←←←←←←←←←←←←←←←← HTTP Response       │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    DispatcherServlet                        │
+│                                                             │
+│          ↗ Pre-processing                                   │
+│          ↖ Post-processing                                  │
+└─────────────────────────┬───────────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          │               │               │
+          ▼               ▼               ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│   Handler       │ │    Controller    │ │   View Resolver │
+│   Mapping       │ │                 │ │                 │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+          │               │                       │
+          │               │                       │
+          ▼               ▼                       ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│  URL to Controller│ │  Business Logic │ │ Logical to     │
+│   Mapping        │ │   Processing    │ │ Physical View  │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+                                          │
+                                          │
+                                          ▼
+                                 ┌─────────────────┐
+                                 │      View       │
+                                 │  (JSP/HTML/etc) │
+                                 └─────────────────┘
+								 
+To Create Spring MVC app we need to add following dependencies-->
+--spring-boot-starter-web
+--spring-boot-devtools
+--tomcat-embed-jasper(Only when using JSP as Presentation Technology, but spring supports Thymeleaf)<----Add externally
+
+-Application.java          ← Main Spring Boot app
+-ServletInitializer.java   ← WAR entry point--->i.e Required for Web Application Execution
+configure(): Entry point for servlet container
+application.sources(): Specifies the main configuration class
+
+--How ServletInitializer Works
+Deployment Flow:
+External Tomcat Startup
+        ↓
+Servlet Container looks for web.xml or ServletInitializer
+        ↓
+ServletInitializer.configure() method is called
+        ↓
+Spring Application Context is created
+        ↓
+Your Spring Boot Application starts
+        ↓
+Controllers and Services are initialized
