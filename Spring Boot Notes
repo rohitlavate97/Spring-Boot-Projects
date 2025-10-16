@@ -1342,3 +1342,40 @@ Spring Application Context is created
 Your Spring Boot Application starts
         ↓
 Controllers and Services are initialized
+
+--Form Tag Library
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
++---------------------+--------------------------------------+------------------------------------------------------------+
+| Tag                 | Description                          | Syntax Example                                             |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:form>         | Main form container, binds to        | <form:form method="POST" modelAttribute="book">            |
+|                     | command object                       |                                                            |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:input>        | Text input field                     | <form:input path="bookName"/>                              |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:password>     | Password input field                 | <form:password path="password"/>                            |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:textarea>     | Multi-line text input                | <form:textarea path="description" rows="5"/>                |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:select>       | Dropdown select box                  | <form:select path="category">                              |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:option>       | Single option in select              | <form:option value="FICTION">Fiction</form:option>          |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:options>      | Multiple options from collection     | <form:options items="${categories}"/>                       |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:radiobutton>  | Radio button input                   | <form:radiobutton path="type" value="EBOOK"/>               |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:checkbox>     | Checkbox input                       | <form:checkbox path="features" value="HARDBACK"/>           |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:errors>       | Display validation errors            | <form:errors path="bookName" cssClass="error"/>             |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:hidden>       | Hidden input field                   | <form:hidden path="bookId"/>                                |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:label>        | Form field label                     | <form:label path="bookName">Book Name</form:label>          |
++---------------------+--------------------------------------+------------------------------------------------------------+
+| <form:button>       | Button element                       | <form:button type="submit">Save</form:button>               |
++---------------------+--------------------------------------+------------------------------------------------------------+
+
+modelAttribute--->maps form data to class mapping(Entity class is different)
+Path Attribute--->Map fields to class variables
