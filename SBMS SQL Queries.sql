@@ -24,7 +24,11 @@ select * from employee;
 
 select * from account_tbl
 
+select * from student_enquiries
+
 create database devDb;
 
 create database stageDb;
+
+create database prodDb;
 
