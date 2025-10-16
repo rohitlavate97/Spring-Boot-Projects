@@ -1426,13 +1426,118 @@ public class StudentController {
 		model.addAttribute("prefTimings", service.getTimings());
 	}
 	
-	//Endpoint to save student record
+	//Endpoint to save student record	
 	@PostMapping("/save")
-	public String SaveStudent(Student s, Model model) {
-		System.out.println(s);
-		model.addAttribute("msg","Data Saved....");
+	public String handSubmitBtm(Student s, Model model) {
+		boolean isSaved = service.saveStudent(s);
+		if(isSaved) {
+			model.addAttribute("msg", "Data Saved....");
+		}
 		init(model);
-		return "index";
+		return "index";	
 	}
 
 }
+
+@Controller
+public class ProductController {
+	
+	@Autowired
+	private ProductRepository repo;
+	
+	@GetMapping("/")
+	public String loadForm(Model model) {
+		model.addAttribute("p",new ProductEntity());
+		return "index";	
+	}
+	
+	@PostMapping("/product")
+	public String handleSave(@ModelAttribute("p") ProductEntity p,Model model) {
+		p = repo.save(p);
+		if(p.getPid()!=null) {
+		model.addAttribute("msg","Data Saved....");
+		}
+		return "index";
+	}
+}
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Home Page</title>
+	</head>
+	<body>
+		<h2>Product Info</h2>
+		<p><font color="green">${msg}</font></p>
+		<form:form action="product" modelAttribute="p" method="POST">
+			<table>
+				<tr>
+					<td>Name:</td>
+					<td><form:input path="name"/></td>
+				</tr>
+				<tr>
+					<td>Price:</td>
+					<td><form:input path="price"/></td>
+				</tr>
+				<tr>
+					<td>Quantity:</td>
+					<td><form:input path="qty"/></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="save"></td>
+				</tr>
+			</table>
+		</form:form>
+		<a href="products">View Products</a>
+	</bdoy>
+</html>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Products Page</title>
+	</head>
+	<body>
+		<table>
+			<thead>
+				<tr>
+					<th>S.NO</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Quantity</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${products}" var="product" varStatus="status">
+					<tr>
+						<td>${status.count}</td>
+						<td>${product.name}</td>
+						<td>${product.price}</td>
+						<td>${product.qty}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+	 </body>
+</html>
+
+# JSTL forEach Tag Breakdown
+
+| Part                | Meaning          | Description                                           |
+|---------------------|------------------|-------------------------------------------------------|
+| <c:forEach          | JSTL Loop Tag    | Starts the loop iteration                             |
+| items="${products}" | Collection to iterate | Refers to products attribute from Spring controller |
+| var="product"       | Loop variable    | Each item in collection is assigned to product         |
+| varStatus="index"   | Loop status      | Provides loop information (counter, index, etc.)       |
+
+
+Embedded Databasee(i.e In Memory database/Temporary Database)-->Starts when app starts and Stops when app stops
+Ex:H2 DB,HSQLDB,Derby
+Note -->don't add devtools dependency otherwise it will restart server upon changes and data will be lost
+JSTL:-->Whatever data we are inserting in the db table, we need to display in the another page. so need to iterate the list of records in jsp
