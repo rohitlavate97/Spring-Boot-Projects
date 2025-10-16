@@ -31,14 +31,21 @@ public class StudentController {
 	}
 	
 	//Endpoint to save student record
+	/*
+	 * @PostMapping("/save") public String saveStudent(Student s, Model model) {
+	 * service.saveStudent(s); System.out.println(s);
+	 * model.addAttribute("msg","Data Saved...."); init(model);
+	 * System.out.println(s); return "index"; }
+	 */
+	
 	@PostMapping("/save")
-	public String SaveStudent(Student s, Model model) {
-		service.saveStudent(s);
-		System.out.println(s);
-		model.addAttribute("msg","Data Saved....");
+	public String handSubmitBtm(Student s, Model model) {
+		boolean isSaved = service.saveStudent(s);
+		if(isSaved) {
+			model.addAttribute("msg", "Data Saved....");
+		}
 		init(model);
-		System.out.println(s);
-		return "index";
+		return "index";	
 	}
 
 }

@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alchemist.binding.Student;
+import com.alchemist.controller.StudentController;
 import com.alchemist.entity.StudentEntity;
 import com.alchemist.repository.StudentRepository;
 
 @Service
 public class StudentService {
-	
+
 	@Autowired
 	private StudentRepository repo;
 	
@@ -28,8 +29,10 @@ public class StudentService {
 	public boolean saveStudent(Student student) {
 		StudentEntity entity = new StudentEntity();
 		BeanUtils.copyProperties(student, entity);
+		entity.setTimings(Arrays.toString(student.getTimings()));
+		System.out.println(entity);
 		repo.save(entity);
-		return false;
+		return true;
 	}
 
 }
