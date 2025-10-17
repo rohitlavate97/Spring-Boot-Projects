@@ -1460,7 +1460,7 @@ public class ProductController {
 		return "index";
 	}
 }
-
+-----------------------------------------------------------------------------------
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
@@ -1495,7 +1495,7 @@ public class ProductController {
 		<a href="products">View Products</a>
 	</bdoy>
 </html>
-
+--------------------------------------------------------------------------------------
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
@@ -1526,7 +1526,7 @@ public class ProductController {
 			</tbody>
 	 </body>
 </html>
-
+-------------------------------------------------------------------------------------------
 # JSTL forEach Tag Breakdown
 
 | Part                | Meaning          | Description                                           |
@@ -1541,3 +1541,21 @@ Embedded Databasee(i.e In Memory database/Temporary Database)-->Starts when app 
 Ex:H2 DB,HSQLDB,Derby
 Note -->don't add devtools dependency otherwise it will restart server upon changes and data will be lost
 JSTL:-->Whatever data we are inserting in the db table, we need to display in the another page. so need to iterate the list of records in jsp
+
+---Thymeleaf vs JSP
+JSP can't send response directly to browser, so it is converted to servelet(Takes more time)
+HTML is faster than jsp, but HTML is only for static pages. so we are going to use Thymeleaf inside HTML, to support dynamic webpages
+Thymeleaf is the template engine that can be integrated into HTML
+create HTML pages in src/resources/templates
+| **Feature**              | **Thymeleaf**                  | **JSP (Java Server Pages)**            | 
+| ------------------------ | ------------------------------ | ---------------------------------------|
+| **Natural Templates**    | ✅ Yes – works as static HTML   | ❌ No – requires server to render     |
+| **Spring Integration**   | ✅ Excellent native support     | ⚠️ Requires additional configuration  |
+| **Syntax**               | ✅ HTML5-compliant, clean       | ❌ Mixes Java code with HTML          |
+| **Learning Curve**       | ✅ Easy for frontend developers | ❌ Steeper, requires Java knowledge   |
+| **Performance**          | ✅ Good (compiled templates)    | ✅ Good (compiled to servlets)        |
+| **Internationalization** | ✅ Excellent support            | ✅ Good support                       |
+| **Fragment Reuse**       | ✅ Layouts and fragments        | ✅ Includes and taglibs               |
+| **Tooling**              | ✅ Good IDE support             | ✅ Mature tooling                     |
+------------------------------------------------------------------------------------------------------
+--need to add thymeleaf-starter in pom.xml(tomcat-embed-jasper is not needed now and no need to configure view resolver)
