@@ -1403,7 +1403,7 @@ HTTP Request → DispatcherServlet → Controller Method → NEW Model → Respo
    Request 2       HandlerMapping      @GetMapping   Model 2   Response 2
    Request 3       HandlerMapping      @GetMapping   Model 3   Response 3
    
-Model is map(key-value pair). From first method once, whatever data you passing to model, view ill be accessing that data in view page, once view page is 
+Model is map(key-value pair). From first method once, whatever data you passing to model, view will be accessing that data in view page, once view page is 
 loaded, that model object will be deleted from container. so we have to set those 3 lines of code in 2nd method. But it is not recommended to write it in 
 2 places. so write it in 1 method and call it in two places
 
@@ -1559,3 +1559,51 @@ create HTML pages in src/resources/templates
 | **Tooling**              | ✅ Good IDE support             | ✅ Mature tooling                     |
 ------------------------------------------------------------------------------------------------------
 --need to add thymeleaf-starter in pom.xml(tomcat-embed-jasper is not needed now and no need to configure view resolver)
+
+| Tag                                            | Description                         |
+| ---------------------------------------------- | ----------------------------------- |
+| `<form th:action="@{/product}" method="post">` | Submits form to `/product` endpoint |
+| `th:object="${p}"`                             | Binds form inputs to Product object |
+| `th:field="*{name}"`                           | Maps field to `Product.name`        |
+| `th:if` / `th:text`                            | Used to show messages dynamically   |
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Home Page</title>
+</head>
+
+<body>
+	<div class="container">
+		<h3>Product Form
+			<p th:text="${msg}" class="text-success"></p>
+		</h3>
+	</div>
+	<form th:action="@{/product}" th:object="${p}" method="post">
+		<table>
+			<tr>
+				<td>Name: </td>
+				<td><input type="text" th:field="*{name}"></td>
+			</tr>
+			<tr>
+				<td>Price: </td>
+				<td><input type="number"></td>
+			</tr>
+			<tr>
+				<td>Quantity: </td>
+				<td><input type="number"></td>
+			</tr>
+			<tr>
+				<td><a href="/">Reset</a></td>
+				<td><input type="submit" value="Save" class="btn btn-primary"></td>
+			</tr>
+		</table>
+	</form>
+	<div class="pt-3 pb-3">
+	  <a href="/products">View All Products</a>
+	</div>
+</body>
+
+</html>
