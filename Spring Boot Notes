@@ -1567,43 +1567,176 @@ create HTML pages in src/resources/templates
 | `th:field="*{name}"`                           | Maps field to `Product.name`        |
 | `th:if` / `th:text`                            | Used to show messages dynamically   |
 
+
+index.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Home Page</title>
+</head>
+<body>
+	<div class="container">
+		<h3>
+			<p th:text="${msg}" class="text-success"></p>
+		</h3>
+	</div>
+
+	<form th:action="@{/product}" th:object="${p}" method="post">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" th:field="*{name}" ></td>
+			</tr>
+			<tr>
+				<td>Price:</td>
+				<td><input type="number" th:field="*{price}" ></td>
+			</tr>
+			<tr>
+				<td>Quantity:</td>
+				<td><input type="number" th:field="*{quantity}" ></td>
+			</tr>
+			<tr>
+				<td><a href="/">Reset</a></td>
+				<td><input type="submit" value="Save" class="btn btn-primary" /></td>
+			</tr>
+		</table>
+	</form>
+
+	<div class="pt-3 pb-3">
+		<a href="/products">View All Products</a>
+	</div>
+</body>
+</html>
+
+data.html
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
-	<title>Home Page</title>
+	<title>Product Page</title>
+	<script type="text/javascript">
+		function deleteConfirm() {
+			return confirm("Are you sure you want to delete this product?");
+		}
+	</script>
 </head>
 
 <body>
 	<div class="container">
-		<h3>Product Form
+		<h1>View Products</h1>
+		<p th:text="${msg}" class="text-danger">
+		<a href="/" class="btn btn-primary">+Add New Product</a>
+	</div>
+	<table>
+		<thead>
+			<tr>
+				<th>Product ID</th>
+				<th>Product Name</th>
+				<th>Product Price</th>
+				<th>Product Quantity</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:if="${list == null or list.empty}">
+				<td colspan="5" style="text-align: center;">
+					No Records found
+				</td>
+			</tr>
+			<tr th:each="product : ${list}" th:if="${list != null and !list.empty}">
+				<td th:text="${product.pid}"></td>
+				<td th:text="${product.name}"></td>
+				<td th:text="${product.price}"></td>
+				<td th:text="${product.quantity}"></td>
+				<td>
+					<a th:href="@{/delete(pid=${product.pid})}" class="btn btn-danger"
+						onclick="return deleteConfirm()">Delete</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+
+Form Validation-->As record should be inserted only when the data is available
+--Client Side Validation: Validations executes on browser
+--Server Side Validation:---for this we have to add spring-boot-starter-validation, we will write validation on binding object
+@Validated---->To tell the spring boot, that we are getting form data in form of binding object, you verify that form data ,
+store into binding object satisfying validation rule or not
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Home Page</title>
+</head>
+<body>
+	<div class="container">
+		<h3>
 			<p th:text="${msg}" class="text-success"></p>
 		</h3>
 	</div>
+
 	<form th:action="@{/product}" th:object="${p}" method="post">
 		<table>
 			<tr>
-				<td>Name: </td>
-				<td><input type="text" th:field="*{name}"></td>
+				<td>Name:</td>
+				<td><input type="text" th:field="*{name}" ></td>
+				<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></td>
 			</tr>
 			<tr>
-				<td>Price: </td>
-				<td><input type="number"></td>
+				<td>Price:</td>
+				<td><input type="number" th:field="*{price}" ></td>
+				<td th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="text-danger"></td>
 			</tr>
 			<tr>
-				<td>Quantity: </td>
-				<td><input type="number"></td>
+				<td>Quantity:</td>
+				<td><input type="number" th:field="*{quantity}" ></td>
+				<td th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="text-danger"></td>
 			</tr>
 			<tr>
 				<td><a href="/">Reset</a></td>
-				<td><input type="submit" value="Save" class="btn btn-primary"></td>
+				<td><input type="submit" value="Save" class="btn btn-primary" /></td>
 			</tr>
 		</table>
 	</form>
+
 	<div class="pt-3 pb-3">
-	  <a href="/products">View All Products</a>
+		<a href="/products">View All Products</a>
 	</div>
 </body>
-
 </html>
+
+@Entity
+@Data
+public class Product {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer pid;
+	
+	@Size(min = 3, max = 15, message = "Name must have between {min} and {max} characters")
+	@NotBlank(message="Name is mandatory")
+	private String name;
+	
+	@NotNull(message="Price should be not null")
+	private Double price;
+	
+	@NotNull(message="Quantity should be entered")
+	private Integer quantity;
+
+}
+
+	@PostMapping("/product")
+	public String saveProduct(@Validated @ModelAttribute("p") Product p,BindingResult result,Model model) {
+		if(result.hasErrors()) {
+			System.out.println(p);
+			return "index";
+		}
+		Product savedProduct = repo.save(p);
+		System.out.println(savedProduct);
+		if(savedProduct.getPid()!=null) {
+			model.addAttribute("msg", "Product is saved in DB");
+		}
+		return "index";
+	}
