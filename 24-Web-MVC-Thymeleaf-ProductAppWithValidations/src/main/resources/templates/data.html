@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Product Page</title>
+	<script type="text/javascript">
+		function deleteConfirm() {
+			return confirm("Are you sure you want to delete this product?");
+		}
+	</script>
 </head>
+
 <body>
 	<div class="container">
 		<h1>View Products</h1>
+		<p th:text="${msg}" class="text-danger">
 		<a href="/" class="btn btn-primary">+Add New Product</a>
 	</div>
 	<table>
@@ -16,15 +24,25 @@
 				<th>Product Name</th>
 				<th>Product Price</th>
 				<th>Product Quantity</th>
+				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr th:each="product:${list}">
-				<td th:text="${product.pid}"/>
-				<td th:text="${product.name}"/>
-				<td th:text="${product.price}"/>
-				<td th:text="${product.quantity}"/>
-			</td>
+			<tr th:if="${list == null or list.empty}">
+				<td colspan="5" style="text-align: center;">
+					No Records found
+				</td>
+			</tr>
+			<tr th:each="product : ${list}" th:if="${list != null and !list.empty}">
+				<td th:text="${product.pid}"></td>
+				<td th:text="${product.name}"></td>
+				<td th:text="${product.price}"></td>
+				<td th:text="${product.quantity}"></td>
+				<td>
+					<a th:href="@{/delete(pid=${product.pid})}" class="btn btn-danger"
+						onclick="return deleteConfirm()">Delete</a>
+				</td>
+			</tr>
 		</tbody>
 	</table>
 </body>
