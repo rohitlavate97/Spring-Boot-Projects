@@ -17,7 +17,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<c:forEach items="${products}" var="p" varStatus="status"/>
+				<c:forEach items="${products}" var="p" varStatus="status">
 					<tr>
 						<td>${status.count}</td>
 						<td>${p.name}</td>
