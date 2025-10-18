@@ -1727,6 +1727,18 @@ public class Product {
 
 }
 
+@Controller
+public class ProductController {
+	
+	@Autowired
+	public ProductRepository repo;
+	
+	@GetMapping("/")
+	public String loadForm(Model model) {
+		model.addAttribute("p", new Product());   //To bind form to binding object
+		return "index";
+	}
+	
 	@PostMapping("/product")
 	public String saveProduct(@Validated @ModelAttribute("p") Product p,BindingResult result,Model model) {
 		if(result.hasErrors()) {
@@ -1740,3 +1752,47 @@ public class Product {
 		}
 		return "index";
 	}
+	
+	@GetMapping("/products")
+	public String loadAllProducts(Model model){
+		List<Product> all = repo.findAll();
+		model.addAttribute("list",all);
+		return "data";
+	}
+	
+	@GetMapping("/delete")
+	public String deleteRecord(@RequestParam("pid")Integer pid,Model model) {
+		repo.deleteById(pid);
+		List<Product> all = repo.findAll();
+		model.addAttribute("msg", "Product deleted Successfully");
+		model.addAttribute("list",all);    //displays latest data
+		return "data";
+	}
+	
+	@GetMapping("/edit")
+	public String editProduct(@RequestParam("pid") Integer pid, Model model) {
+	    Product product = repo.findById(pid).orElse(new Product());
+	    model.addAttribute("p", product);
+	    return "index"; // same form, pre-filled with data
+	}
+
+
+}
+
+-->While using edit button and click on save button, pid again coming as null value, JPA thinks it's a new record. We need to tell JPA that it's existing,
+ so use hidden variable
+ <body>
+	<div class="container">
+		<h3>
+			<p th:text="${msg}" class="text-success"></p>
+		</h3>
+	</div>
+
+	<form th:action="@{/product}" th:object="${p}" method="post">
+		<input type="hidden" th:field="*{pid}" />
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" th:field="*{name}" ></td>
+				<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></td>
+			</tr>

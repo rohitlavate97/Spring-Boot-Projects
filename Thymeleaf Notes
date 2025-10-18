@@ -1,0 +1,2318 @@
+Out-of-the-box, Thymeleaf allows you to process six kinds of templates, each of which is called a Template Mode:
+HTML
+XML
+TEXT
+JAVASCRIPT
+CSS
+RAW
+
+There are two markup template modes ( HTML and XML ), three textual template modes ( TEXT , JAVASCRIPT and CSS ) and a no-op template mode ( RAW ).
+The HTML template mode will allow any kind of HTML input, including HTML5, HTML 4 and XHTML. No validation or well-formedness check will be performed, and template code/structure will be respected to the biggest possible extent in output.
+The JAVASCRIPT template mode will allow the processing of JavaScript files in a Thymeleaf application. This means being able to use model data inside JavaScript files in the same way it can be done in HTML files, but with JavaScript-specific integrations such as specialized escaping or natural scripting. The JAVASCRIPT template mode is considered a
+textual mode and therefore uses the same special syntax as the TEXT template mode.
+The CSS template mode will allow the processing of CSS files involved in a Thymeleaf application. Similar to the JAVASCRIPT mode, the CSS template mode is also a textual mode and uses the special processing syntax from the TEXT template mode.
+
+-Thymeleaf is an extremely extensible template engine (in fact it could be called a template engine framework) that allows you to define and customize the way your templates will be processed to a fine level of detail.The official thymeleaf-spring3 and thymeleaf-spring4 integration packages both define a dialect called the
+“SpringStandard Dialect”, which is mostly the same as the Standard Dialect, but with small adaptations to make better use of some features in the Spring Framework (for example, by using Spring Expression Language or SpringEL instead of OGNL). So if you are a Spring MVC user you are not wasting your time, as almost everything you learn here will be of use in your Spring applications.
+-Most of the processors of the Standard Dialect are attribute processors. This allows browsers to correctly display HTML template files even before being processed because they will simply ignore the additional attributes. For example, while a JSP using tag libraries could include a fragment of code not directly displayable by a browser like:
+JSP--><form:inputText name="userName" value= "${user.name}" />
+Thymeleaf--><input type="text" name="userName" value="James Carrot" th:value="${user.name}" />  --->This is Natural Templating.
+
+--Using Texts
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" 
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+</head>
+<body>
+    <p th:text="#{welcome.message}">Welcome to our grocery store!</p>
+</body>
+</html>
+
+Note: browsers ignore all attributes they don’t understand, like th:text 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" 
+          href="../../css/gtvg.css" data-th-href="@{/css/gtvg.css}" />
+</head>
+<body>
+    <p data-th-text="#{home.welcome}">Welcome to our grocery store!</p>
+</body>
+</html>
+
+home.welcome=Welcome to our <b>fantastic</b> grocery store!
+
+Note:Custom data-prefixed attributes are allowed by the HTML5 specification, so, with this code above, our template would be a valid HTML5 document.
+--Externalizing text is extracting fragments of template code out of template files so that they can be kept in separate files (typically .properties files) and that they can be easily replaced with equivalent texts written in other languages (a process called internationalization or simply i18n). Externalized fragments of text are usually called “messages”. Messages always have a key that identifies them, and Thymeleaf allows you to specify that a text should correspond to a specific message with the #{...} syntax:
+----What we can see here are in fact two different features of the Thymeleaf Standard Dialect:
+The th:text attribute, which evaluates its value expression and sets the result as the body of the host tag, effectively replacing the “Welcome to our grocery store!” text we see in the code.
+The #{home.welcome} expression, specified in the Standard Expression Syntax, instructing that the text to be used by the th:text attribute should be the message with the home.welcome key corresponding to whichever locale we are processing the template with.
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" 
+          href="../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+</head>
+<body>
+    <p th:utext="#{home.welcome}">Welcome to our grocery store!</p>
+    <p>Today is: <span th:text="${today}">13 February 2011</span></p>
+</body>
+</html>
+
+Note:syntax is a little bit different this time and instead of a #{...} expression value, we are using a ${...} one. This is a variable expression, and it contains an expression in a language called OGNL (Object-Graph Navigation Language) that will be executed on the context variables map we talked about before.
+
+---Standard Expression Syntax
+--Simple expressions:
+-Variable Expressions: ${...}
+-Selection Variable Expressions: *{...}
+-Message Expressions: #{...}
+-Link URL Expressions: @{...}
+-Fragment Expressions: ~{...}
+
+-1. Variable Expressions: ${...}
+<p th:text="${user.name}">User Name</p>
+<p th:text="${user?.address?.city}">City (safe navigation)</p>
+<p th:text="${users[0].email}">First user's email</p>
+
+-2. Selection Expressions: *{...}
+<div th:object="${user}">
+    <p th:text="*{name}">Name</p>
+    <p th:text="*{email}">Email</p>
+    <p th:text="*{address.city}">City</p>
+</div>
+
+<!-- Equivalent to: -->
+<div>
+    <p th:text="${user.name}">Name</p>
+    <p th:text="${user.email}">Email</p>
+</div>
+
+-3. Message Expressions: #{...} (i18n)
+<p th:text="#{home.welcome}">Welcome message</p>
+<p th:text="#{user.greeting(${user.name})}">Hello, User!</p>
+<p th:utext="#{html.content}">HTML content</p>
+
+-4. Link Expressions: @{...}
+<a th:href="@{/users}">All Users</a>
+<a th:href="@{/users/{id}(id=${user.id})}">User Profile</a>
+<a th:href="@{/search(page=1,size=10)}">Search</a>
+<a th:href="@{https://example.com}">External Link</a>
+<script th:src="@{/js/app.js}"></script>
+
+-5. Literal Expressions
+<!-- String literals -->
+<p th:text="'Hello World'">Static Text</p>
+
+<!-- Number literals -->
+<p th:text="100">Number</p>
+
+<!-- Boolean literals -->
+<p th:text="true">Boolean</p>
+
+<!-- Literal substitution -->
+<p th:text="|Hello ${user.name}!|">Hello User!</p>
+
+-6. Expression Utility Objects
+<!-- #dates -->
+<p th:text="${#dates.format(today, 'dd/MM/yyyy')}">13/02/2011</p>
+<p th:text="${#dates.createNow()}">Current date</p>
+
+<!-- #strings -->
+<p th:text="${#strings.toUpperCase(user.name)}">JOHN</p>
+<p th:text="${#strings.isEmpty(user.name)}">false</p>
+<p th:text="${#strings.length(user.name)}">4</p>
+
+<!-- #numbers -->
+<p th:text="${#numbers.formatCurrency(product.price)}">$29.99</p>
+<p th:text="${#numbers.formatDecimal(percentage, 1, 2)}">25.50</p>
+
+<!-- #lists -->
+<p th:text="${#lists.size(users)}">5</p>
+<p th:text="${#lists.isEmpty(products)}">false</p>
+
+<!-- #objects -->
+<p th:text="${#objects.nullSafe(user, 'defaultUser')}">Default</p>
+
+-7. Expression Preprocessing: __${...}__
+<!-- Preprocess the expression before execution -->
+<p th:text="${__#{${user.role} + '.message'}__}">Role-based message</p>
+
+-8. Conditional Expressions
+<!-- Ternary operator -->
+<p th:text="${user.active} ? 'Active' : 'Inactive'">Status</p>
+
+<!-- Elvis operator (default value) -->
+<p th:text="${user.nickname} ?: 'Anonymous'">Nickname</p>
+
+<!-- No-Operation token -->
+<p th:text="${user} ?: _">No user selected</p>
+
+-9. Mathematical Operations
+<p th:text="${quantity + 1}">Increased quantity</p>
+<p th:text="${total * 1.1}">Total with tax</p>
+<p th:text="${count / 2}">Half count</p>
+
+-10. Complex Examples Combining Multiple Types
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Expression Examples</title>
+</head>
+<body>
+    <!-- Variable + Message Expression -->
+    <h1 th:text="#{welcome.message(${user.name})}">Welcome, John!</h1>
+    
+    <!-- Link + Variable Expression -->
+    <a th:href="@{/users/{id}/profile(id=${user.id})}" 
+       th:text="|View ${user.name}'s Profile|">View Profile</a>
+    
+    <!-- Selection + Utility Objects -->
+    <div th:object="${product}">
+        <p th:text="*{name}">Product Name</p>
+        <p th:text="${#numbers.formatCurrency(*{price})}">$29.99</p>
+        <p th:text="${#dates.format(*{createdDate}, 'MMM dd, yyyy')}">Feb 13, 2011</p>
+    </div>
+    
+    <!-- Conditional + Literal Substitution -->
+    <p th:text="${user.vip} ? |VIP: ${user.name}| : ${user.name}">User Name</p>
+    
+    <!-- List iteration with status variable -->
+    <ul>
+        <li th:each="item, iterStat : ${items}"
+            th:text="|${iterStat.count}. ${item.name} - $${item.price}|">
+            1. Sample Item - $10.00
+        </li>
+    </ul>
+</body>
+</html>
+
+-Complete Template Example:
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Expression Types Demo</title>
+</head>
+<body>
+    <!-- Your original code -->
+    <p th:utext="#{home.welcome}">Welcome to our grocery store!</p>
+    <p>Today is: <span th:text="${today}">13 february 2011</span></p>
+    
+    <!-- Additional expression examples -->
+    <p th:text="|User: ${user.name} (${user.email})|">User: John (john@example.com)</p>
+    <a th:href="@{/logout}">Sign Out</a>
+    <div th:if="${not #lists.isEmpty(user.orders)}">
+        <p th:text="#{orders.count(${#lists.size(user.orders)})}">You have 5 orders</p>
+    </div>
+</body>
+</html>
+
+--Property Access Expressionss
+-1. Dot Notation (Standard)
+<p th:text="${person.father.name}">Father's Name</p>
+<p th:text="${user.profile.settings.theme}">Theme</p>
+
+-2.Bracket Notation (Flexible)
+<!-- With string literals -->
+<p th:text="${person['father']['name']}">Father's Name</p>
+
+<!-- With dynamic property names -->
+<p th:text="${user['profile']['settings'][preferenceType]}">Preference</p>
+
+<!-- With variables as property names -->
+<p th:text="${person[propertyName]}">Dynamic Property</p>
+
+-3. Map Access
+<!-- Both syntaxes work for Maps -->
+<p th:text="${countriesByCode.ES}">Spain</p>
+<p th:text="${countriesByCode['ES']}">Spain</p>
+
+<!-- Complex map keys -->
+<p th:text="${personsByName['Stephen Zucchini'].age}">25</p>
+<p th:text="${productPrices['item-123'].value}">29.99</p>
+
+-4. Array and Collection Indexing
+<!-- Array access -->
+<p th:text="${personsArray[0].name}">First Person</p>
+<p th:text="${tags[2]}">Third Tag</p>
+
+<!-- List access -->
+<p th:text="${userList[5].email}">Sixth User Email</p>
+<p th:text="${productIds[currentIndex]}">Current Product ID</p>
+
+-5. Method Calls
+<!-- Method without parameters -->
+<p th:text="${person.createCompleteName()}">Full Name</p>
+<p th:text="${user.getDisplayName()}">Display Name</p>
+
+<!-- Method with parameters -->
+<p th:text="${person.createCompleteNameWithSeparator('-')}">First-Last</p>
+<p th:text="${calculator.add(5, 10)}">15</p>
+<p th:text="${stringUtils.capitalize(user.name)}">John</p>
+
+--Complete Practical Example
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Property Access Examples</title>
+</head>
+<body>
+    <!-- Dot Notation -->
+    <div th:object="${customer}">
+        <h2 th:text="*{name}">Customer Name</h2>
+        <p th:text="*{address.street}">Street</p>
+        <p th:text="*{address.city}">City</p>
+    </div>
+
+    <!-- Map Access -->
+    <p>Country: <span th:text="${countryMap['US']}">United States</span></p>
+    <p>Currency: <span th:text="${currencies.USD}">US Dollar</span></p>
+
+    <!-- Array Access -->
+    <ul>
+        <li th:each="i : ${#numbers.sequence(0, 2)}">
+            <span th:text="${products[i].name}">Product Name</span>
+        </li>
+    </ul>
+
+    <!-- Method Calls -->
+    <p th:text="${user.getFullName()}">Full Name</p>
+    <p th:text="${dateUtils.formatDate(today, 'yyyy-MM-dd')}">2024-01-15</p>
+    <p th:text="${textUtils.truncate(description, 100)}">Truncated text...</p>
+
+    <!-- Mixed Examples -->
+    <div th:if="${user.permissions['admin']}">
+        <p th:text="|Welcome ${user.profile['displayName']}!|">
+            Welcome Admin!
+        </p>
+        <p th:text="${reports[0].generateSummary('monthly')}">
+            Monthly Report Summary
+        </p>
+    </div>
+</body>
+</html>
+
+
+Note:The safe navigation operator (?.) prevents NullPointerException when accessing properties of potentially null objects.
+${object?.property}
+${object?.method()}
+${object?.property?.nestedProperty}
+
+<!-- Returns null instead of throwing exception -->
+<p th:text="${person?.father?.name}">Father's Name</p>
+
+<!-- Safe chain of multiple properties -->
+<p th:text="${user?.profile?.settings?.theme}">Theme</p>
+
+<!-- Safe method calls -->
+<p th:text="${user?.getDisplayName()}">Display Name</p>
+
+--Complete List of Basic Objects
+-1. #ctx - Context Object
+<p th:text="${#ctx.locale}">Locale: en_US</p>
+<p th:text="${#ctx.variableNames}">[user, products, ...]</p>
+<p th:text="${#ctx.containsVariable('user')}">true</p>
+
+-2. #vars - Context Variables
+<!-- Same as using direct variable names -->
+<p th:text="${#vars.user.name}">John Doe</p>
+<p th:text="${#vars['product'].price}">29.99</p>
+<p th:text="${#vars.get('today')}">2024-01-15</p>
+
+-3. #locale - Locale Information
+<p th:text="${#locale.country}">US</p>
+<p th:text="${#locale.language}">en</p>
+<p th:text="${#locale.displayName}">English (United States)</p>
+<p th:text="${#locale.displayCountry}">United States</p>
+<p th:text="${#locale.displayLanguage}">English</p>
+
+-4. #request - HttpServletRequest
+<p th:text="${#request.contextPath}">/myapp</p>
+<p th:text="${#request.servletPath}">/home</p>
+<p th:text="${#request.serverName}">localhost</p>
+<p th:text="${#request.serverPort}">8080</p>
+<p th:text="${#request.scheme}">http</p>
+<p th:text="${#request.queryString}">page=1</p>
+<p th:text="${#request.getParameter('page')}">1</p>
+<p th:text="${#request.getHeader('User-Agent')}">Browser Info</p>
+
+-5. #response - HttpServletResponse
+<p th:text="${#response.characterEncoding}">UTF-8</p>
+<p th:text="${#response.contentType}">text/html</p>
+<p th:text="${#response.status}">200</p>
+
+-6. #session - HttpSession
+<p th:text="${#session.id}">Session ID</p>
+<p th:text="${#session.getAttribute('cartCount')}">5</p>
+<p th:text="${#session.lastAccessedTime}">1705320000000</p>
+<p th:text="${#session.maxInactiveInterval}">1800</p>
+
+<!-- Check if session attribute exists -->
+<div th:if="${#session.containsKey('user')}">
+    <p>User is logged in</p>
+</div>
+
+-7. #servletContext - ServletContext
+<p th:text="${#servletContext.contextPath}">/myapp</p>
+<p th:text="${#servletContext.serverInfo}">Tomcat</p>
+<p th:text="${#servletContext.majorVersion}">4</p>
+<p th:text="${#servletContext.minorVersion}">0</p>
+
+Ex:-Localization and Internationalization
+<div th:with="currentLocale=${#locale}">
+    <p>Current Language: <span th:text="${currentLocale.language}">en</span></p>
+    <p>Country: <span th:text="${currentLocale.country}">US</span></p>
+    
+    <!-- Show different content based on locale -->
+    <div th:if="${#locale.language == 'es'}">
+        <p>¡Bienvenido!</p>
+    </div>
+    <div th:if="${#locale.language == 'fr'}">
+        <p>Bienvenue!</p>
+    </div>
+    <div th:if="${#locale.language == 'en'}">
+        <p>Welcome!</p>
+    </div>
+</div>
+
+<!-- Get query parameters -->
+<div th:if="${#request.getParameter('search')}">
+    <p>Search results for: 
+        <strong th:text="${#request.getParameter('search')}">query</strong>
+    </p>
+</div>
+-Request Parameter Handling
+<!-- Pagination with request parameters -->
+<div class="pagination">
+    <a th:href="@{/products(page=0, size=${#request.getParameter('size')})}">First</a>
+    
+    <span th:each="i : ${#numbers.sequence(1, 5)}">
+        <a th:href="@{/products(page=${i}, size=${#request.getParameter('size')})}"
+           th:text="${i}">1</a>
+    </span>
+</div>
+
+<!-- Form with current query string -->
+<form th:action="@{/search${#request.queryString != null ? '?' + #request.queryString : ''}}"
+      method="post">
+    <input type="text" name="filter" placeholder="Filter results">
+    <button type="submit">Apply Filter</button>
+</form>
+
+--Complete List of Utility Objects
+-1. #strings - String Utilities
+<!-- Basic string operations -->
+<p th:text="${#strings.toUpperCase(user.name)}">JOHN DOE</p>
+<p th:text="${#strings.toLowerCase('HELLO')}">hello</p>
+<p th:text="${#strings.capitalize(user.name)}">John doe</p>
+<p th:text="${#strings.capitalizeWords('hello world')}">Hello World</p>
+
+<!-- String checks -->
+<p th:text="${#strings.isEmpty(user.bio)}">true/false</p>
+<p th:text="${#strings.contains(user.email, '@')}">true</p>
+<p th:text="${#strings.startsWith(user.name, 'Jo')}">true</p>
+<p th:text="${#strings.endsWith(file.name, '.jpg')}">true</p>
+
+<!-- String manipulation -->
+<p th:text="${#strings.substring(user.email, 0, 5)}">john@</p>
+<p th:text="${#strings.replace(user.name, ' ', '-')}">John-Doe</p>
+<p th:text="${#strings.trim('  hello  ')}">hello</p>
+
+<!-- String information -->
+<p th:text="${#strings.length(user.name)}">8</p>
+<p th:text="${#strings.arrayJoin(users, ', ')}">John, Jane, Bob</p>
+<p th:text="${#strings.listJoin(user.roles, ' | ')}">ADMIN | USER</p>
+
+<!-- Default values -->
+<p th:text="${#strings.defaultString(user.nickname, 'Anonymous')}">Anonymous</p>
+
+-2. #numbers - Number Utilities
+<!-- Number formatting -->
+<p th:text="${#numbers.formatInteger(product.stock, 3)}">010</p>
+<p th:text="${#numbers.formatDecimal(product.price, 1, 2)}">29.99</p>
+<p th:text="${#numbers.formatCurrency(product.price)}">$29.99</p>
+<p th:text="${#numbers.formatPercent(discount.rate, 1, 2)}">15.50%</p>
+
+<!-- Number sequences -->
+<p th:text="${#numbers.sequence(1, 5)}">[1, 2, 3, 4, 5]</p>
+<p th:text="${#numbers.sequence(0, 10, 2)}">[0, 2, 4, 6, 8, 10]</p>
+
+<!-- Number information -->
+<p th:text="${#numbers.formatInteger(1000, 'POINT', 2, 'COMMA')}">10.00</p>
+
+-3. #dates - Date Utilities
+<!-- Date formatting -->
+<p th:text="${#dates.format(today)}">Jan 15, 2024</p>
+<p th:text="${#dates.format(today, 'dd/MM/yyyy')}">15/01/2024</p>
+<p th:text="${#dates.format(today, 'yyyy-MM-dd HH:mm')}">2024-01-15 14:30</p>
+
+<!-- Date creation -->
+<p th:text="${#dates.createNow()}">Current date</p>
+<p th:text="${#dates.create(2024, 1, 15)}">Jan 15, 2024</p>
+
+<!-- Date components -->
+<p th:text="${#dates.day(today)}">15</p>
+<p th:text="${#dates.month(today)}">1</p>
+<p th:text="${#dates.monthName(today)}">January</p>
+<p th:text="${#dates.year(today)}">2024</p>
+<p th:text="${#dates.hour(now)}">14</p>
+<p th:text="${#dates.minute(now)}">30</p>
+
+<!-- Date arithmetic -->
+<p th:text="${#dates.addDay(today, 7)}">Jan 22, 2024</p>
+<p th:text="${#dates.addMonth(today, 1)}">Feb 15, 2024</p>
+
+<!-- Date comparison -->
+<p th:text="${#dates.create(2024,1,1).before(today)}">true</p>
+
+-4. #calendars - Calendar Utilities
+<!-- Similar to #dates but for Calendar objects -->
+<p th:text="${#calendars.format(calendar)}">Jan 15, 2024</p>
+<p th:text="${#calendars.format(calendar, 'dd/MM/yyyy')}">15/01/2024</p>
+<p th:text="${#calendars.day(calendar)}">15</p>
+
+-5. #lists - List Utilities
+<!-- List information -->
+<p th:text="${#lists.size(users)}">5</p>
+<p th:text="${#lists.isEmpty(products)}">false</p>
+<p th:text="${#lists.contains(users, currentUser)}">true</p>
+
+<!-- List operations -->
+<p th:text="${#lists.sort(users, 'name')}">Sorted list</p>
+<p th:text="${#lists.toArray(users)}">Array conversion</p>
+
+<!-- List creation -->
+<p th:text="${#lists.toList(1, 2, 3, 4, 5)}">[1, 2, 3, 4, 5]</p>
+
+-6. #arrays - Array Utilities
+<!-- Array information -->
+<p th:text="${#arrays.length(products)}">10</p>
+<p th:text="${#arrays.isEmpty(tags)}">false</p>
+<p th:text="${#arrays.contains(tags, 'sale')}">true</p>
+
+<!-- Array operations -->
+<p th:text="${#arrays.toStringArray(1, 2, 3)}">['1','2','3']</p>
+
+-7. #sets - Set Utilities
+<p th:text="${#sets.size(user.roles)}">2</p>
+<p th:text="${#sets.contains(user.roles, 'ADMIN')}">true</p>
+<p th:text="${#sets.toSet(1, 2, 2, 3)}">[1, 2, 3]</p>
+
+-8. #maps - Map Utilities
+<p th:text="${#maps.size(user.settings)}">5</p>
+<p th:text="${#maps.containsKey(user.settings, 'theme')}">true</p>
+<p th:text="${#maps.containsValue(user.settings, 'dark')}">true</p>
+
+-9. #objects - Object Utilities
+<!-- Null safety -->
+<p th:text="${#objects.nullSafe(user.profile, defaultProfile)}">Default</p>
+<p th:text="${#objects.arrayNullSafe(users)}">Safe array</p>
+
+<!-- Object information -->
+<p th:text="${#objects.toString(user)}">User object string</p>
+
+-10. #bools - Boolean Utilities
+<p th:text="${#bools.isTrue(user.active)}">true</p>
+<p th:text="${#bools.isFalse(user.banned)}">true</p>
+<p th:text="${#bools.arrayAnd(flags)}">true if all true</p>
+<p th:text="${#bools.arrayOr(flags)}">true if any true</p>
+
+-11. #aggregates - Aggregation Utilities
+<p th:text="${#aggregates.sum(product.prices)}">Total sum</p>
+<p th:text="${#aggregates.avg(user.scores)}">Average</p>
+<p th:text="${#aggregates.min(product.prices)}">Minimum</p>
+<p th:text="${#aggregates.max(product.prices)}">Maximum</p>
+
+-12. #messages - Message Utilities
+<p th:text="${#messages.msg('welcome.message')}">Welcome</p>
+<p th:text="${#messages.msgWithParams('greeting', user.name)}">Hello John</p>
+<p th:text="${#messages.arrayMsgWithParams('messages', params)}">Formatted</p>
+
+ex:-
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Join Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="user, stat : ${users}">
+            <!-- Capitalize names -->
+            <td th:text="${#strings.capitalizeWords(user.fullName)}">John Doe</td>
+            
+            <!-- Lowercase email -->
+            <td th:text="${#strings.toLowerCase(user.email)}">john@example.com</td>
+            
+            <!-- Format dates -->
+            <td th:text="${#dates.format(user.joinDate, 'yyyy-MM-dd')}">2024-01-15</td>
+            
+            <!-- Status with conditional formatting -->
+            <td>
+                <span th:class="${user.active} ? 'status-active' : 'status-inactive'"
+                      th:text="${#strings.capitalize(user.status)}">Active</span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+---Use of * and $
+<!-- 
+  APPROACH 1: Using th:object with selection expressions (*{...})
+  This sets a context object and uses shorter selection expression syntax
+-->
+<div th:object="${session.user}">
+    <p>Name: <span th:text="*{firstName}">Sebastian</span>.</p>
+    <p>Surname: <span th:text="*{lastName}">Pepper</span>.</p>
+    <p>Nationality: <span th:text="*{nationality}">Saturn</span>.</p>
+</div>
+
+<!-- 
+  APPROACH 2: Using direct variable expressions (${...})
+  This accesses the nested properties directly without setting a context object
+-->
+<div>
+    <p>Name: <span th:text="${session.user.firstName}">Sebastian</span>.</p>
+    <p>Surname: <span th:text="${session.user.lastName}">Pepper</span>.</p>
+    <p>Nationality: <span th:text="${session.user.nationality}">Saturn</span>.</p>
+</div>
+
+<!-- 
+  APPROACH 3: Mixed approach (th:object with both *{...} and ${...})
+  This sets a context object but mixes selection and variable expressions
+  NOTE: This works but is inconsistent - not recommended for production code
+-->
+<div th:object="${session.user}">
+    <p>Name: <span th:text="*{firstName}">Sebastian</span>.</p>
+    <p>Surname: <span th:text="${session.user.lastName}">Pepper</span>.</p>
+    <p>Nationality: <span th:text="*{nationality}">Saturn</span>.</p>
+</div>
+
+<!-- 
+  EXAMPLE 1: Object selection with mixed expression types
+  When th:object is used, the selected object is available as #object
+-->
+<div th:object="${session.user}">
+    <!-- Using #object in dollar expression -->
+    <p>Name: <span th:text="${#object.firstName}">Sebastian</span>.</p>
+    
+    <!-- Using full path in dollar expression (redundant but works) -->
+    <p>Surname: <span th:text="${session.user.lastName}">Pepper</span>.</p>
+    
+    <!-- Using selection expression (recommended for selected object) -->
+    <p>Nationality: <span th:text="*{nationality}">Saturn</span>.</p>
+</div>
+
+<!-- 
+  EXAMPLE 2: No object selection - dollar and asterisk are equivalent
+  Without th:object, both syntaxes work the same way
+-->
+<div>
+    <!-- These all work identically without object selection -->
+    <p>Name: <span th:text="*{session.user.name}">Sebastian</span>.</p>
+    <p>Surname: <span th:text="*{session.user.surname}">Pepper</span>.</p>
+    <p>Nationality: <span th:text="*{session.user.nationality}">Saturn</span>.</p>
+    
+    <!-- Equivalent dollar expressions -->
+    <p>Name: <span th:text="${session.user.name}">Sebastian</span>.</p>
+    <p>Surname: <span th:text="${session.user.surname}">Pepper</span>.</p>
+    <p>Nationality: <span th:text="${session.user.nationality}">Saturn</span>.</p>
+</div>
+
+--Link URLs-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thymeleaf URL Types - Complete Guide</title>
+    <meta charset="UTF-8">
+    
+    <!-- ========================================================================= -->
+    <!-- 1. ABSOLUTE URLs - Full URL with protocol -->
+    <!-- ========================================================================= -->
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
+    <a th:href="@{https://www.thymeleaf.org/documentation}">Thymeleaf Docs</a>
+
+    <!-- ========================================================================= -->
+    <!-- 2. CONTEXT-RELATIVE URLs - Most Common (relative to web app context root) -->
+    <!-- ========================================================================= -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <script th:src="@{/js/app.js}"></script>
+    <img th:src="@{/images/logo.png}" alt="Logo">
+    <a th:href="@{/}">Home</a>
+    <a th:href="@{/users}">Users</a>
+    <a th:href="@{/products/list}">Products</a>
+    <form th:action="@{/login}" method="post"></form>
+
+    <!-- ========================================================================= -->
+    <!-- 3. PAGE-RELATIVE URLs - Relative to current page location -->
+    <!-- ========================================================================= -->
+    <a th:href="@{user/profile.html}">Profile (same directory)</a>
+    <a th:href="@{../admin/dashboard.html}">Admin (parent directory)</a>
+    <a th:href="@{./details.html}">Details (current directory)</a>
+    <img th:src="@{../images/icon.png}" alt="Icon">
+    <script th:src="@{js/local.js}"></script>
+
+    <!-- ========================================================================= -->
+    <!-- 4. SERVER-RELATIVE URLs - Relative to server root (different context/app) -->
+    <!-- ========================================================================= -->
+    <a th:href="@{~/billing/invoices}">Billing System</a>
+    <a th:href="@{~/crm/customers}">CRM System</a>
+    <a th:href="@{~/admin/users}">Admin System</a>
+    <script th:src="@{~/shared/js/utils.js}"></script>
+
+    <!-- ========================================================================= -->
+    <!-- 5. PROTOCOL-RELATIVE URLs - Same protocol as current page (http/https) -->
+    <!-- ========================================================================= -->
+    <script th:src="@{//cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js}"></script>
+    <link th:href="@{//fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap}" rel="stylesheet">
+    <img th:src="@{//maps.example.com/static/marker.png}" alt="Map Marker">
+
+    <!-- ========================================================================= -->
+    <!-- 6. URL PARAMETERS - All parameter types with examples -->
+    <!-- ========================================================================= -->
+    
+    <!-- Query Parameters -->
+    <a th:href="@{/search(keyword='laptop', category='electronics')}">Search Laptops</a>
+    <a th:href="@{/users(filter='active', sort='name', page=1, size=20)}">Active Users</a>
+    <a th:href="@{/products(category=${currentCategory}, minPrice=${minPrice})}">Filtered Products</a>
+
+    <!-- Path Parameters -->
+    <a th:href="@{/user/{id}(id=${userId})}">User Profile</a>
+    <a th:href="@{/product/{category}/{id}(category=${product.category}, id=${product.id})}">Product Details</a>
+    <a th:href="@{/order/{orderId}/item/{itemId}(orderId=${order.id}, itemId=${item.id})}">Order Item</a>
+
+    <!-- Mixed Parameters (Path + Query) -->
+    <a th:href="@{/category/{id}/products(id=${category.id}, sort='price', view='grid')}">Category Products</a>
+    <a th:href="@{/user/{id}/orders(id=${user.id}, status='pending', page=0)}">User Orders</a>
+
+    <!-- ========================================================================= -->
+    <!-- 7. DYNAMIC URL BUILDING - Advanced examples -->
+    <!-- ========================================================================= -->
+    
+    <!-- Conditional Parameters -->
+    <a th:href="@{/search(query=${searchTerm}, ${not #strings.isEmpty(category)} ? category=${category} : _)}">Search</a>
+    
+    <!-- Multiple Parameters with Collections -->
+    <a th:href="@{/export(columns=${selectedColumns}, format='csv')}">Export Data</a>
+    
+    <!-- URL Fragments -->
+    <a th:href="@{/page#section-{num}(num=${sectionNumber})}">Jump to Section</a>
+
+    <!-- ========================================================================= -->
+    <!-- 8. REAL-WORLD COMPLETE EXAMPLE -->
+    <!-- ========================================================================= -->
+    
+    <header>
+        <!-- Context-relative navigation -->
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/products}">Products</a>
+            <a th:href="@{/about}">About</a>
+            <a th:href="@{/contact}">Contact</a>
+            
+            <!-- External absolute URL -->
+            <a th:href="@{https://www.github.com/thymeleaf}">GitHub</a>
+            
+            <!-- Server-relative to different app -->
+            <a th:href="@{~/admin/dashboard}">Admin</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Product listing with dynamic URLs -->
+        <div th:each="product : ${products}">
+            <img th:src="@{/images/products/{image}(image=${product.imageUrl})}" 
+                 alt="Product Image">
+            <h3 th:text="${product.name}">Product Name</h3>
+            <a th:href="@{/product/{id}(id=${product.id})}" 
+               class="btn btn-primary">View Details</a>
+            <a th:href="@{/cart/add/{id}(id=${product.id})}" 
+               class="btn btn-success">Add to Cart</a>
+        </div>
+
+        <!-- Pagination with parameters -->
+        <div class="pagination">
+            <a th:href="@{/products(page=0, size=${pageSize})}">First</a>
+            <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+               th:href="@{/products(page=${i}, size=${pageSize})}"
+               th:text="${i}">1</a>
+            <a th:href="@{/products(page=${totalPages - 1}, size=${pageSize})}">Last</a>
+        </div>
+
+        <!-- Form with context-relative action -->
+        <form th:action="@{/contact/submit}" method="post">
+            <input type="text" name="name" placeholder="Name">
+            <input type="email" name="email" placeholder="Email">
+            <button type="submit">Send Message</button>
+        </form>
+    </main>
+
+    <footer>
+        <!-- Protocol-relative CDN resources -->
+        <script th:src="@{//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js}"></script>
+        
+        <!-- Page-relative links -->
+        <a th:href="@{privacy-policy.html}">Privacy Policy</a>
+        <a th:href="@{terms-of-service.html}">Terms of Service</a>
+        
+        <!-- Server-relative to support app -->
+        <a th:href="@{~/support/help}">Help Center</a>
+    </footer>
+
+    <!-- ========================================================================= -->
+    <!-- 9. URL OUTPUT EXAMPLES (How they render) -->
+    <!-- ========================================================================= -->
+    <!-- 
+    Context: /myapp, Current Page: /myapp/products/list.html
+    
+    Absolute:          @{https://example.com}          → https://example.com
+    Context-relative:  @{/users}                       → /myapp/users
+    Context-relative:  @{/user/{id}(id=123)}           → /myapp/user/123
+    Page-relative:     @{details.html}                 → /myapp/products/details.html  
+    Page-relative:     @{../admin/users.html}          → /myapp/admin/users.html
+    Server-relative:   @{~/billing/invoices}           → /billing/invoices
+    Protocol-relative: @{//cdn.com/jquery.js}          → //cdn.com/jquery.js
+    -->
+</body>
+</html>
+
+--<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thymeleaf Fragment Expressions - Complete Guide</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- 1. FRAGMENT DEFINITIONS (Fragments to be reused) -->
+    <!-- ========================================================================= -->
+    
+    <!-- fragments/header.html -->
+    <div th:fragment="header">
+        <header>
+            <h1>My Application</h1>
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/products}">Products</a>
+                <a th:href="@{/about}">About</a>
+            </nav>
+        </header>
+    </div>
+
+    <!-- fragments/footer.html -->
+    <div th:fragment="footer">
+        <footer>
+            <p>&copy; 2024 My Application</p>
+            <div th:fragment="social-links">
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- fragments/user-card.html -->
+    <div th:fragment="user-card(user, showDetails)">
+        <div class="user-card">
+            <img th:src="${user.avatarUrl}" alt="Avatar" th:src="@{/images/default-avatar.png}">
+            <h3 th:text="${user.name}">User Name</h3>
+            <p th:text="${user.email}">user@example.com</p>
+            <div th:if="${showDetails}">
+                <p th:text="${user.role}">Role</p>
+                <p th:text="${#dates.format(user.joinDate, 'yyyy-MM-dd')}">Join Date</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- fragments/product.html -->
+    <div th:fragment="product-item(product, layout)">
+        <div th:class="${layout == 'grid'} ? 'product-grid' : 'product-list'">
+            <h4 th:text="${product.name}">Product Name</h4>
+            <p th:text="${#numbers.formatCurrency(product.price)}">$29.99</p>
+            <span th:class="${product.stock > 0} ? 'in-stock' : 'out-of-stock'"
+                  th:text="${product.stock > 0} ? 'In Stock' : 'Out of Stock'">
+                Stock Status
+            </span>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. FRAGMENT EXPRESSION SYNTAX: ~{template :: fragment} -->
+    <!-- ========================================================================= -->
+    
+    <div>
+        <h2>Fragment Expression Syntax</h2>
+        
+        <!-- Basic fragment reference -->
+        <div th:replace="~{fragments/header :: header}">Header will be replaced</div>
+        
+        <!-- Fragment with parameters -->
+        <div th:replace="~{fragments/user-card :: user-card(user=${currentUser}, showDetails=true)}">
+            User card will be replaced
+        </div>
+        
+        <!-- Different templates -->
+        <div th:replace="~{common/fragments :: notification}">Notification</div>
+        <div th:replace="~{admin/fragments :: admin-panel}">Admin Panel</div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. FRAGMENT INCLUSION METHODS: th:replace vs th:insert vs th:include -->
+    <!-- ========================================================================= -->
+    
+    <div class="comparison">
+        <h2>Fragment Inclusion Methods</h2>
+        
+        <!-- th:replace - REPLACES the host tag with the fragment -->
+        <div class="original-div" th:replace="~{fragments/header :: header}">
+            This entire div will be replaced by the header fragment
+        </div>
+        
+        <!-- th:insert - INSERTS the fragment inside the host tag -->
+        <div class="container" th:insert="~{fragments/user-card :: user-card(user=${user})}">
+            The user-card fragment will be inserted inside this div
+        </div>
+        
+        <!-- th:include - INSERTS the fragment's content only (deprecated in Thymeleaf 3.0) -->
+        <div class="wrapper" th:include="~{fragments/footer :: footer}">
+            Only the content of footer fragment will be inserted (without footer tag)
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. FRAGMENT PARAMETERS - Passing data to fragments -->
+    <!-- ========================================================================= -->
+    
+    <div class="parameter-examples">
+        <h2>Fragment Parameters</h2>
+        
+        <!-- Simple parameters -->
+        <div th:replace="~{fragments/user-card :: user-card(user=${currentUser}, showDetails=true)}"></div>
+        
+        <!-- Multiple parameters -->
+        <div th:replace="~{fragments/product :: product-item(product=${product}, layout='grid')}"></div>
+        
+        <!-- Default parameter values -->
+        <div th:replace="~{fragments/product :: product-item(product=${product})}">
+            <!-- Uses default layout parameter -->
+        </div>
+        
+        <!-- Complex objects as parameters -->
+        <div th:replace="~{fragments/order-summary :: order-details(order=${order}, showTax=${user.vip})}"></div>
+        
+        <!-- Using utility objects in parameters -->
+        <div th:replace="~{fragments/alert :: message(type='success', text=${#strings.toUpperCase(successMessage)})}"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. DYNAMIC FRAGMENT SELECTION -->
+    <!-- ========================================================================= -->
+    
+    <div class="dynamic-fragments">
+        <h2>Dynamic Fragment Selection</h2>
+        
+        <!-- Conditional fragment selection -->
+        <div th:replace="${user.role == 'ADMIN'} ? 
+                          ~{fragments/dashboard :: admin-dashboard} : 
+                          ~{fragments/dashboard :: user-dashboard}">
+            Dynamic dashboard based on role
+        </div>
+        
+        <!-- Fragment selection based on variable -->
+        <div th:replace="~{fragments/notifications :: ${notificationType}}">
+            Dynamic notification type
+        </div>
+        
+        <!-- Fragment with dynamic template -->
+        <div th:replace="~{${templatePath} :: ${fragmentName}}">
+            Fully dynamic template and fragment
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 6. LAYOUT FRAGMENTS WITH CONTENT -->
+    <!-- ========================================================================= -->
+    
+    <!-- fragments/layout.html -->
+    <div th:fragment="base-layout(title, content)">
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title th:text="${title}">Default Title</title>
+        </head>
+        <body>
+            <div th:replace="~{fragments/header :: header}"></div>
+            <main th:insert="${content}">
+                <!-- Content will be inserted here -->
+            </main>
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </body>
+        </html>
+    </div>
+
+    <!-- Using layout fragment -->
+    <div th:replace="~{fragments/layout :: base-layout(title='Home Page', content=~{home :: content})}"></div>
+
+    <!-- ========================================================================= -->
+    <!-- 7. INLINE FRAGMENT DEFINITIONS -->
+    <!-- ========================================================================= -->
+    
+    <div class="inline-fragments">
+        <h2>Inline Fragments</h2>
+        
+        <!-- Define fragment inline -->
+        <div th:fragment="inline-alert(message, type)">
+            <div th:class="'alert alert-' + ${type}">
+                <span th:text="${message}">Alert message</span>
+            </div>
+        </div>
+        
+        <!-- Use inline fragment -->
+        <div th:replace="~{:: inline-alert(message='Success!', type='success')}"></div>
+        <div th:replace="~{:: inline-alert(message='Error!', type='danger')}"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 8. FRAGMENT SELECTORS (DOM Selectors) -->
+    <!-- ========================================================================= -->
+    
+    <div class="fragment-selectors">
+        <h2>Fragment Selectors</h2>
+        
+        <!-- Select by ID -->
+        <div id="special-content" th:fragment>
+            <p>This is special content selected by ID</p>
+        </div>
+        <div th:replace="~{:: #special-content}"></div>
+        
+        <!-- Select by class -->
+        <div class="highlighted" th:fragment>
+            <p>This is highlighted content</p>
+        </div>
+        <div th:replace="~{:: .highlighted}"></div>
+        
+        <!-- Complex CSS selectors -->
+        <div th:replace="~{fragments/navigation :: nav > ul > li:first-child}">
+            First navigation item
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 9. COMPLETE REAL-WORLD EXAMPLE -->
+    <!-- ========================================================================= -->
+    
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>E-Commerce Site</title>
+    </head>
+    <body>
+        <!-- Header fragment -->
+        <div th:replace="~{fragments/header :: header}"></div>
+        
+        <main class="container">
+            <!-- Dynamic content based on user role -->
+            <div th:replace="${user.role == 'ADMIN'} ? 
+                              ~{fragments/admin :: admin-panel} : 
+                              ~{fragments/user :: welcome-message}">
+            </div>
+            
+            <!-- Product grid with parameters -->
+            <div class="products-grid">
+                <div th:each="product : ${products}"
+                     th:replace="~{fragments/product :: product-item(product=${product}, layout='grid')}">
+                </div>
+            </div>
+            
+            <!-- User profile with details -->
+            <div th:if="${user != null}"
+                 th:replace="~{fragments/user-card :: user-card(user=${user}, showDetails=true)}">
+            </div>
+            
+            <!-- Inline alert fragment -->
+            <div th:if="${successMessage}"
+                 th:replace="~{:: inline-alert(message=${successMessage}, type='success')}">
+            </div>
+        </main>
+        
+        <!-- Footer with social links fragment -->
+        <div th:replace="~{fragments/footer :: footer}">
+            Default footer content
+        </div>
+        
+        <!-- Include social links separately -->
+        <div th:insert="~{fragments/footer :: social-links}"></div>
+        
+        <!-- Define inline fragment for alerts -->
+        <div th:fragment="inline-alert(message, type)" style="display: none;">
+            <div th:class="'alert alert-' + ${type}" role="alert">
+                <span th:text="${message}"></span>
+            </div>
+        </div>
+    </body>
+    </html>
+
+    <!-- ========================================================================= -->
+    <!-- 10. ADVANCED FRAGMENT PATTERNS -->
+    <!-- ========================================================================= -->
+    
+    <div class="advanced-patterns">
+        <h2>Advanced Fragment Patterns</h2>
+        
+        <!-- Fragment with default content -->
+        <div th:fragment="conditional-content(showExtra=true)">
+            <p>Main content</p>
+            <div th:if="${showExtra}">
+                <p>Extra content that can be hidden</p>
+            </div>
+        </div>
+        
+        <!-- Nested fragment calls -->
+        <div th:fragment="nested-example">
+            <div th:replace="~{fragments/header :: header}"></div>
+            <div th:insert="~{:: conditional-content(showExtra=false)}"></div>
+        </div>
+        
+        <!-- Fragment with iteration -->
+        <div th:fragment="user-list(users)">
+            <ul>
+                <li th:each="user : ${users}"
+                    th:replace="~{fragments/user-card :: user-card(user=${user}, showDetails=false)}">
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Template composition -->
+        <div th:replace="~{fragments/layout :: base-layout(
+                            title=${pageTitle}, 
+                            content=~{fragments/content :: main-content(data=${pageData})}
+                          )}">
+        </div>
+    </div>
+
+</body>
+</html>
+
+--Appending texts
+<span th:text="'The name of the user is ' + ${user.name}">
+
+--Comparators and Equality
+<div th:if="${prodStat.count} &gt; 1">
+<span th:text="'Execution mode is ' + ( (${execMode} =='dev')? 'Development' : 'Production')">
+
+--Setting Attribute Values
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thymeleaf Attribute Examples</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- 1. ORIGINAL STATIC HTML FORM -->
+    <!-- ========================================================================= -->
+    <h2>1. Static HTML Form</h2>
+    <form action="subscribe.html">
+        <fieldset>
+            <input type="text" name="email" />
+            <input type="submit" value="Subscribe!" />
+        </fieldset>
+    </form>
+
+    <!-- ========================================================================= -->
+    <!-- 2. THYMELEAF FORM WITH th:attr (Multiple Attributes) -->
+    <!-- ========================================================================= -->
+    <h2>2. Thymeleaf Form with th:attr</h2>
+    <form action="subscribe.html" th:attr="action=@{/subscribe}">
+        <fieldset>
+            <input type="text" name="email" />
+            <input type="submit" value="Subscribe!" th:attr="value=#{subscribe.submit}"/>
+        </fieldset>
+    </form>
+
+    <!-- ========================================================================= -->
+    <!-- 3. BETTER APPROACH: Using Specific th:* Attributes -->
+    <!-- ========================================================================= -->
+    <h2>3. Better Approach - Specific th:* Attributes</h2>
+    <form th:action="@{/subscribe}" method="post">
+        <fieldset>
+            <input type="text" name="email" th:placeholder="#{email.placeholder}" />
+            <input type="submit" th:value="#{subscribe.submit}" />
+        </fieldset>
+    </form>
+
+    <!-- ========================================================================= -->
+    <!-- 4. COMPLETE FORM WITH ALL ATTRIBUTE TYPES -->
+    <!-- ========================================================================= -->
+    <h2>4. Complete Form Example</h2>
+    <form th:action="@{/subscribe}" 
+          th:object="${subscription}"
+          method="post" 
+          th:attr="data-form-type=#{form.type}, 
+                   onsubmit=${#strings.isEmpty(user.name)} ? 'return confirm(\"Continue as guest?\")' : _">
+        
+        <fieldset>
+            <!-- Text Input with multiple attributes -->
+            <input type="text" 
+                   th:field="*{email}"
+                   th:attr="placeholder=#{email.placeholder},
+                            maxlength=100,
+                            required=required" />
+            
+            <!-- Submit button with dynamic attributes -->
+            <input type="submit" 
+                   th:value="#{subscribe.submit}"
+                   th:attr="class=${user.vip} ? 'btn-vip' : 'btn-normal',
+                            disabled=${#strings.isEmpty(user.email)}" />
+            
+            <!-- Additional button with th:attr -->
+            <button type="button"
+                    th:attr="onclick=|showPreview('${user.name}')|,
+                             data-user-id=${user.id},
+                             title=#{button.help}">
+                Preview
+            </button>
+        </fieldset>
+    </form>
+
+    <!-- ========================================================================= -->
+    <!-- 5. th:attr VS SPECIFIC ATTRIBUTES COMPARISON -->
+    <!-- ========================================================================= -->
+    <h2>5. th:attr vs Specific Attributes Comparison</h2>
+    
+    <!-- Using th:attr (less readable) -->
+    <div th:attr="class=container, id=main-content, data-role=admin-panel">
+        Content with th:attr
+    </div>
+    
+    <!-- Using specific attributes (recommended) -->
+    <div th:class="container" th:id="main-content" th:attr="data-role=admin-panel">
+        Content with specific attributes
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 6. FIXED AND IMPROVED VERSION OF YOUR CODE -->
+    <!-- ========================================================================= -->
+    <h2>6. Fixed & Improved Version</h2>
+    
+    <!-- Original with formatting fixes -->
+    <form action="subscribe.html" th:attr="action=@{/subscribe}">
+        <fieldset>
+            <input type="text" name="email" />
+            <input type="submit" value="Subscribe!" th:attr="value=#{subscribe.submit}"/>
+        </fieldset>
+    </form>
+
+    <!-- Improved version -->
+    <form th:action="@{/subscribe}">
+        <fieldset>
+            <input type="text" name="email" th:placeholder="Enter your email" />
+            <input type="submit" th:value="#{subscribe.submit}" />
+        </fieldset>
+    </form>
+
+    <!-- ========================================================================= -->
+    <!-- 7. DYNAMIC ATTRIBUTE EXAMPLES -->
+    <!-- ========================================================================= -->
+    <h2>7. Dynamic Attribute Examples</h2>
+    
+    <!-- Conditional attributes -->
+    <div th:attr="class=${user.active} ? 'user-active' : 'user-inactive',
+                 data-status=${user.status},
+                 style=${user.vip} ? 'border: 2px solid gold;' : ''">
+        User Card
+    </div>
+    
+    <!-- Dynamic URLs and links -->
+    <a href="/default" 
+       th:attr="href=@{/user/{id}(id=${user.id})},
+                title=|View ${user.name}'s profile|,
+                target=${user.external} ? '_blank' : '_self'">
+        User Profile
+    </a>
+    
+    <!-- Image with dynamic attributes -->
+    <img src="/default.png"
+         th:attr="src=@{/images/{file}(file=${user.avatar})},
+                  alt=${user.name},
+                  width=${user.avatarSize},
+                  height=${user.avatarSize}" />
+
+    <!-- ========================================================================= -->
+    <!-- 8. CUSTOM DATA ATTRIBUTES -->
+    <!-- ========================================================================= -->
+    <h2>8. Custom Data Attributes</h2>
+    
+    <div th:attr="data-user-id=${user.id},
+                 data-user-role=${user.role},
+                 data-created=${#dates.format(user.createdAt, 'yyyy-MM-dd')},
+                 data-email-verified=${user.emailVerified}">
+        User data container
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 9. MULTIPLE ATTRIBUTES IN ONE th:attr -->
+    <!-- ========================================================================= -->
+    <h2>9. Multiple Attributes in One th:attr</h2>
+    
+    <button th:attr="onclick=|submitForm('${formId}')|,
+                     data-loading-text=#{button.loading},
+                     disabled=${formValid} ? _ : 'disabled',
+                     class=${buttonStyle} + ' btn-large'">
+        Submit Form
+    </button>
+
+    <!-- ========================================================================= -->
+    <!-- 10. BEST PRACTICES EXAMPLE -->
+    <!-- ========================================================================= -->
+    <h2>10. Best Practices - Complete Form</h2>
+    
+    <form th:action="@{/user/update}" 
+          th:object="${user}"
+          method="post"
+          class="user-form"
+          th:attr="novalidate=novalidate,
+                   data-form-version='1.0'">
+        
+        <div class="form-group">
+            <label th:text="#{user.name}">Name</label>
+            <input type="text" 
+                   th:field="*{name}"
+                   th:attr="placeholder=#{user.name.placeholder},
+                            required=required,
+                            maxlength=50" />
+        </div>
+        
+        <div class="form-group">
+            <label th:text="#{user.email}">Email</label>
+            <input type="email" 
+                   th:field="*{email}"
+                   th:attr="placeholder=#{user.email.placeholder},
+                            required=required" />
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit"
+                    th:text="#{form.save}"
+                    th:attr="class=${user.new} ? 'btn-success' : 'btn-primary',
+                             disabled=${#strings.isEmpty(user.name)}">
+                Save
+            </button>
+            
+            <button type="button"
+                    th:text="#{form.cancel}"
+                    th:attr="onclick=@{/users},
+                             class='btn-secondary'">
+                Cancel
+            </button>
+        </div>
+    </form>
+
+</body>
+</html>
+
+Better Approach--
+<!-- Instead of th:attr for single attributes -->
+<input th:attr="value=#{subscribe.submit}"/>
+
+<!-- Use specific attribute processors -->
+<input th:value="#{subscribe.submit}"/>
+
+<!-- Use th:attr for multiple custom attributes -->
+<div th:attr="data-id=${user.id}, data-role=${user.role}"></div>
+
+--Iteration
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thymeleaf Iteration - Complete Guide</title>
+    <meta charset="UTF-8">
+    <style>
+        .user-card { border: 1px solid #ccc; margin: 10px; padding: 10px; }
+        .even { background-color: #f9f9f9; }
+        .odd { background-color: #fff; }
+        .first { border-top: 3px solid green; }
+        .last { border-bottom: 3px solid red; }
+        .vip { background-color: gold; }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- 1. BASIC ITERATION WITH th:each -->
+    <!-- ========================================================================= -->
+    <h2>1. Basic Iteration</h2>
+    
+    <ul>
+        <li th:each="product : ${products}" th:text="${product.name}">Product Name</li>
+    </ul>
+
+    <!-- ========================================================================= -->
+    <!-- 2. ITERATION STATUS(iterStat) VARIABLE -->
+    <!-- ========================================================================= -->
+    <h2>2. Iteration Status Variable</h2>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Index</th>
+                <th>Count</th>
+                <th>Size</th>
+                <th>Even?</th>
+                <th>Odd?</th>
+                <th>First?</th>
+                <th>Last?</th>
+                <th>Product</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product, iterStat : ${products}"
+                th:class="${iterStat.odd} ? 'odd' : 'even'">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${iterStat.index}">0</td>
+                <td th:text="${iterStat.size}">5</td>
+                <td th:text="${iterStat.even}">true/false</td>
+                <td th:text="${iterStat.odd}">true/false</td>
+                <td th:text="${iterStat.first}">true/false</td>
+                <td th:text="${iterStat.last}">true/false</td>
+                <td th:text="${product.name}">Product Name</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ========================================================================= -->
+    <!-- 3. DIFFERENT STATUS VARIABLE NAMES -->
+    <!-- ========================================================================= -->
+    <h2>3. Different Status Variable Names</h2>
+    
+    <div th:each="user, status : ${users}">
+        <p th:text="|User #${status.count}: ${user.name}|">User #1: John</p>
+    </div>
+
+    <div th:each="user, i : ${users}">
+        <p th:text="|Index ${i.index}: ${user.name}|">Index 0: John</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. ITERATING OVER DIFFERENT COLLECTION TYPES -->
+    <!-- ========================================================================= -->
+    <h2>4. Different Collection Types</h2>
+    
+    <!-- List iteration -->
+    <div th:each="item : ${listItems}">
+        <span th:text="${item}">List Item</span>
+    </div>
+    
+    <!-- Array iteration -->
+    <div th:each="element : ${arrayItems}">
+        <span th:text="${element}">Array Element</span>
+    </div>
+    
+    <!-- Set iteration (no guaranteed order) -->
+    <div th:each="value : ${setItems}">
+        <span th:text="${value}">Set Value</span>
+    </div>
+    
+    <!-- Map iteration -->
+    <div th:each="entry : ${mapItems}">
+        Key: <span th:text="${entry.key}">key</span>,
+        Value: <span th:text="${entry.value}">value</span>
+    </div>
+    
+    <!-- Map iteration with key and value -->
+    <div th:each="key, value : ${mapItems}">
+        Key: <span th:text="${key}">key</span>,
+        Value: <span th:text="${value}">value</span>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. NESTED ITERATION -->
+    <!-- ========================================================================= -->
+    <h2>5. Nested Iteration</h2>
+    
+    <div th:each="category : ${categories}">
+        <h3 th:text="${category.name}">Category Name</h3>
+        <ul>
+            <li th:each="product : ${category.products}" 
+                th:text="${product.name}">Product Name</li>
+        </ul>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 6. CONDITIONAL ITERATION -->
+    <!-- ========================================================================= -->
+    <h2>6. Conditional Iteration</h2>
+    
+    <!-- Only show active users -->
+    <div th:each="user : ${users}" th:if="${user.active}">
+        <p th:text="${user.name}">Active User</p>
+    </div>
+    
+    <!-- Conditional styling -->
+    <div th:each="user, stat : ${users}"
+         th:class="${user.vip} ? 'vip user-card' : 
+                   ${stat.first} ? 'first user-card' : 
+                   ${stat.last} ? 'last user-card' : 'user-card'">
+        <h4 th:text="${user.name}">User Name</h4>
+        <p th:text="${user.email}">user@example.com</p>
+        <p th:text="${user.vip} ? 'VIP Member' : 'Regular Member'">Member Type</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 7. ITERATION WITH THYMELEAF UTILITIES -->
+    <!-- ========================================================================= -->
+    <h2>7. Iteration with Utility Objects</h2>
+    
+    <!-- Using #numbers.sequence for numeric iteration -->
+    <div th:each="i : ${#numbers.sequence(1, 5)}">
+        <span th:text="|Number ${i}|">Number 1</span>
+    </div>
+    
+    <!-- Step in sequence -->
+    <div th:each="i : ${#numbers.sequence(0, 10, 2)}">
+        <span th:text="|Even: ${i}|">Even: 0</span>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 8. ITERATION WITH FORM ELEMENTS -->
+    <!-- ========================================================================= -->
+    <h2>8. Iteration with Form Elements</h2>
+    
+    <form th:action="@{/updateUsers}" method="post">
+        <div th:each="user, stat : ${users}">
+            <input type="hidden" th:name="|users[${stat.index}].id|" th:value="${user.id}">
+            <label th:text="|User ${stat.count}:|">User 1:</label>
+            <input type="text" th:name="|users[${stat.index}].name|" th:value="${user.name}">
+            <input type="checkbox" th:name="|users[${stat.index}].active|" th:checked="${user.active}">
+        </div>
+        <button type="submit">Update All Users</button>
+    </form>
+
+    <!-- ========================================================================= -->
+    <!-- 9. TABLE ITERATION WITH COMPLEX CONDITIONS -->
+    <!-- ========================================================================= -->
+    <h2>9. Table with Complex Conditions</h2>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user, iter : ${users}"
+                th:class="${user.active} ? 
+                          (${user.vip} ? 'vip' : 'active') : 'inactive'">
+                
+                <td th:text="${iter.count}">1</td>
+                <td th:text="${user.name}">John Doe</td>
+                <td th:text="${user.email}">john@example.com</td>
+                <td th:text="${user.role}">USER</td>
+                <td>
+                    <span th:if="${user.active}" style="color: green;">Active</span>
+                    <span th:unless="${user.active}" style="color: red;">Inactive</span>
+                </td>
+                <td>
+                    <a th:href="@{/user/{id}(id=${user.id})}">Edit</a>
+                    <a th:if="${!iter.first}" th:href="@{/user/moveUp/{id}(id=${user.id})}">↑</a>
+                    <a th:if="${!iter.last}" th:href="@{/user/moveDown/{id}(id=${user.id})}">↓</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ========================================================================= -->
+    <!-- 10. ITERATION WITH FRAGMENTS -->
+    <!-- ========================================================================= -->
+    <h2>10. Iteration with Fragments</h2>
+    
+    <!-- User card fragment -->
+    <div th:fragment="user-card(user, index)" class="user-card">
+        <h4 th:text="|#${index}: ${user.name}|">#1: John Doe</h4>
+        <p th:text="${user.email}">john@example.com</p>
+        <p th:text="${user.role}">ADMIN</p>
+    </div>
+    
+    <!-- Using fragment in iteration -->
+    <div th:each="user, iter : ${users}">
+        <div th:replace="~{:: user-card(user=${user}, index=${iter.count})}"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 11. PAGINATION EXAMPLE -->
+    <!-- ========================================================================= -->
+    <h2>11. Pagination Example</h2>
+    
+    <div class="pagination">
+        <span th:each="page : ${#numbers.sequence(1, totalPages)}">
+            <a th:if="${page != currentPage}" 
+               th:href="@{/users(page=${page}, size=${pageSize})}"
+               th:text="${page}">1</a>
+            <span th:unless="${page != currentPage}" 
+                  th:text="${page}" 
+                  style="font-weight: bold;">1</span>
+        </span>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 12. ITERATION WITH EMPTY COLLECTION HANDLING -->
+    <!-- ========================================================================= -->
+    <h2>12. Empty Collection Handling</h2>
+    
+    <div th:if="${not #lists.isEmpty(users)}">
+        <div th:each="user : ${users}" class="user-item">
+            <span th:text="${user.name}">User Name</span>
+        </div>
+    </div>
+    <div th:unless="${not #lists.isEmpty(users)}">
+        <p>No users found.</p>
+    </div>
+
+    <!-- Alternative using th:block -->
+    <th:block th:if="${#lists.isEmpty(users)}">
+        <p>No users available.</p>
+    </th:block>
+    
+    <th:block th:unless="${#lists.isEmpty(users)}">
+        <div th:each="user : ${users}">
+            <p th:text="${user.name}">User Name</p>
+        </div>
+    </th:block>
+
+    <!-- ========================================================================= -->
+    <!-- 13. ITERATION WITH LIMIT (First N items) -->
+    <!-- ========================================================================= -->
+    <h2>13. Limited Iteration (First N Items)</h2>
+    
+    <div th:each="user, iter : ${users}" th:if="${iter.count <= 5}">
+        <p th:text="|${iter.count}. ${user.name}|">1. John Doe</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 14. COMPLEX REAL-WORLD EXAMPLE -->
+    <!-- ========================================================================= -->
+    <h2>14. Complex Real-World Example</h2>
+    
+    <div class="dashboard">
+        <!-- Categories with products -->
+        <div th:each="category, catStat : ${categories}">
+            <div class="category-header" 
+                 th:class="${catStat.first} ? 'first-category' : 
+                           ${catStat.last} ? 'last-category' : 'category'">
+                <h2 th:text="|${catStat.count}. ${category.name}|">1. Electronics</h2>
+                <span th:text="|(${category.products.size()} products)|">(5 products)</span>
+            </div>
+            
+            <div class="products-grid">
+                <div th:each="product, prodStat : ${category.products}"
+                     th:class="'product-card ' + 
+                              (${prodStat.even} ? 'even-product' : 'odd-product') + 
+                              (${product.featured} ? ' featured' : '')">
+                    
+                    <img th:src="@{/images/products/{img}(img=${product.image})}" 
+                         th:alt="${product.name}">
+                    
+                    <h4 th:text="${product.name}">Product Name</h4>
+                    <p th:text="${#numbers.formatCurrency(product.price)}">$29.99</p>
+                    
+                    <div class="product-meta">
+                        <span th:if="${product.stock > 0}" 
+                              th:text="|In Stock: ${product.stock}|"
+                              style="color: green;">In Stock: 10</span>
+                        <span th:unless="${product.stock > 0}" 
+                              style="color: red;">Out of Stock</span>
+                        
+                        <span th:if="${prodStat.first}" class="first-product">🔥</span>
+                        <span th:if="${prodStat.last}" class="last-product">⭐</span>
+                    </div>
+                    
+                    <div class="actions">
+                        <a th:href="@{/product/{id}(id=${product.id})}">View</a>
+                        <a th:if="${user != null}" 
+                           th:href="@{/cart/add/{id}(id=${product.id})}">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(categories)}" class="empty-state">
+            <p>No categories found.</p>
+            <a th:href="@{/admin/categories/create}">Create First Category</a>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 15. ITERATION STATUS VARIABLE REFERENCE -->
+    <!-- ========================================================================= -->
+    <h2>15. Iteration Status Variable Reference</h2>
+    
+    <table border="1">
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+            <th>Example Value</th>
+        </tr>
+        <tr>
+            <td><code>index</code></td>
+            <td>Zero-based index</td>
+            <td>0, 1, 2, ...</td>
+        </tr>
+        <tr>
+            <td><code>count</code></td>
+            <td>One-based counter</td>
+            <td>1, 2, 3, ...</td>
+        </tr>
+        <tr>
+            <td><code>size</code></td>
+            <td>Total number of elements</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td><code>current</code></td>
+            <td>Current element (same as iteration var)</td>
+            <td>The current object</td>
+        </tr>
+        <tr>
+            <td><code>even</code></td>
+            <td>Is current iteration even?</td>
+            <td>true/false</td>
+        </tr>
+        <tr>
+            <td><code>odd</code></td>
+            <td>Is current iteration odd?</td>
+            <td>true/false</td>
+        </tr>
+        <tr>
+            <td><code>first</code></td>
+            <td>Is this the first iteration?</td>
+            <td>true/false</td>
+        </tr>
+        <tr>
+            <td><code>last</code></td>
+            <td>Is this the last iteration?</td>
+            <td>true/false</td>
+        </tr>
+    </table>
+
+</body>
+</html>
+
+---Conditional Evaluation
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thymeleaf Conditional Evaluation - Complete Guide</title>
+    <meta charset="UTF-8">
+    <style>
+        .active { background-color: #d4edda; color: #155724; padding: 5px; }
+        .inactive { background-color: #f8d7da; color: #721c24; padding: 5px; }
+        .vip { background-color: gold; padding: 10px; border: 2px solid orange; }
+        .featured { border-left: 4px solid #007bff; padding-left: 10px; }
+        .discounted { text-decoration: line-through; color: #6c757d; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- 1. th:if - BASIC CONDITIONAL RENDERING -->
+    <!-- ========================================================================= -->
+    <h2>1. th:if - Basic Conditional Rendering</h2>
+    
+    <div th:if="${user != null}">
+        <p>Welcome, <span th:text="${user.name}">John</span>!</p>
+    </div>
+    
+    <div th:if="${not #lists.isEmpty(products)}">
+        <p>Showing <span th:text="${products.size()}">5</span> products</p>
+    </div>
+    
+    <div th:if="${#strings.isEmpty(searchQuery)}">
+        <p class="warning">Please enter a search query</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. th:unless - NEGATIVE CONDITIONAL -->
+    <!-- ========================================================================= -->
+    <h2>2. th:unless - Negative Conditional</h2>
+    
+    <div th:unless="${user != null}">
+        <p>Please <a th:href="@{/login}">log in</a> to continue</p>
+    </div>
+    
+    <div th:unless="${not #lists.isEmpty(cart.items)}">
+        <p>Your cart is empty</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. th:if vs th:unless COMPARISON -->
+    <!-- ========================================================================= -->
+    <h2>3. th:if vs th:unless Comparison</h2>
+    
+    <!-- These are equivalent -->
+    <div th:if="${user.active}">
+        <p>User is active (th:if)</p>
+    </div>
+    
+    <div th:unless="${not user.active}">
+        <p>User is active (th:unless)</p>
+    </div>
+    
+    <!-- These are also equivalent -->
+    <div th:if="${not user.active}">
+        <p>User is inactive (th:if)</p>
+    </div>
+    
+    <div th:unless="${user.active}">
+        <p>User is inactive (th:unless)</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. th:switch, th:case, th:case* - SWITCH STATEMENTS -->
+    <!-- ========================================================================= -->
+    <h2>4. th:switch, th:case, th:case* - Switch Statements</h2>
+    
+    <div th:switch="${user.role}">
+        <p th:case="'ADMIN'">Administrator Access</p>
+        <p th:case="'EDITOR'">Editor Access</p>
+        <p th:case="'USER'">User Access</p>
+        <p th:case="*">Guest Access (default)</p>
+    </div>
+    
+    <!-- Status based styling -->
+    <div th:switch="${order.status}">
+        <span th:case="'PENDING'" class="badge badge-warning">Pending</span>
+        <span th:case="'PROCESSING'" class="badge badge-info">Processing</span>
+        <span th:case="'SHIPPED'" class="badge badge-primary">Shipped</span>
+        <span th:case="'DELIVERED'" class="badge badge-success">Delivered</span>
+        <span th:case="'CANCELLED'" class="badge badge-danger">Cancelled</span>
+        <span th:case="*" class="badge badge-secondary">Unknown</span>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. CONDITIONAL EXPRESSIONS WITH OPERATORS -->
+    <!-- ========================================================================= -->
+    <h2>5. Conditional Expressions with Operators</h2>
+    
+    <!-- Comparison operators -->
+    <div th:if="${product.price > 100}">
+        <p>Premium product</p>
+    </div>
+    
+    <div th:if="${user.age >= 18}">
+        <p>Adult user</p>
+    </div>
+    
+    <div th:if="${items.size() == 0}">
+        <p>No items found</p>
+    </div>
+    
+    <div th:if="${discount.percentage < 10}">
+        <p>Small discount</p>
+    </div>
+
+    <!-- Logical operators -->
+    <div th:if="${user.active and user.emailVerified}">
+        <p>Fully verified active user</p>
+    </div>
+    
+    <div th:if="${user.vip or user.role == 'ADMIN'}">
+        <p>Special privileges</p>
+    </div>
+    
+    <div th:if="${not user.banned and not user.suspended}">
+        <p>Account in good standing</p>
+    </div>
+    
+    <div th:if="${(user.age >= 18 and user.age <= 65) and user.employed}">
+        <p>Working age adult</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 6. CONDITIONAL ATTRIBUTES -->
+    <!-- ========================================================================= -->
+    <h2>6. Conditional Attributes</h2>
+    
+    <!-- Conditional CSS classes -->
+    <div th:class="${user.active} ? 'active' : 'inactive'">
+        User Status
+    </div>
+    
+    <div th:class="'user-card ' + (${user.vip} ? 'vip' : 'regular')">
+        User Card
+    </div>
+    
+    <!-- Conditional multiple classes -->
+    <div th:class="|card ${user.active ? 'active' : ''} ${user.vip ? 'vip' : ''} ${user.featured ? 'featured' : ''}|">
+        User Profile Card
+    </div>
+
+    <!-- Conditional other attributes -->
+    <input type="text" 
+           th:value="${user.name}"
+           th:readonly="${not user.canEdit}">
+    
+    <button th:disabled="${#strings.isEmpty(formData)}">
+        Submit
+    </button>
+    
+    <img th:src="${user.avatarUrl}" 
+         th:alt="${user.name}"
+         th:attr="title=${user.vip} ? 'VIP User' : 'Regular User'">
+
+    <!-- ========================================================================= -->
+    <!-- 7. ELVIS OPERATOR (?:) - DEFAULT VALUES -->
+    <!-- ========================================================================= -->
+    <h2>7. Elvis Operator (?:) - Default Values</h2>
+    
+    <p>Welcome, <span th:text="${user.name} ?: 'Guest'">Guest</span>!</p>
+    
+    <p>Theme: <span th:text="${user.settings.theme} ?: 'light'">light</span></p>
+    
+    <p>Items in cart: <span th:text="${cart?.items?.size()} ?: 0">0</span></p>
+    
+    <img th:src="${product.imageUrl} ?: @{/images/default-product.png}" 
+         alt="Product Image">
+
+    <!-- ========================================================================= -->
+    <!-- 8. CONDITIONAL WITH UTILITY OBJECTS -->
+    <!-- ========================================================================= -->
+    <h2>8. Conditional with Utility Objects</h2>
+    
+    <!-- String conditions -->
+    <div th:if="${not #strings.isEmpty(user.bio)}">
+        <p th:text="${user.bio}">User biography</p>
+    </div>
+    
+    <div th:if="${#strings.startsWith(user.email, 'admin@')}">
+        <p>Admin email address</p>
+    </div>
+    
+    <div th:if="${#strings.containsIgnoreCase(product.name, 'premium')}">
+        <p>Premium product detected</p>
+    </div>
+
+    <!-- Collection conditions -->
+    <div th:if="${not #lists.isEmpty(user.orders)}">
+        <p>Order history available</p>
+    </div>
+    
+    <div th:if="${#lists.contains(user.roles, 'ADMIN')}">
+        <p>User has admin role</p>
+    </div>
+    
+    <div th:if="${#arrays.length(user.permissions) > 5}">
+        <p>User has extensive permissions</p>
+    </div>
+
+    <!-- Date conditions -->
+    <div th:if="${#dates.createNow().after(user.subscriptionEnd)}">
+        <p class="warning">Subscription expired</p>
+    </div>
+    
+    <div th:if="${#dates.day(user.birthday) == #dates.day(#dates.createNow())}">
+        <p>Happy Birthday!</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 9. COMPLEX CONDITIONAL LOGIC -->
+    <!-- ========================================================================= -->
+    <h2>9. Complex Conditional Logic</h2>
+    
+    <!-- Multiple conditions -->
+    <div th:if="${user.active and user.emailVerified and not user.banned}">
+        <p>Fully verified and active account</p>
+    </div>
+    
+    <!-- Nested conditions -->
+    <div th:if="${user != null}">
+        <div th:if="${user.role == 'ADMIN'}">
+            <div th:if="${user.superAdmin}">
+                <p>Super Administrator Access</p>
+            </div>
+            <div th:unless="${user.superAdmin}">
+                <p>Regular Administrator Access</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conditional with calculations -->
+    <div th:if="${(product.price - product.discount) > 50}">
+        <p>Final price exceeds $50</p>
+    </div>
+    
+    <div th:if="${user.orders.size() >= 10 and user.totalSpent > 1000}">
+        <p>Loyal customer</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 10. CONDITIONAL IN LOOPS -->
+    <!-- ========================================================================= -->
+    <h2>10. Conditional in Loops</h2>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}" 
+                th:class="${user.active} ? 'active-row' : 'inactive-row'">
+                
+                <td th:text="${user.name}">John Doe</td>
+                <td th:text="${user.email}">john@example.com</td>
+                <td>
+                    <span th:if="${user.active}" style="color: green;">● Active</span>
+                    <span th:unless="${user.active}" style="color: red;">● Inactive</span>
+                </td>
+                <td>
+                    <button th:if="${user.role != 'ADMIN'}" 
+                            th:onclick="|deleteUser(${user.id})|">Delete</button>
+                    <button th:unless="${user.role == 'ADMIN'}" 
+                            th:onclick="|promoteUser(${user.id})|">Promote</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ========================================================================= -->
+    <!-- 11. CONDITIONAL FRAGMENTS -->
+    <!-- ========================================================================= -->
+    <h2>11. Conditional Fragments</h2>
+    
+    <!-- Fragment with conditions -->
+    <div th:fragment="user-card(user)">
+        <div th:class="'card ' + (${user.vip} ? 'vip-card' : 'regular-card')">
+            <h3 th:text="${user.name}">User Name</h3>
+            <div th:if="${user.vip}">
+                <span class="vip-badge">VIP</span>
+            </div>
+            <p th:text="${user.email}">user@example.com</p>
+        </div>
+    </div>
+    
+    <!-- Conditional fragment inclusion -->
+    <div th:if="${user.role == 'ADMIN'}">
+        <div th:replace="~{fragments/admin-panel :: admin-tools}"></div>
+    </div>
+    
+    <div th:unless="${user.role == 'ADMIN'}">
+        <div th:replace="~{fragments/user-panel :: user-tools}"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 12. SAFE NAVIGATION IN CONDITIONS -->
+    <!-- ========================================================================= -->
+    <h2>12. Safe Navigation in Conditions</h2>
+    
+    <div th:if="${user?.profile?.settings?.notificationsEnabled}">
+        <p>Notifications are enabled</p>
+    </div>
+    
+    <div th:unless="${user?.billing?.subscription?.active}">
+        <p>No active subscription</p>
+    </div>
+    
+    <p th:text="${user?.address?.city} ?: 'City not specified'">City not specified</p>
+
+    <!-- ========================================================================= -->
+    <!-- 13. REAL-WORLD E-COMMERCE EXAMPLE -->
+    <!-- ========================================================================= -->
+    <h2>13. Real-World E-Commerce Example</h2>
+    
+    <div class="product-detail">
+        <h1 th:text="${product.name}">Product Name</h1>
+        
+        <!-- Price with discount -->
+        <div class="pricing">
+            <span th:if="${product.discount > 0}" 
+                  class="original-price discounted"
+                  th:text="${#numbers.formatCurrency(product.price)}">$100.00</span>
+            
+            <span th:class="|current-price ${product.discount > 0 ? 'discounted-price' : ''}|"
+                  th:text="${#numbers.formatCurrency(product.price - product.discount)}">$80.00</span>
+            
+            <span th:if="${product.discount > 0}" 
+                  class="discount-badge"
+                  th:text="|Save ${#numbers.formatPercent(product.discount/product.price)}|">Save 20%</span>
+        </div>
+        
+        <!-- Stock status -->
+        <div th:switch="${product.stock}">
+            <p th:case="0" class="out-of-stock">Out of Stock</p>
+            <p th:case="*" th:if="${product.stock <= 10}" class="low-stock">
+                Only <span th:text="${product.stock}">5</span> left in stock!
+            </p>
+            <p th:case="*" th:unless="${product.stock <= 10}" class="in-stock">
+                In Stock
+            </p>
+        </div>
+        
+        <!-- Actions -->
+        <div class="actions">
+            <button th:if="${product.stock > 0 and user != null}"
+                    th:disabled="${cart?.contains(product)}"
+                    th:text="${cart?.contains(product)} ? 'Added to Cart' : 'Add to Cart'">
+                Add to Cart
+            </button>
+            
+            <button th:if="${product.stock > 0 and user == null}"
+                    th:onclick="location.href='@{/login}'">
+                Login to Purchase
+            </button>
+            
+            <button th:if="${user?.role == 'ADMIN'}"
+                    th:onclick="|editProduct(${product.id})|">
+                Edit Product
+            </button>
+        </div>
+        
+        <!-- Reviews -->
+        <div th:if="${not #lists.isEmpty(product.reviews)}">
+            <h3>Customer Reviews</h3>
+            <div th:each="review : ${product.reviews}" 
+                 th:if="${review.approved or user?.role == 'ADMIN'}">
+                <div th:class="|review ${review.rating >= 4 ? 'positive' : 'average'}|">
+                    <p th:text="${review.comment}">Great product!</p>
+                    <small th:if="${user?.role == 'ADMIN' and not review.approved}"
+                           class="pending-approval">Pending Approval</small>
+                </div>
+            </div>
+        </div>
+        <div th:unless="${not #lists.isEmpty(product.reviews)}">
+            <p>No reviews yet. <span th:if="${user != null}">Be the first to review!</span></p>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 14. CONDITIONAL TEMPLATE LAYOUT -->
+    <!-- ========================================================================= -->
+    <h2>14. Conditional Template Layout</h2>
+    
+    <header th:if="${showHeader}">
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:if="${user != null}" th:href="@{/dashboard}">Dashboard</a>
+            <a th:unless="${user != null}" th:href="@{/login}">Login</a>
+            <a th:if="${user?.role == 'ADMIN'}" th:href="@{/admin}">Admin</a>
+        </nav>
+    </header>
+    
+    <main th:class="${user?.preferences?.darkMode} ? 'dark-theme' : 'light-theme'">
+        <div th:if="${user == null}">
+            <h1>Welcome to our application!</h1>
+            <p>Please <a th:href="@{/login}">log in</a> or <a th:href="@{/register}">register</a>.</p>
+        </div>
+        
+        <div th:unless="${user == null}">
+            <h1 th:text="|Welcome back, ${user.name}!|">Welcome back, John!</h1>
+            <div th:if="${user.newMessages > 0}" class="notification">
+                You have <span th:text="${user.newMessages}">3</span> new messages
+            </div>
+        </div>
+    </main>
+    
+    <footer th:if="${showFooter}">
+        <p th:if="${appVersion != null}" th:text="|Version: ${appVersion}|">Version: 1.0.0</p>
+        <p th:unless="${appVersion != null}">Production Version</p>
+    </footer>
+
+    <!-- ========================================================================= -->
+    <!-- 15. PERFORMANCE OPTIMIZATION TIPS -->
+    <!-- ========================================================================= -->
+    <h2>15. Performance Optimization Tips</h2>
+    
+    <!-- Use th:block for complex conditionals without extra DOM elements -->
+    <th:block th:if="${complexCondition}">
+        <p>Conditional content</p>
+        <div>More content</div>
+    </th:block>
+    
+    <!-- Combine conditions when possible -->
+    <div th:if="${user != null and user.active and user.emailVerified}">
+        <!-- Instead of nested th:if -->
+    </div>
+    
+    <!-- Use utility objects for efficient checks -->
+    <div th:if="${not #strings.isEmpty(text)}">
+        <!-- Instead of: th:if="${text != null and text != ''}" -->
+    </div>
+
+</body>
+</html>
+
+---Local Variables
+Thymeleaf calls local variables the variables that are defined for a specific fragment of a template, and are only available for evaluation inside that fragment.
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thymeleaf Local Variables - Complete Guide</title>
+    <meta charset="UTF-8">
+    <style>
+        .user-card { border: 1px solid #ddd; padding: 15px; margin: 10px; border-radius: 5px; }
+        .vip { background-color: #fff3cd; border-color: #ffeaa7; }
+        .admin { background-color: #d4edda; border-color: #c3e6cb; }
+        .highlight { background-color: yellow; font-weight: bold; }
+        .discount { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- 1. th:with - BASIC LOCAL VARIABLE DECLARATION -->
+    <!-- ========================================================================= -->
+    <h2>1. th:with - Basic Local Variable Declaration</h2>
+    
+    <!-- Simple variable assignment -->
+    <div th:with="username='John Doe'">
+        <p th:text="'Hello, ' + ${username}">Hello, John Doe</p>
+    </div>
+    
+    <!-- Variable from context -->
+    <div th:with="currentUser=${user}">
+        <p th:text="'Welcome, ' + ${currentUser.name}">Welcome, John</p>
+        <p th:text="'Email: ' + ${currentUser.email}">Email: john@example.com</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. MULTIPLE LOCAL VARIABLES -->
+    <!-- ========================================================================= -->
+    <h2>2. Multiple Local Variables</h2>
+    
+    <div th:with="firstName='John', lastName='Doe', age=30">
+        <p th:text="|Name: ${firstName} ${lastName}|">Name: John Doe</p>
+        <p th:text="|Age: ${age}|">Age: 30</p>
+        <p th:text="|Next year: ${age + 1}|">Next year: 31</p>
+    </div>
+    
+    <!-- Multiple variables from context -->
+    <div th:with="userName=${user.name}, userRole=${user.role}, isActive=${user.active}">
+        <p th:text="${userName}">John Doe</p>
+        <p th:text="${userRole}">USER</p>
+        <p th:text="${isActive} ? 'Active' : 'Inactive'">Active</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. VARIABLE SCOPE - LOCAL VS GLOBAL -->
+    <!-- ========================================================================= -->
+    <h2>3. Variable Scope - Local vs Global</h2>
+    
+    <!-- Global variable -->
+    <p th:text="'Global user: ' + ${user.name}">Global user: John</p>
+    
+    <!-- Local variable shadows global -->
+    <div th:with="user='Local Value'">
+        <p th:text="'Local user: ' + ${user}">Local user: Local Value</p>
+    </div>
+    
+    <!-- Back to global scope -->
+    <p th:text="'Global user again: ' + ${user.name}">Global user again: John</p>
+
+ ---Attribute Precedence
+What happens when you write more than one th:* attribute in the same tag? For example:
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Item List</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- CORRECTED ITERATION EXAMPLE -->
+    <!-- ========================================================================= -->
+    
+    <!-- Your original code had issues: -->
+    <!-- 1. <li> was outside <ul> -->
+    <!-- 2. Line breaks in attributes -->
+    <!-- 3. Missing closing tags -->
+    
+    <!-- ✅ Correct Version: -->
+    <ul>
+        <li th:each="item : ${items}" th:text="${item.description}">
+            Item description here
+        </li>
+    </ul>
+
+    <!-- ========================================================================= -->
+    <!-- COMPLETE ITERATION EXAMPLES -->
+    <!-- ========================================================================= -->
+    
+    <!-- Basic List Iteration -->
+    <h2>Product List</h2>
+    <ul>
+        <li th:each="product : ${products}" th:text="${product.name}">
+            Product Name
+        </li>
+    </ul>
+
+    <!-- List with Status Variable -->
+    <h2>User List with Numbers</h2>
+    <ol>
+        <li th:each="user, iterStat : ${users}" 
+            th:text="|${iterStat.count}. ${user.name} - ${user.email}|">
+            1. John Doe - john@example.com
+        </li>
+    </ol>
+
+    <!-- List with Conditional Styling -->
+    <h2>Task List</h2>
+    <ul>
+        <li th:each="task : ${tasks}" 
+            th:class="${task.completed} ? 'completed' : 'pending'"
+            th:text="${task.description}">
+            Task description
+        </li>
+    </ul>
+
+    <!-- Complex List Item -->
+    <h2>Order Items</h2>
+    <ul class="order-items">
+        <li th:each="item, stat : ${order.items}" 
+            th:class="${stat.odd} ? 'odd' : 'even'">
+            <span th:text="|${item.name} - $${item.price}|">Product - $10.00</span>
+            <span th:if="${item.quantity > 1}" 
+                  th:text="|(x${item.quantity})|">(x2)</span>
+            <span th:if="${stat.first}" class="first-item">🔥</span>
+        </li>
+    </ul>
+
+    <!-- Empty List Handling -->
+    <h2>Cart Items</h2>
+    <ul th:if="${not #lists.isEmpty(cart.items)}">
+        <li th:each="item : ${cart.items}" 
+            th:text="|${item.name} - $${item.price}|">
+            Item Name - $10.00
+        </li>
+    </ul>
+    <p th:if="${#lists.isEmpty(cart.items)}" class="empty-message">
+        Your cart is empty
+    </p>
+
+</body>
+</html>
