@@ -12,6 +12,7 @@
 	</div>
 
 	<form th:action="@{/product}" th:object="${p}" method="post">
+		<input type="hidden" th:field="*{pid}" />
 		<table>
 			<tr>
 				<td>Name:</td>

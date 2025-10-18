@@ -32,3 +32,5 @@ create database stageDb;
 
 create database prodDb;
 
+select * from product
+
