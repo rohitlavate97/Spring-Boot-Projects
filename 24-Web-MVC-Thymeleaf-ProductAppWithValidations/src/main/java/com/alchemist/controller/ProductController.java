@@ -56,5 +56,13 @@ public class ProductController {
 		model.addAttribute("list",all);    //displays latest data
 		return "data";
 	}
+	
+	@GetMapping("/edit")
+	public String editProduct(@RequestParam("pid") Integer pid, Model model) {
+	    Product product = repo.findById(pid).orElse(new Product());
+	    model.addAttribute("p", product);
+	    return "index"; // same form, pre-filled with data
+	}
+
 
 }

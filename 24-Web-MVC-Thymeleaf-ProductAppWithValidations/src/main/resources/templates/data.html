@@ -39,6 +39,7 @@
 				<td th:text="${product.price}"></td>
 				<td th:text="${product.quantity}"></td>
 				<td>
+					<a th:href="@{/edit?(pid=${product.pid})}" class="btn btn-info">Edit</a>
 					<a th:href="@{/delete(pid=${product.pid})}" class="btn btn-danger"
 						onclick="return deleteConfirm()">Delete</a>
 				</td>
