@@ -1880,3 +1880,18 @@ public class DemoController {
 
 Whenever, Exception comes in project, spring boot will check is their anu handler for it?-->If yes, then it will execute it and if NO-->whitelebel error
 
+--Global Exception Handler
+
+@ControllerAdvice
+public class AppExceptionHandler {
+	
+	private Logger logger = LoggerFactory.getLogger(AppExceptionHandler.class);
+	
+	@ExceptionHandler(value=Exception.class)
+	public String handleException(Exception e) {
+		String errorText = e.getMessage();
+		logger.error(errorText);
+		return "errorPage";		
+	}
+
+}
