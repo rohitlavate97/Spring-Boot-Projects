@@ -1,24 +1,18 @@
 package com.alchemist.binding;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 public class Customer {
 	
 	private Integer id;
 	
 	private String name;
-	
+
 	private String email;
 	
 	private Long phno;
 	
 	private Address addr;
-
-	public Address getAddr() {
-		return addr;
-	}
-
-	public void setAddr(Address addr) {
-		this.addr = addr;
-	}
 
 	public Integer getId() {
 		return id;
@@ -52,9 +46,17 @@ public class Customer {
 		this.phno = phno;
 	}
 
+	public Address getAddr() {
+		return addr;
+	}
+
+	public void setAddr(Address addr) {
+		this.addr = addr;
+	}
+
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", email=" + email + ", phno=" + phno + ", addr=" + addr + "]";
 	}
-	
+
 }

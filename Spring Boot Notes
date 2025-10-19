@@ -2168,3 +2168,119 @@ public class App {
         }
     }
 }
+
+@RestController
+public class CutstomerRestController {
+	
+	@GetMapping("/")
+	public Customer getCustomer() {
+		Address addr = new Address();
+		addr.setCity("Terwad");
+		addr.setState("Maharashtra");
+		addr.setCountry("India");
+		
+		Customer customer = new Customer();
+		customer.setId(1);
+		customer.setName("Prime");
+		customer.setEmail("prime@gmail.com");
+		customer.setPhno((long)996050);
+		customer.setAddr(addr);
+		
+		return customer;          --->Return json when we hit localhost:${server.port}/
+	}
+}
+
+--XML and JAX-B
+XML is extensible markup language(inter-operable)
+XML represents data in element format(start tag and end tag) ex-<id>101</id>
+XML have  2 types of elements
+-Simple Elements:--Contains data directory
+-Compound Elements:--Element containing child element
+ex: <person>
+       <id>101</id>
+	   <name>Smith</name>
+	   <address>
+	       <city>Ichalkaranji</city>
+		   <state>MH</state>
+	   </address>
+    </person>
+	
+# MARSHALLING & UNMARSHALLING
+
+## 🔄 CONVERSION PROCESS
+
+      +-------------+    MARSHALLING     +-------------+
+      |             |   (Object → Data)  |             |
+      |  JAVA OBJ   | ————————————————> |    XML/JSON |
+      |             |                    |             |
+      +-------------+                    +-------------+
+            ^                                  |
+            | UNMARSHALLING                    |
+            | (Data → Object)                  |
+            |                                  |
+            +——————————————————————————————————+
+
+## 📝 DEFINITIONS
+
+### MARSHALLING (Serialization)
+- **Java Object → Structured Data** (XML/JSON)
+- Also called: **Serialization**, **Encoding**
+- **Purpose**: For transmission, storage, API calls
+
+### UNMARSHALLING (Deserialization)  
+- **Structured Data → Java Object** 
+- Also called: **Deserialization**, **Decoding**
+- **Purpose**: For processing, data manipulation
+
+## 🛠️ TECHNOLOGIES
+
+### 1. JAX-B (Java Architecture for XML Binding)
+```java
+// MARSHALLING
+JAXBContext context = JAXBContext.newInstance(Employee.class);
+Marshaller marshaller = context.createMarshaller();
+marshaller.marshal(employee, new File("employee.xml"));
+
+// UNMARSHALLING  
+Unmarshaller unmarshaller = context.createUnmarshaller();
+Employee emp = (Employee) unmarshaller.unmarshal(new File("employee.xml"));
+Note: To perform marshalling and Un-Marshalling, we need to create Binding class
+Note: Upto JDK 1.8, JAX-B was part of JDK, but from 1.9v, it is not part of JDK, so we need to add in pom.xml
+
+@Data
+@XmlRootElement
+public class Customer {
+	
+	private Integer id;
+	
+	private String name;
+	
+	private String email;
+	
+	private Long phno;
+
+}
+
+public class MarshalDemo {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Customer customer = new Customer();
+		customer.setId(1);
+		customer.setName("Prime");
+		customer.setEmail("prime@co.in");
+		customer.setPhno((long)9899);
+		
+		try {
+			JAXBContext context = JAXBContext.newInstance(Customer.class);
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.marshal(customer,new File("Customer.xml"));
+			System.out.println("XML file is created");
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+}
