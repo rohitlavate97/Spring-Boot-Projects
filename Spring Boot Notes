@@ -1796,3 +1796,87 @@ public class ProductController {
 				<td><input type="text" th:field="*{name}" ></td>
 				<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></td>
 			</tr>
+-------------------------------------------------------------------------------------
+@Controller
+@RequestMapping("/grateful")
+public class MsgController {
+	
+	@GetMapping("/welcome")          --------------->When both are @GetMapping Method url should also be unique, otherwise confusion/ambiguity while component scanning
+	public String welcomeMsg(Model model) {
+		model.addAttribute("msg","Welcome to the team");
+		return "index";        //Returns a Thymeleaf template view
+	}
+	
+	@GetMapping("greet")
+	@ResponseBody                      ------>@Controller + @ResponseBody--->Method will become REST method
+	public String greetMsg() {
+		return "Greetings";     //@ResponseBody returns the string directly as the HTTP response, not as a template view.
+	}
+
+}
+
+application.properties
+spring.application.name=25-Web-MVC-EmbedServer-ResponseBodyApp
+server.port=9090
+server.servelet.context-path=/alchemist
+#localhost:9090/alchemist/*  ---->this url should be formed
+
+
+Note: When controller method returns string type, dispatcher servelet will consider it as a view file, with that name and search it--->error. 
+So we use @ResponseBody--> dispatcher will think that, whatever this method is returning is direct response to the client, who sends the request
+@Controller--->C2B communication---->Request---->WebPages
+@RestController--->B2B communication--->Request--->Response
+
+@ResponseBody can be used at class level as well as Method level
+
+Mutliple URL pattern for single method
+@GetMapping(value={"/hi","/hello","/"})
+
+---Exception Handling in the Web MVC application--->Unexepected and unwanted situation is called Exception.(i.e program terminate abnormally)
+Handling Exception and Conveying to user are two different things.
+--Two ways of Exception Handling
+-Local Exception Handling(Controller specific exception handling)-->@ExceptionHandler
+-Global Exception Handling(Application Specific)
+Note: Local Exception Handling is not recommended as code duplication, we need to seperate Business logic and secondary logic(Aspect Oriented Programming)
+
+@Controller
+public class DemoController {
+	
+	private Logger logger = LoggerFactory.getLogger(DemoController.class);
+	
+	@GetMapping("/")
+	public String getMessage(Model model) {
+		int i=1/0;
+		model.addAttribute("msg","Hi, Hello");
+		return "index";
+	}
+	
+	@GetMapping("/greet")
+	public String greetMsg(Model model) {
+		String txt=null;
+		txt.length();
+		model.addAttribute("msg","Greetings");
+		return "index"; 
+	}
+	
+	//@ExceptionHandler(value=ArithmeticException.class)
+	@ExceptionHandler(value=Exception.class)------------------>//Exception is super class for all types of Exception
+	public String handleArithmeticException(Exception ae){
+		String msg = ae.getMessage();
+		logger.error(msg);          //logging Error Message
+		return "errorPage";
+	}
+}
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Error Page</title>
+	</head>
+	<body>
+		<h2>Some problem occurred, Please try after some time....</h2>
+	</body>
+</html>
+
+Whenever, Exception comes in project, spring boot will check is their anu handler for it?-->If yes, then it will execute it and if NO-->whitelebel error
+
