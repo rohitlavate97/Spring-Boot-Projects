@@ -2052,5 +2052,119 @@ Syntax:
 -key in double quotes and only string value is in double quotes
 As a part of development, java object conveted to JSON and vice versa
 We have to use 3rd party apis to work with JSON data in java applications
--JackSon api--->ObjectMapper class provides method to conver java to json and vice versa
+-JackSon api--->ObjectMapper class provides method to convert java to json and vice versa(Spring boot by default uses it, 
+when we add spring web--by default jackson-databind-__.jar can be seen)
 -GSon api
+
+JackSon api-->ObjectMapper class
+/*
+ * JACKSON OBJECTMAPPER - COMPLETE REFERENCE
+ * 
+ * ObjectMapper is the main class for Jackson API that provides 
+ * bidirectional conversion between Java Objects and JSON data
+ */
+
+ObjectMapper mapper = new ObjectMapper();
+
+// ================= SERIALIZATION (Java Object → JSON) =================
+// Converting Java objects to JSON format
+
+String jsonString = mapper.writeValueAsString(javaObject);
+// → Converts Java object to JSON string
+
+mapper.writeValue(new File("data.json"), javaObject);
+// → Writes Java object as JSON to file
+
+String prettyJson = mapper.writerWithDefaultPrettyPrinter()
+                         .writeValueAsString(javaObject);
+// → Converts to formatted/readable JSON string
+
+// ================= DESERIALIZATION (JSON → Java Object) =================
+// Converting JSON data back to Java objects
+
+JavaObject obj1 = mapper.readValue(jsonString, JavaObject.class);
+// → Converts JSON string to Java object
+
+JavaObject obj2 = mapper.readValue(new File("data.json"), JavaObject.class);
+// → Reads JSON file and converts to Java object
+
+JavaObject obj3 = mapper.readValue(inputStream, JavaObject.class);
+// → Converts JSON from InputStream to Java object
+
+// ================= WORKFLOW DIAGRAM =================
+/*
+ *        +----------------+      Serialization      +---------------+
+ *        |                |    (Java → JSON)        |               |
+ *        |  Java Object   |  -------------------->  |   JSON Data   |
+ *        |                |                         |               |
+ *        +----------------+                         +---------------+
+ *                ^                                         |
+ *                | Deserialization                         |
+ *                | (JSON → Java)                          |
+ *                |                                         |
+ *                +-----------------------------------------+
+ */
+
+// ================= DEPENDENCY =================
+/*
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.17.2</version>
+</dependency>
+*/
+
+// ================= KEY FEATURES =================
+// • Handles nested objects and collections
+// • Supports annotations for customization
+// • Thread-safe after configuration
+// • Automatic type inference
+// • Exception handling for invalid JSON
+
+// ================= COMMON EXCEPTIONS =================
+// JsonProcessingException - Invalid JSON during reading
+// IOException - File/stream operations
+// InvalidFormatException - Type mismatch
+
+--Gson api
+
+public class App {
+	public static void main(String[] args) {
+    	Address addr = new Address();
+		addr.setCity("Ichalkaranji");
+		addr.setState("Maharashtra");
+		addr.setCountry("India");
+		
+		Customer c = new Customer();
+		c.setId(1);
+		c.setName("Rohit");
+		c.setEmail("lavatero92@gmail.com");
+		c.setPhno((long)80872179);
+		c.setAddr(addr);
+		
+		/*
+		 * Gson gson = new Gson(); String json = gson.toJson(c); System.out.println(c);
+		 */
+		
+        File file = new File("customer.json");
+        Gson gson = new Gson();
+        try {
+            // Write JSON to File
+            FileWriter writer = new FileWriter(file);
+            gson.toJson(c, writer);
+            writer.close();
+		
+		/*Customer fromJson = gson.fromJson(json, Customer.class);
+		System.out.println(fromJson);
+        */
+            FileReader reader = new FileReader(file);
+            Customer fromJson = gson.fromJson(reader, Customer.class);
+            reader.close();
+            
+            System.out.println("\nObject from JSON file:");
+            System.out.println(fromJson);
+        }catch(Exception e) {
+        	e.printStackTrace();
+        }
+    }
+}
