@@ -1,0 +1,132 @@
+# ✅ Java Interview Preparation Guide
+
+## 1️⃣ Core Java
+
+### 🔹 OOPs Concepts
+- Class, Object, Constructor (default, parameterized)
+- Inheritance, Polymorphism (overloading vs overriding)
+- Encapsulation, Abstraction
+- `this`, `super`, `final`, `static`, `transient`, `volatile`
+- Access Modifiers
+- Object class methods: `equals()`, `hashCode()`, `toString()`, `clone()`
+
+### 🔹 Java Basics
+- JVM, JRE, JDK architecture
+- Primitive vs Wrapper classes
+- Type casting
+- Packages & imports
+- String, StringBuilder, StringBuffer
+- Immutability concept
+
+### 🔹 Collections Framework
+- Interfaces: List, Set, Map, Queue, Deque
+- Implementations: ArrayList, LinkedList, HashSet, TreeSet, HashMap, LinkedHashMap, TreeMap, PriorityQueue
+- Sorting: Comparator, Comparable
+- Fail-fast vs Fail-safe
+- Iterators, ListIterator
+- Internal Working:
+  - HashMap (hashing, equals, hashCode)
+  - ArrayList (resizing)
+  - ConcurrentHashMap (segments)
+- Common Comparisons:
+  - ArrayList vs LinkedList
+  - HashMap vs Hashtable
+  - HashSet vs TreeSet
+
+### 🔹 Exception Handling
+- Checked vs Unchecked exceptions
+- try-catch-finally, throw, throws
+- Custom exceptions
+- Multi-catch block
+- Common: NPE, ArithmeticException, ClassNotFoundException
+
+### 🔹 Multithreading & Concurrency
+- Thread lifecycle
+- Runnable vs Thread
+- Synchronization, Locks
+- wait(), notify(), notifyAll()
+- ExecutorService, Callable, Future
+- Concurrent Collections
+- Thread-safety, volatile
+
+### 🔹 Memory Management
+- Garbage Collection mechanism
+- Reference types: strong, weak, soft, phantom
+- Stack vs Heap
+- Errors: OutOfMemoryError, StackOverflowError
+
+---
+
+## 2️⃣ Java 8 Features
+
+### 🔹 Functional Programming
+- Lambda expressions
+- Method references (`Class::method`)
+- Functional interfaces: Predicate, Function, Consumer, Supplier, BiFunction
+- Custom @FunctionalInterface
+
+### 🔹 Streams API
+- Stream creation (Collection, Arrays, Files)
+- Intermediate ops: map(), filter(), sorted(), distinct(), limit()
+- Terminal ops: collect(), forEach(), reduce(), count(), anyMatch()
+- Collectors: groupingBy, partitioningBy, mapping
+- Parallel Streams
+
+### 🔹 Optional Class
+- of(), ofNullable(), isPresent(), ifPresent(), orElse(), orElseGet()
+
+### 🔹 Date & Time API
+- LocalDate, LocalTime, LocalDateTime, ZonedDateTime
+- Period, Duration
+- DateTimeFormatter
+
+### 🔹 Default & Static Methods in Interfaces
+- Usage and backward compatibility
+
+---
+
+## 3️⃣ Advanced Java
+
+### 🔹 JDBC
+- Connection, Statement, PreparedStatement, CallableStatement
+- Transactions: commit, rollback, savepoint
+- Connection Pooling (HikariCP, DBCP)
+- SQL Injection prevention
+
+### 🔹 Servlets
+- Lifecycle: init(), service(), destroy()
+- Request/Response model
+- Session Management: cookies, URL rewriting, HttpSession
+- Filters, Listeners
+
+### 🔹 JSP
+- Scriptlets, EL, JSTL
+- MVC pattern
+- JSP lifecycle
+
+### 🔹 Spring Framework / Spring Boot
+- IOC, Dependency Injection
+- Bean scopes & lifecycle
+- Auto-configuration, Starters
+- Spring MVC (Controller, Service, Repository)
+- REST APIs: @RestController, @GetMapping, @PostMapping
+- Exception Handling: @ControllerAdvice, @ExceptionHandler
+- JPA / Hibernate integration
+
+---
+
+## 4️⃣ Bonus Topics
+- Design Patterns: Singleton, Factory, Builder, Strategy, Observer
+- SOLID Principles
+- Clean Code & Best Practices
+- Unit Testing: JUnit 5, Mockito
+- Basic System Design (API design, scalability)
+
+---
+
+## 🧭 Recommended Study Order
+1. Core Java → Collections → Exception Handling  
+2. Java 8 → Streams → Functional Interfaces  
+3. Multithreading → Concurrency  
+4. JDBC → Servlets/JSP → Spring Boot  
+5. Design Patterns → Testing → System Design

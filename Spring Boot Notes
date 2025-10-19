@@ -1893,5 +1893,164 @@ public class AppExceptionHandler {
 		logger.error(errorText);
 		return "errorPage";		
 	}
+	
+	@ExceptionHandler(value=NullPointerException.class)
+	public String handleNullPointerEx(NullPointerException e) {
+		String errorText = e.getMessage();
+		logger.error(errorText);
+		return "errorPage";
+	}
 
 }
+
+---Java MocroServices(Microservice-->Architectural design pattern)
+--Monolith Architecture--->Maintenance, Single point of failure, Redeploy entire app
+--Microservices Architecture-->Easy maintenance,High availablility,Fast Development,Quick releases,Technology independency(i.e each API can be developed with differnt languages)
+Microservice == One REST API
+Distribute Applications-->One project wants to communicate with other project
+ex: Passport App---->Aadhar app---->DB
+Here Passport app is consumer app, and Aadhar app is provider app(i.e Providing services to other apps)
+UI and BackEnd can be differnt projects
+--InterOperatibility means platform independent and language independent
+Mediator language--XML/JSON
+XML-->As a mediator to excbange data between one application to other application
+JSON-->Platform Independent and language indpendent(Inter-Operatibility achieved)
+
+--REST Architecture-->
+-Provider/Resource-->The application which is giving services to other application is called as provider application
+-Consumer/Client-->The application which is accessing the services from other applications is called as Consumer application
+-How communication happens between Provider and Consumer?
+HTTP protocol, will act as mediator between consumer and provider. Consumer and provider will exchange data in the form of XML/JSON
+Note: XML and JSON are inter-operable
+
+HTTP Protocol-->HTTP will act as a mediator between client and server, HTTP is stateless protocol
+                HTTP Request
+                HTTP RESPONSE
+				HTTP methods
+				HTTP status code 
+-HTTP Methods-->GET(To get the data from the server)
+                POST(To send the data to server, insert/crete record at server)
+				PUT(To update data at server)
+				DELETE(To delet data at the server)
+Note: Every REST API method should be mapped to HTTP Method
+
+-HTTP Status Code:-->When Client send request to the Server, then server will process that request and will send response to the client with status code
+  1XX--->Informational Code
+  2XX--->Success Code
+  3XX--->ReDirection(You sent request to one server, it will redirect to other server)
+  4XX--->Client Error(Sending Incorrect request)
+  5XX--->Server Error
+  
+All codes
+1xx Informational:
+100 Continue
+101 Switching Protocols
+102 Processing
+103 Early Hints
+
+2xx Success:
+200 OK
+201 Created
+202 Accepted
+204 No Content
+206 Partial Content
+
+3xx Redirection:
+301 Moved Permanently
+302 Found
+304 Not Modified
+307 Temporary Redirect
+308 Permanent Redirect
+
+4xx Client Error:----->when 4xx entered in 400 they told bad request and go to 401 and mark it as unauthorized,  
+400 Bad Request------->in 401 it told to go in 403 and mark it as Forbidden, one person still tried after it marked as forbidden he got it 404-->not found, he tried one method and got 405 Method not allow
+401 Unauthorized
+403 Forbidden
+404 Not Found
+405 Method Not Allowed
+409 Conflict
+429 Too Many Requests
+
+5xx Server Error:
+500 Internal Server Error
+501 Not Implemented
+502 Bad Gateway
+503 Service Unavailable
+504 Gateway Timeout
+
+Quick Ref:
+2xx = Success
+3xx = Redirect  
+4xx = Client Error
+5xx = Server Error
+
+HTTP Request–Response Cycle Diagram
+
+                ┌──────────────────────────────┐
+                │          CLIENT              │
+                │ (Browser / Postman / App)    │
+                └─────────────┬────────────────┘
+                              │
+                              │  HTTP Request
+                              ▼
+     ┌────────────────────────────────────────────────────┐
+     │                   HTTP REQUEST                     │
+     │────────────────────────────────────────────────────│
+     │ Request Line    →  Method + URL + HTTP Version      │
+     │   e.g. GET /api/course/101 HTTP/1.1                 │
+     │────────────────────────────────────────────────────│
+     │ Request Headers →  Metadata (key–value pairs)       │
+     │   e.g. Content-Type: application/json               │
+     │        Authorization: Bearer <token>                │
+     │────────────────────────────────────────────────────│
+     │ Request Body    →  Payload (actual data sent)       │
+     │   e.g. { "courseName": "Java", "duration": "2m" }   │
+     └────────────────────────────────────────────────────┘
+                              │
+                              │  ↓ Sent to Server
+                              │
+                              ▼
+     ┌────────────────────────────────────────────────────┐
+     │                     SERVER                         │
+     │ (API / Web Server / Database)                      │
+     └────────────────────────────────────────────────────┘
+                              │
+                              │  HTTP Response
+                              ▼
+     ┌────────────────────────────────────────────────────┐
+     │                   HTTP RESPONSE                    │
+     │────────────────────────────────────────────────────│
+     │ Response Line   →  Status Code + Message            │
+     │   e.g. HTTP/1.1 200 OK                              │
+     │────────────────────────────────────────────────────│
+     │ Response Headers →  Metadata (content type, etc.)   │
+     │   e.g. Content-Type: application/json               │
+     │────────────────────────────────────────────────────│
+     │ Response Body   →  Actual response data             │
+     │   e.g. { "id": 101, "courseName": "Java" }          │
+     └────────────────────────────────────────────────────┘
+                              │
+                              │  ↓ Back to Client
+                              ▼
+                ┌──────────────────────────────┐
+                │      CLIENT (Displays Data)   │
+                └──────────────────────────────┘
+
+--JSON(JavaScript Object Notation):-JSON is used to represent data in key-value format
+JSON is umiversal format to exchange data over internet
+Syntax:
+{
+ "id" : 101,
+ "name" : "Rohit",
+ "gender" : "Male",
+ "Phno" : "8087217921",
+ "address" : {
+               "city" : "Ichalkaranji",
+			   "state" : "Maharashtra"
+			  } 
+}
+-key in double quotes and only string value is in double quotes
+As a part of development, java object conveted to JSON and vice versa
+We have to use 3rd party apis to work with JSON data in java applications
+-JackSon api--->ObjectMapper class provides method to conver java to json and vice versa
+-GSon api

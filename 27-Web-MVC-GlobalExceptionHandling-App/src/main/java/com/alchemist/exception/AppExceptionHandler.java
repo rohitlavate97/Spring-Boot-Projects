@@ -16,5 +16,12 @@ public class AppExceptionHandler {
 		logger.error(errorText);
 		return "errorPage";		
 	}
+	
+	@ExceptionHandler(value=NullPointerException.class)
+	public String handleNullPointerEx(NullPointerException e) {
+		String errorText = e.getMessage();
+		logger.error(errorText);
+		return "errorPage";
+	}
 
 }
