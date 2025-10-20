@@ -2377,3 +2377,29 @@ check userId in query parameters. take it and give it to the method. Method retu
 																   it observes Content-Type-->Give it to MsgConverter-->it give back converted data to DispatcherServelet and 
 																   then passed to method
 
+Note:
+-When you want to get record with unique id-->Path Parameter(Based on ticket number, get data)
+-If your method is giving more records as response-->Query Parameter(Based on author name, get book list)
+
+--Consumes and Produces-->
+consumes--->It represents which format supported by REST API method or In which format REST API can accept input data from client.
+produces--->It represents in which format REST API method can provide response to clients
+Example:
+    @PostMapping(
+			value="/user",
+			consumes= {"application/json"}
+			)
+	public ResponseEntity<String> addUser(@RequestBody User user){
+		dataMap.put(user.getId(), user);
+		System.out.println(dataMap);
+		return new ResponseEntity<String>("User saved.....",HttpStatus.CREATED);
+	}
+	
+	@GetMapping(
+			value="/user", 
+			produces= {"aplication/json"}
+	)
+	public User getUserByQueryParam(@RequestParam("userId") Integer userId) {
+		User user = dataMap.get(userId);
+		return user;
+	}

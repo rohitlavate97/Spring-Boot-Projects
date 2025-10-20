@@ -19,14 +19,20 @@ public class UserRestController {
 	
 	private  Map<Integer, User> dataMap =new HashMap<>();
 	
-	@PostMapping("/user")
+	@PostMapping(
+			value="/user",
+			consumes= {"application/json"}
+			)
 	public ResponseEntity<String> addUser(@RequestBody User user){
 		dataMap.put(user.getId(), user);
 		System.out.println(dataMap);
 		return new ResponseEntity<String>("User saved.....",HttpStatus.CREATED);
 	}
 	
-	@GetMapping("/user")
+	@GetMapping(
+			value="/user", 
+			produces= {"aplication/json"}
+	)
 	public User getUserByQueryParam(@RequestParam("userId") Integer userId) {
 		User user = dataMap.get(userId);
 		return user;
