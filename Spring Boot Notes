@@ -2403,3 +2403,11 @@ Example:
 		User user = dataMap.get(userId);
 		return user;
 	}
+	
+Client should send--->Accept=aplication/json or application/xml in header
+The client must specify the Accept header to tell the server which format they want.
+- Request Flow:
+CLIENT REQUEST → Spring DispatcherServlet → Content Negotiation → Message Converter → Your Method
+     ↓                   ↓                       ↓                   ↓               ↓
+   Accept:             Reads                Determines           Converts        Returns
+application/json    Accept header          response format    Object → JSON     Java Object
