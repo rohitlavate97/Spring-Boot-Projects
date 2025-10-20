@@ -1917,7 +1917,7 @@ XML-->As a mediator to excbange data between one application to other applicatio
 JSON-->Platform Independent and language indpendent(Inter-Operatibility achieved)
 
 --REST Architecture-->
--Provider/Resource-->The application which is giving services to other application is called as provider application
+-Provider/Resource-->The application which is giving services to other application is called as provider application, provider is also called as REST APIs
 -Consumer/Client-->The application which is accessing the services from other applications is called as Consumer application
 -How communication happens between Provider and Consumer?
 HTTP protocol, will act as mediator between consumer and provider. Consumer and provider will exchange data in the form of XML/JSON
@@ -2284,3 +2284,96 @@ public class MarshalDemo {
 	}
 
 }
+
+
+--Provider/REST API development
+@RestController
+public class MsgRestController {
+	
+	@PostMapping("/msg")        //we have to check through postman--->405 in browser(whitelebel), browser will support only get methods(doesnot contain body)
+	public ResponseEntity<String> saveMsg(){
+		String responseBody = "Msg saved successfully....";
+		return new ResponseEntity<String>(responseBody,HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/welcome")
+	public ResponseEntity<String> welcomeMsg(){
+		String msg = "Welcome to all people";
+		return new ResponseEntity<String>(msg,HttpStatus.OK);----->To customize Response Body
+	}
+	
+	@GetMapping("/greet")     --------------------------------->Method is not returning any status , but internally dispatcher servelet will prepare response and sent it(Can be seen in Postman)
+	public String getGreeting() {
+		String greet = "Good Morning, everyone";
+		return greet;
+	}
+
+}
+-------------------------------------------------------------------------------
+@RestController
+public class UserRestController {
+	
+	private  Map<Integer, User> dataMap =new HashMap<>();
+	
+	@PostMapping("/user")
+	public ResponseEntity<String> addUser(@RequestBody User user){
+		dataMap.put(user.getId(), user);
+		System.out.println(dataMap);
+		return new ResponseEntity<String>("User saved.....",HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/user")
+	public User getUserByQueryParam(@RequestParam("userId") Integer userId) {
+		User user = dataMap.get(userId);
+		return user;
+	}
+	
+	//example for multiple query parameters
+	/*
+	 * @GetMapping("/userData") public User getUserData(@RequestParam("name") String
+	 * name, @RequestParam("email") String email ) { return null; }
+	 */
+	
+	@GetMapping("/user/{id}")
+	public User getUserByPathParam(@PathVariable("id")Integer userId) {
+		User user = dataMap.get(userId);
+		return user;
+	}
+	
+	@GetMapping("/userData/{id}/data")
+	public User getUserByPathParamUrlPattern(@PathVariable("id")Integer userId) {
+		User user = dataMap.get(userId);
+		return user;
+	}
+
+}
+
+
+-When hit this url, check header in the postman--->Content-Type=application/Json
+-Payload-->Business data, any data that is exchanged between consumer and provider in the body is called as a payload.
+-Header-->Extra data you want to send consumer or provider(we can't pass business data here)-->Content-Type=application/Json(Understand what type of data client sends)
+-@RequestBody--->To read Payload from HTTP POST Request(Telling that, get the data from request body and store into User object)
+-@RequestPaaram-->To take single value 
+-ResponseEntity-->To Test Rest API functionality
+Note: if data is huge, go for body. Otherwise use url(Not sensitive data, send it in url)
+
+--Query Param and Path Params--->Both are used to send data to server, sends data in URL
+-Query Parameter----> www.youtube.com/watch?v=123(key and value format),Normally present at end of URL, starts with '?', 
+and seperated by using '&'(e.g-->?v=seva&country=IN)------>Use @RequestParam to read query param from url
+When client sends GET request with userId in query parameter. method will read parameter, using this gets data from map and return object in JSON format
+
+-Path Parameter----->www.udemy.com/courses/java(direct value format)-->Path param will represent data directly, Path param can present anywhere in URL, starts with '/'
+and will seperated only by '/'----->Use @PathParam to read the path parameter----->localhost:9090/user/1
+Note: When Client is GET request, then client can use Query params or path params to send data to the server. GET request will not contain any Request Body
+so we have to use either Query or path param to send the data. POST method doesn't require it, as it have body to send the data.
+i.e when, we have parameter with @RequestParam, DispatcherServelet will understand that, userId will come as a query parameter--> It will understand that and 
+check userId in query parameters. take it and give it to the method. Method return object --> DispatcherServelet return JSON(POST Processing)
+
+	@PostMapping("/user")
+	public ResponseEntity<String> addUser(String user){    ------->Instead of object if we send string it also works but, whatever json client is sending that should come
+	                                                               as parameter to our method(raw JSON)-->write logic to convert JSON to java
+																   But what if client sends xml--->code fails--->Tightly coupled with JSON, that's why we take object
+																     Before processing, DispatcherServelet will read what data in the url,what is in body, in header
+																   it observes Content-Type-->Give it to MsgConverter-->it give back converted data to DispatcherServelet and 
+																   then passed to method
+
