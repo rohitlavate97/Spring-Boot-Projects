@@ -2384,6 +2384,8 @@ Note:
 --Consumes and Produces-->
 consumes--->It represents which format supported by REST API method or In which format REST API can accept input data from client.
 produces--->It represents in which format REST API method can provide response to clients
+Note: POST Method-->consumes data
+      GET Method--->produces data
 Example:
     @PostMapping(
 			value="/user",
@@ -2411,3 +2413,34 @@ CLIENT REQUEST → Spring DispatcherServlet → Content Negotiation → Message 
      ↓                   ↓                       ↓                   ↓               ↓
    Accept:             Reads                Determines           Converts        Returns
 application/json    Accept header          response format    Object → JSON     Java Object
+
+---jackson-dataformat-xml used in place of JAXB
+@RestController
+public class BookRestController {
+	
+	@GetMapping(
+			value="/book",
+			produces= {"application/json","application/xml"}
+			)
+	public Book getBook() {
+		Book b = new Book();
+		b.setId(1);
+		b.setName("Java");
+		b.setPrice(200d);
+		return b;	
+	}
+
+}
+Note: If we add JAXB dependency, above program will give data in xml format.(By default we get data in Json format)
+If we want data to be stored in particular format mention it in 'Accept' attribute.
+
+POST-->localhost:9090/book
+       Content-Type: application/json(Header)  ----->i.e represents in which format client sending data to server in Request Body
+	   Body: Raw-data-->JSON
+GET-->localhost:8080/book
+       Accept: aplication/json(Header)   -----> This header will represent in which format client expecting response from server
+	   
+--Swagger Documentation:
+-Add dependencies
+springfox-swagger2
+springfox-swagger-ui
