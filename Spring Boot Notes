@@ -2465,4 +2465,51 @@ Doc URL  http://localhost:9090/v3/api-docs     -->info about APIs(JSON Format)--
 		<plugins>
 			<plugin......
 
--Refresh and run as --> Maven build, Goals-->clean package
+-Refresh and run as --> Maven build, Goals-->clean package(To package app)
+-Launch EC2(Linux VM, Ubuntu,t2.micro,key-pair(e.g sbmsKey)), Security group-->Add rule-->Custom TCP(8080)-->in our case 9090
+-Open Mobaxterm--->Basic SSH setting-->Remote Host-->(paste public IP) and Specify Username-->Ubuntu,Port:22
+                   Advanced SSH setting-->Use private key(Check it)-->Select key-pair
+-copy file path and upload file
+-run following commands
+$sudo apt install dafault-jdk
+$sudo apt install java
+$java -version
+$java -jar sb-irctc-api.jar
+--Now go to instance-->take public ip by selecting EC2
+--Go to browser===> (public IP):8080/swagger-ui.html
+
+---Consumer Development
+--Client/Consumer-->application which is accessing services from other applications
+3 ways to develop consumer
+-RestTemplate(Out dated)---------------->Supports only synchronous communication
+-WebClient(Introduced from Spring 5.X)-->supports both synchronous as well as Asynchronous communication
+-FeignClient(Spring Cloud)
+Note: In Realtime, APIs cannot be accessed by everyone(security)
+
+--For using RestTemplate
+   RestTemplate rt = new RestTemplate();
+   ResponseEntity<Object of Response type> response=rt.postForEntity("url you want to access"."object data you want to send in body","Response type(how we want response)");-->for post request, 
+   
+   for get request--->getForEntity(url,ResponseType class, path variables comma seperated);
+   
+-public class ServiceImpl implements MTMService{
+	private String BOOK_TICKET_URL = "http://localhost:9090/ticket";       //ip inplace of localhost when deployed on AWS
+	private String GET_TICKET_URL = "http://localhost:9090/ticket/{ticketNum}";
+
+	@Override
+	public Ticket bookTicket(Passenger passenger) {
+		RestTemplate rt = new RestTemplate();
+		ResponseEntity<Ticket> response = rt.postForEntity(BOOK_TICKET_URL, passenger, Ticket.class);
+		Ticket ticket = response.getBody();
+		return ticket;
+	}
+
+	@Override
+	public Ticket getTicketByNum(String ticketNumber) {
+		RestTemplate rt = new RestTemplate();
+		ResponseEntity<Ticket> response = rt.getForEntity(GET_TICKET_URL, Ticket.class, ticketNumber);
+		Ticket ticket = response.getBody();
+		return ticket;
+	}
+
+}
