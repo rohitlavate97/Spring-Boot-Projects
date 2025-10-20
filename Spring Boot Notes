@@ -2440,7 +2440,29 @@ POST-->localhost:9090/book
 GET-->localhost:8080/book
        Accept: aplication/json(Header)   -----> This header will represent in which format client expecting response from server
 	   
---Swagger Documentation:
+--Swagger Documentation:--Swagger(Third party library) is used to generate REST API documentation
+-The Problem
+Spring Boot 3 uses Jakarta EE 9+ (package names: jakarta.servlet)
+SpringFox (Swagger) uses legacy Java EE (package names: javax.servlet)
+This causes ClassNotFoundException for javax.servlet.http.HttpServletRequest
 -Add dependencies
-springfox-swagger2
-springfox-swagger-ui
+<!-- Add SpringDoc OpenAPI -->
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.8.5</version>
+</dependency>
+-don't add these dependencies-->springfox-swagger2,springfox-swagger-ui
+--Create SwaggerConfig Class with @Configuration
+--spring.mvc.pathmatch.matching-strategy=ANT_PATH_MATCHER(application.properties)
+--UI URL http://localhost:9090/swagger-ui.html directly access this url
+Doc URL  http://localhost:9090/v3/api-docs     -->info about APIs(JSON Format)-->host,basepath,paths(url patterns),consumes,produces and Response data
+
+--For Deployment
+-add in pom.xnl--->Add tag <finalName>
+<build>
+	 <finalName>sb-irctc-api</finalName>
+		<plugins>
+			<plugin......
+
+-Refresh and run as --> Maven build, Goals-->clean package
