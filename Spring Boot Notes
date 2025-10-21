@@ -2513,3 +2513,41 @@ Note: In Realtime, APIs cannot be accessed by everyone(security)
 	}
 
 }
+
+--WebClient-->Predefined interface(spring 5.x)--->We can send HTTP Request(GET,PUT,POST,DELETE)
+Supports both sychronous and asynchronous communications.
+Dependency-->web-flux-starter 
+
+@Service
+public class ServiceImpl implements MTMService{
+	private String BOOK_TICKET_URL = "http://localhost:9090/ticket";       //ip inplace of localhost when deployed on AWS
+	private String GET_TICKET_URL = "http://localhost:9090/ticket/{ticketNum}";
+
+	@Override
+	public Ticket bookTicket(Passenger passenger) {
+		WebClient webclient = WebClient.create();
+		Ticket ticket = webclient.post()
+				     .uri(BOOK_TICKET_URL)
+				     //.body(BodyInserters.fromObject(passenger))    //deprecated
+				     .bodyValue(passenger)                           //use it--->i.e convert passenger data from object to json
+				     .retrieve()
+				     .bodyToMono(Ticket.class)
+				     .block();
+		return ticket;
+	}
+
+	@Override
+	public Ticket getTicketByNum(Integer ticketNumber) {
+		//Get the instance of webclient(Implementaion class object)
+		WebClient webclient = WebClient.create(); 
+		//Send GET Request and map response to ticket obj
+		Ticket ticket = webclient.get()                         //represent get request
+				        .uri(GET_TICKET_URL,ticketNumber)      //If we want to send query param-->set it parameter here
+				        .retrieve()                            //retrieve the response
+				        .bodyToMono(Ticket.class)              //response map to Ticket class object and return object
+				        .block();                             //wait till get response from IRCTC app and store into variable
+		return ticket;
+	}
+
+}
+

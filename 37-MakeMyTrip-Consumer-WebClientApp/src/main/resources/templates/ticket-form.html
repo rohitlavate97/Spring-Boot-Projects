@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Details</title>
+</head>
+<body>
+    <h2>Check Ticket Status</h2>
+    
+    <!-- Fixed form with proper input field and method -->
+    <form th:action="@{/get-ticket}" method="get">
+        Enter Ticket Number: 
+        <input type="text" name="ticketNumber" th:value="${param.ticketNumber}" />
+        <input type="submit" value="Get Ticket">
+    </form>
+    
+    <hr/>
+    
+    <!-- Display ticket details if available -->
+    <div th:if="${ticket != null}">
+        <h3>Ticket Details:</h3>
+        <p><strong>Ticket Number:</strong> <span th:text="${ticket.ticketNumber}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${ticket.status}"></span></p>
+        <p><strong>Name:</strong> <span th:text="${ticket.name}"></span></p>
+        <p><strong>From:</strong> <span th:text="${ticket.from}"></span></p>
+        <p><strong>To:</strong> <span th:text="${ticket.to}"></span></p>
+        <p><strong>Date of Journey:</strong> <span th:text="${ticket.doj}"></span></p>
+        <p><strong>Train Number:</strong> <span th:text="${ticket.trainNumber}"></span></p>
+    </div>
+    
+    <!-- Show message if no ticket found -->
+    <div th:if="${ticket == null and param.ticketNumber != null}">
+        <p style="color: red;">No ticket found with number: <span th:text="${param.ticketNumber}"></span></p>
+    </div>
+</body>
+</html>
