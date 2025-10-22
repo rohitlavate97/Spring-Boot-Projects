@@ -22,6 +22,11 @@ public class CustomController {
         this.csvService = csvService;
         this.pdfService = pdfService;
     }
+    
+    @GetMapping("/")
+    public String getMessage() {
+    	return "Welcom to Spring boot Prod-ready features: Actuators";
+    }
 
     // CSV download
     @GetMapping(value = "/report", produces = "text/csv")

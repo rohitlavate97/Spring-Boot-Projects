@@ -2824,3 +2824,45 @@ public class UserRestController {
 -----------------------------------------------------------------
 Note: When ArithmeticException occurs, it will check any handler for it or not--->if not, it will go for generic exception. For client app, we are senging meaningful message,
 Sending response in JSON format to client app
+
+---properties file vs yml(Yet Another MarkUP language) file
+--properties file-->represents data in key-values format and used only in java applications
+--yml file--->represents data in hierarchical format, universal format(Java,Ansible,K8s,Python),indent spacing is important
+-For multiple values use list
+ex:
+hobbies:
+    -singing
+	-playinfg
+	-dancing
+	
+--Actuators:-
+Need to add dependency-->spring-boot-starter-actuator
+ Used to provide production-ready features for our application(i.e monitor and manage our application)-->no of beans loaded,app health, conifg properties,
+environments loaded,threads,JVM and heap etc
+https://docs.spring.io/spring-boot/reference/actuator/index.html
+https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
+URL->http://localhost:9090/actuator, http://localhost:9090/actuator/health
+-To enable actuators-----> .include/.exclude
+--application.yml-->
+spring:
+  application:
+    name: 40-CSV-PDF-App
+server:
+  port: 9090
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'                     //Expose all endpoints
+        exclude: 'mappings'              //mapping will not be ommited
+  endpoint:
+    shutdown:
+      enabled: true                     //we have configured shutdown of app
+
+
+URL-->http://localhost:9090/actuator/mapping ---->All URL patterns loaded by our application
+      http://localhost:9090/actuator/beans ---> All classes loaded by our (Predefined and custom)
+	  http://localhost:9090/actuator/threaddump
+	  http://localhost:9090/actuator/heapdump
+	  
+Note:Shutdown is a special endpoint which is used to stop our application and it is mapped to POST request.	  

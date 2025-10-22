@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: 40-CSV-PDF-App
+server:
+  port: 9090
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        exclude: 'mappings'
+  endpoint:
+    shutdown:
+      enabled: true
