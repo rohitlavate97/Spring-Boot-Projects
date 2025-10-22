@@ -2516,7 +2516,7 @@ Note: In Realtime, APIs cannot be accessed by everyone(security)
 
 --WebClient-->Predefined interface(spring 5.x)--->We can send HTTP Request(GET,PUT,POST,DELETE)
 Supports both sychronous and asynchronous communications.
-Dependency-->web-flux-starter 
+Dependency-->web-flux-starter (spring reactive web)
 
 @Service
 public class ServiceImpl implements MTMService{
@@ -2528,6 +2528,7 @@ public class ServiceImpl implements MTMService{
 		WebClient webclient = WebClient.create();
 		Ticket ticket = webclient.post()
 				     .uri(BOOK_TICKET_URL)
+					 .header("Accept","application/json")             //To send the header in request
 				     //.body(BodyInserters.fromObject(passenger))    //deprecated
 				     .bodyValue(passenger)                           //use it--->i.e convert passenger data from object to json
 				     .retrieve()
@@ -2550,4 +2551,175 @@ public class ServiceImpl implements MTMService{
 	}
 
 }
+-----------------------------------------------------------------------------------------------------
+@Controller
+public class MakeMyTripController {
+	@Autowired
+	private MTMService service;
+	
+	@GetMapping("/")
+	public String loadForm(Model model) {
+		model.addAttribute("passenger",new Passenger());
+		return "index";
+	}
+	
+	@PostMapping("book-ticket")
+	public String bookTicket(@ModelAttribute("passenger")Passenger passenger, Model model) {
+		Ticket bookedTicket = service.bookTicket(passenger);
+		model.addAttribute("msg","Ticket is booked with ID:"+bookedTicket.getTicketNumber());
+		return "index";
+	}
+	@GetMapping("/get-ticket")  
+	public String getTicketDetails(
+	        @RequestParam(value = "ticketNumber", required = false) Integer ticketNumber, 
+	        Model model) {
+	    
+	    System.out.println("=== GET TICKET DEBUG ===");
+	    System.out.println("Received ticketNum parameter: " + ticketNumber);
+	    
+	    if (ticketNumber != null) {
+	        System.out.println("Calling service.getTicketByNum(" + ticketNumber + ")");
+	        Ticket ticket = service.getTicketByNum(ticketNumber);
+	        System.out.println("Service returned ticket: " + ticket);
+	        model.addAttribute("ticket", ticket);
+	        
+	        if (ticket == null) {
+	            System.out.println("⚠️ No ticket found for number: " + ticketNumber);
+	        } else {
+	            System.out.println("✅ Ticket found: " + ticket.getTicketNumber());
+	        }
+	    } else {
+	        System.out.println("ℹ️ No ticketNum parameter received");
+	    }
+	    
+	    System.out.println("Returning view: ticket-form");
+	    return "ticket-form";
+	}
+	
+}
 
+--Sychronous vs Asynchronous Communications
+Synchronous Communication-->After Sending request, thread will wait for RESPONSE---->sync call(sync request)-->block()
+Aysnc Communication--->After sending the request, thread will not wait for response-->Async call(Async request)-->subscribe()
+//do one example
+
+--------------------------------------------------------------------------------
+public class WebClientSyncAsyncExample {
+
+    public static void main(String[] args) throws InterruptedException {
+
+        WebClient webClient = WebClient.create("https://jsonplaceholder.typicode.com");
+
+        // --- Synchronous Call ---
+        System.out.println("=== Synchronous Call Start ===");
+        long startSync = System.currentTimeMillis();
+
+        String syncResponse = webClient.get()
+                .uri("/posts/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();  // <-- BLOCKING call
+
+        long endSync = System.currentTimeMillis();
+        System.out.println("Sync Response Received:");
+        System.out.println(syncResponse);
+        System.out.println("Time Taken (Sync): " + (endSync - startSync) + " ms");
+        System.out.println("=== Synchronous Call End ===\n");
+
+
+        // --- Asynchronous Call ---
+        System.out.println("=== Asynchronous Call Start ===");
+        long startAsync = System.currentTimeMillis();
+
+        Mono<String> asyncResponse = webClient.get()
+                .uri("/posts/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        asyncResponse.subscribe(
+                data -> {
+                    long endAsync = System.currentTimeMillis();
+                    System.out.println("Async Response Received:");
+                    System.out.println(data);
+                    System.out.println("Time Taken (Async): " + (endAsync - startAsync) + " ms");
+                    System.out.println("=== Asynchronous Call End ===");
+                },
+                error -> System.err.println("Error occurred: " + error),
+                () -> System.out.println("Request completed successfully.")
+        );
+
+        System.out.println("Main thread continues execution...");
+        
+        // Keep the program running long enough for async response to complete
+        Thread.sleep(2000);
+    }
+}
+------------------------------------------------------------------------------------------
+package com.example.webclientdemo.controller;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+@RestController
+public class WebClientController {
+
+    private final WebClient webClient = WebClient.create("https://jsonplaceholder.typicode.com");
+
+    // --- Synchronous Example ---
+    @GetMapping(value = "/sync", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getSyncData() {
+        System.out.println("=== Synchronous Request Start ===");
+        long start = System.currentTimeMillis();
+
+        // Blocking call
+        String response = webClient.get()
+                .uri("/posts/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block(); // waits for response
+
+        long end = System.currentTimeMillis();
+        System.out.println("=== Synchronous Request End (Time: " + (end - start) + " ms) ===");
+        return response;
+    }
+
+    // --- Asynchronous Example ---
+    @GetMapping(value = "/async", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<String> getAsyncData() {
+        System.out.println("=== Asynchronous Request Start ===");
+        long start = System.currentTimeMillis();
+
+        // Non-blocking call
+        Mono<String> responseMono = webClient.get()
+                .uri("/posts/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnNext(resp -> {
+                    long end = System.currentTimeMillis();
+                    System.out.println("=== Asynchronous Response Received (Time: " + (end - start) + " ms) ===");
+                });
+
+        System.out.println("Main thread continues execution immediately (non-blocking).");
+        return responseMono;
+    }
+}
+----------------------------------------------------------------------------------------------------------
+package com.example.webclientdemo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class WebClientDemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(WebClientDemoApplication.class, args);
+    }
+}
+----------------------------------------------------------------------------------------------------------

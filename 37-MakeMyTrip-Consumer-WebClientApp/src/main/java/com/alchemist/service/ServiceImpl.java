@@ -1,12 +1,7 @@
 package com.alchemist.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.BodyInserter;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.alchemist.controller.MakeMyTripController;
 import com.alchemist.request.Passenger;
 import com.alchemist.response.Ticket;
 

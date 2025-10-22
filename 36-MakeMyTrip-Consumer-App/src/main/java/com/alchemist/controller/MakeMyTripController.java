@@ -32,8 +32,8 @@ public class MakeMyTripController {
 	}
 	
 	@GetMapping("/get-ticket")
-	public String getTicket(@RequestParam("ticketNum") Integer ticketNum, Model model) {
-		Ticket ticketByNum = service.getTicketByNum(ticketNum);
+	public String getTicket(@RequestParam("ticketNumber") Integer ticketNumber, Model model) {
+		Ticket ticketByNum = service.getTicketByNum(ticketNumber);
 		model.addAttribute("ticket",ticketByNum);
 		return "ticket-form";
 	}
