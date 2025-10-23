@@ -2865,4 +2865,41 @@ URL-->http://localhost:9090/actuator/mapping ---->All URL patterns loaded by our
 	  http://localhost:9090/actuator/threaddump
 	  http://localhost:9090/actuator/heapdump
 	  
-Note:Shutdown is a special endpoint which is used to stop our application and it is mapped to POST request.	  
+Note:Shutdown is a special endpoint which is used to stop our application and it is mapped to POST request.
+http://localhost:9090/actuator/shutdown	  
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--Microservices--->It is architectural design pattern
+Microservices project means it contains collection of REST APIs, and every REST API responsible for one functionality(Independently deployable ,testable)
+Advantages:--Easy maintenance,High availability,Fast Development, Quick Releases, Technology Independence(Each REST ApI can be developed with differnt technology)
+Challenges:--Bounded context(Deciding No of microservices), lots of configuration and visibility
+Microservices Architecture-->Their is no fixed architecture, customize architeture according to project requirement
+Example
++-----------------------+       +-----------------------+       +-----------------------+
+|         UI            | --->  |     API Gateway       | --->  |   Service Registry     |
+| (Frontend / Angular)  |       | (Spring Cloud Gateway)|       |      (Eureka)          |
++-----------------------+       +-----------------------+       +-----------------------+
+                                                                          |
+                                                                          v
+-------------------------------------------------------------------------------------------------------------
+|                                                                                                           |
+|   +----------------+       +----------------+       +------------------+       +------------------+        |
+|   |   Service A    |<----->|   Service B    |<----->|   Admin Server   |<----->|  Zipkin Server   |        |
+|   | (API-1)        |       | (API-2)        |       | (Monitoring)     |       | (Tracing)        |        |
+|   +--------+-------+       +--------+-------+       +------------------+       +------------------+        |
+|            |                        |                                                               |      |
+|            |                        |                                                               |      |
+|     +------+-----+          +--------+--------+                                                      |      |
+|     |    Redis    |          |       Kafka     |                                                      |      |
+|     | (Caching)   |          | (Event Stream)  |                                                      |      |
+|     +-------------+          +-----------------+                                                      |      |
+|                                                                                                      |      |
+|     +---------------------------------------------------------------------------------------------+  |      |
+|     |                               Config Server (Centralized Config)                            |  |      |
+|     |         ↑                    ↑                     ↑                    ↑                    |  |      |
+|     |         |                    |                     |                    |                    |  |      |
+|     |    Gateway, Service A,   Service B,          Admin Server,         Zipkin Server             |  |      |
+|     |   etc. all fetch configs at startup and refresh dynamically from here                        |  |      |
+|     +---------------------------------------------------------------------------------------------+  |      |
+-------------------------------------------------------------------------------------------------------------
+
