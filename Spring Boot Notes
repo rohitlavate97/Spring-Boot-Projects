@@ -3050,3 +3050,7 @@ public class Application {
 }
 -----------------------
 Note: When call invokeGreetApi() method, feign client will take service-name and go to service registry and get the url of API. Then feign client will talk to Greet API by sending GET request with '/greet' as URL pattern pattern
+
+---Load Balancer--->
+-What if 1 million request---> 1 tomcat server can not handle it. 
+In real time--> Application should not run in one server. so same application should run in multiple server.
