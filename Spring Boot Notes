@@ -2903,3 +2903,35 @@ Example
 |     +---------------------------------------------------------------------------------------------+  |      |
 -------------------------------------------------------------------------------------------------------------
 
+--Service Registry-->It will maintain list of apis available in our project(apis acts as clients of Eureka server(Spring cloud) which acts as Service Registry)-->Name,status and URL
+@SpringBootApplication
+@EnableEurekaServer
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+
+application.yml
+---------------
+spring:
+  application:
+    name: 41-SBMS-Service-Registry
+server:
+  port: 8761
+eureka:
+  client:
+    register-with-eureka: false            //Other app should register with Eureka server, but same application should not
+
+
+--Admin Server-->It will provide dashboard to monitor and manage all apis actuator at one place(All apis acts as client to admin server also)
+--Zipkin Server-->It is used for distributed tracing(i.e Tracing one request by one api). It will provide information about request processing time(Performace of apis)
+--API GateWay-->Request Verifcation and Request validation.(Any request coming to api should come first to api gateway).It will acts as a entry point for all backend apis, it will act as mediator between incoming requestts and backend apis
+ex-zuul proxy(Backend),spring cloud Gateway(Open Source),ApiGee(Google, Commercial)
+--ConfigServer-->It is used to seperate configuration properties from our application-->For loosely coupling
+Project + Project configuration Properties
+--Redis Server-->It is used to maintain distributed cache(Cache memory)-->used to reduce number of db calls from our application to DB
+Data = Dynamic + Static(Stor static data in Redis cache to reduce database calls)
+--Apache kafka-->Message broker, used to develop event driven microservices(to send message from one app to another app)
