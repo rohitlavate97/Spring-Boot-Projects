@@ -2925,13 +2925,92 @@ eureka:
   client:
     register-with-eureka: false            //Other app should register with Eureka server, but same application should not
 
+Note: If Service-Registry port is 8761, then client can discover service-registry and will register automatically with service-registry else, we have to register clients with service-registry manually
+application.yml     ------>manual registration
+---------------
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9090/eureka/
+
 
 --Admin Server-->It will provide dashboard to monitor and manage all apis actuator at one place(All apis acts as client to admin server also)
+@EnableAdminServer
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+
+application.yml
+----------------
+spring:
+  application:
+    name: 42-SBMS-Admin-Server
+server:
+  port: 1111
+
 --Zipkin Server-->It is used for distributed tracing(i.e Tracing one request by one api). It will provide information about request processing time(Performace of apis)
+Add sleuth dependency, to connect with zipkin server
+Download jar-->zipkin.io/quickstart(Java--latest release)
+default port: 9411------> http://localhost:9411/zipkin/
+To run-->commands
+curl -sSL https://zipkin.io/quickstart.sh | bash -s
+java -jar zipkin.jar
+-Instead of sleuth, add these following dependencies
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-tracing-bridge-brave</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>io.zipkin.reporter2</groupId>
+    <artifactId>zipkin-reporter-brave</artifactId>
+</dependency>
+
+
+Note: Whatever api we develop acts as client for all following apis
+http://localhost:8761 --->Service Registry
+http://localhost:1111 ---->Admin Server
+http://localhost:9411/zipkin/ --->Zipkin Server
+
 --API GateWay-->Request Verifcation and Request validation.(Any request coming to api should come first to api gateway).It will acts as a entry point for all backend apis, it will act as mediator between incoming requestts and backend apis
 ex-zuul proxy(Backend),spring cloud Gateway(Open Source),ApiGee(Google, Commercial)
+
 --ConfigServer-->It is used to seperate configuration properties from our application-->For loosely coupling
 Project + Project configuration Properties
+
 --Redis Server-->It is used to maintain distributed cache(Cache memory)-->used to reduce number of db calls from our application to DB
 Data = Dynamic + Static(Stor static data in Redis cache to reduce database calls)
+
 --Apache kafka-->Message broker, used to develop event driven microservices(to send message from one app to another app)
+
+---Create one application for Service registry, Admin Server and Zipkin Server
+Add following dependencies-->
+  Spring-web
+  DevTools
+  Actuator
+  Eureka Discovery client
+  Spring boot admin client
+  zipkin
+  sleuth ------> It will communicate with zipkin server
+
+  application.yml
+  ---------------
+  spring:
+  application:
+    name: 43-GREET-API
+  boot:
+    admin:
+      client:
+        url: http://localhost:1111/                //To tell admin server available(spring.boot.admin.client.url=)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+server:
+  port: 9090
