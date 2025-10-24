@@ -3014,3 +3014,39 @@ management:
         include: '*'
 server:
   port: 9090
+
+------------------------------------
+--For InterService communication, we will use feign client(Also can be done with RestTemplate)
+
+@FeignClient("GREET-API")
+public interface GreetFeignClient {
+	@GetMapping("/greet")
+	public String invokeGreetApi();         //RunTime implementation by using proxy design pattern
+}
+---------------
+@RestController
+public class WelcomeRestController {
+	
+	@Autowired
+	private GreetFeignClient client;
+	
+	@GetMapping("/welcome")
+	public String welcomeMsg() {
+		String greetResponse = client.invokeGreetApi();
+		return greetResponse + " Welcome to REST";
+	}
+
+}
+------------------------
+@EnableFeignClients
+@EnableDiscoveryClient
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+-----------------------
+Note: When call invokeGreetApi() method, feign client will take service-name and go to service registry and get the url of API. Then feign client will talk to Greet API by sending GET request with '/greet' as URL pattern pattern
