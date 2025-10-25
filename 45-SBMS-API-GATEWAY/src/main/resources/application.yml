@@ -1,54 +1,48 @@
 spring:
   application:
-    name: 44-SBMS-API-GATEWAY
+    name: 45-SBMS-API-GATEWAY
+
+  main:
+    web-application-type: servlet
+
   cloud:
     gateway:
+      mvc:  # ✅ not under server
+        routes:
+          - id: greet-api
+            uri: lb://43-GREET-API
+            predicates:
+              - Path=/greet/**
+          - id: welcome-api
+            uri: lb://44-WELCOMEAPI-INTERSERVICECOMMUNICATION-MONITOR
+            predicates:
+              - Path=/welcome/**
       discovery:
         locator:
-          enabled: true              # Enable service discovery integration
-          lower-case-service-id: true # Convert service names to lowercase
-#          predicates:
-#            - name: Path
-#              args:
-#                pattern: "'/'+serviceId+'/**'"
-#          filters:
-#            - name: RewritePath
-#              args:
-#                regexp: "'/' + serviceId + '/(?<remaining>.*)'"
-#                replacement: "'/${remaining}'"
-#      
-      # Optional: Manual route configuration for specific services
-      routes:
-        - id: 43-greet-api
-          uri: lb://43-GREET-API      # Uses service discovery with load balancing
-          predicates:
-            - Path=/greet
-#          filters:
-#            - StripPrefix=1
-#            - name: RequestRateLimiter
-#              args:
-#                redis-rate-limiter.replenishRate: 10
-#                redis-rate-limiter.burstCapacity: 20
-#            - name: CircuitBreaker
-#              args:
-#                name: userService
-#                fallbackUri: forward:/fallback/user
-        
-        - id: 44-welcoome-service
-          uri: lb://44-WELCOME-API
-          predicates:
-            - Path=/welcome
-#          filters:
-#            - StripPrefix=1
+          enabled: true
+          lower-case-service-id: true
+
 server:
   port: 2222
-## Service Discovery Configuration (Eureka example)
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka
-#    register-with-eureka: true
-#    fetch-registry: true
-#  instance:
-#    prefer-ip-address: true
-#    instance-id: ${spring.application.name}:${server.port}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway.server.mvc: TRACE

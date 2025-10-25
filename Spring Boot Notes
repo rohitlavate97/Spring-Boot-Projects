@@ -3078,48 +3078,31 @@ Routing used to distribute request from one app to other app
 -----------------
 spring:
   application:
-    name: 44-SBMS-API-GATEWAY
+    name: 45-SBMS-API-GATEWAY
+
+  main:
+    web-application-type: servlet
+
   cloud:
     gateway:
+      mvc:  # ✅ not under server
+        routes:
+          - id: greet-api
+            uri: lb://43-GREET-API
+            predicates:
+              - Path=/greet/**
+          - id: welcome-api
+            uri: lb://44-WELCOMEAPI-INTERSERVICECOMMUNICATION-MONITOR
+            predicates:
+              - Path=/welcome/**
       discovery:
         locator:
-          enabled: true              # Enable service discovery integration
-          lower-case-service-id: true # Convert service names to lowercase
-          predicates:
-            - name: Path
-              args:
-                pattern: "'/'+serviceId+'/**'"
-          filters:
-            - name: RewritePath
-              args:
-                regexp: "'/' + serviceId + '/(?<remaining>.*)'"
-                replacement: "'/${remaining}'"
-      
-      # Optional: Manual route configuration for specific services
-      routes:
-        - id: user-service
-          uri: lb://USER-SERVICE      # Uses service discovery with load balancing
-          predicates:
-            - Path=/api/users/**
-          filters:
-            - StripPrefix=1
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
-            - name: CircuitBreaker
-              args:
-                name: userService
-                fallbackUri: forward:/fallback/user
-        
-        - id: product-service
-          uri: lb://PRODUCT-SERVICE
-          predicates:
-            - Path=/api/products/**
-          filters:
-            - StripPrefix=1
+          enabled: true
+          lower-case-service-id: true
 
-# Service Discovery Configuration (Eureka example)
+server:
+  port: 2222
+
 eureka:
   client:
     service-url:
@@ -3128,31 +3111,23 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
-	
-Example:
-spring:
-  application:
-    name: 44-SBMS-API-GATEWAY
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true              # Enable service discovery integration
-          lower-case-service-id: true # Convert service names to lowercase
-      # Optional: Manual route configuration for specific services
-      routes:
-        - id: greet-api
-          uri: lb://GREET-API      # Uses service discovery with load balancing
-          predicates:
-            - Path=/greet
-        
-        - id: welcoome-service
-          uri: lb://WELCOME-API
-          predicates:
-            - Path=/welcome
-server:
-  port: 2222
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway.server.mvc: TRACE
+
+
+
+
   
 -Routing Flow
   Client Request → Gateway (Port 2222) → Route Matching → Service Discovery → Load Balancing → Target Service
