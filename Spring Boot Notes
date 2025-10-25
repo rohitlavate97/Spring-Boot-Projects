@@ -3051,6 +3051,110 @@ public class Application {
 -----------------------
 Note: When call invokeGreetApi() method, feign client will take service-name and go to service registry and get the url of API. Then feign client will talk to Greet API by sending GET request with '/greet' as URL pattern pattern
 
----Load Balancer--->
+---Load Balancer---> To achieve high availability(using FeignClient-->Already load balancing implemented in it)
 -What if 1 million request---> 1 tomcat server can not handle it. 
 In real time--> Application should not run in one server. so same application should run in multiple server.
+Note: With RestTemplate,only one url so no load balancing.
+ Feign client will get multiple URL, it will get confused which to use , to avoid confusion spring cloud contains Ribbon. FeignClient contact ribbon, 
+ it will decide which URL to use to access GREET API(Logic is round robin). If get more traffic, we can increase instances.(Run configurations---->To do it manually)
+ i.e Scalability-->Without stopping any instance, creating new instance
+ Autoscaling---->System will decide how much servers it needed, based on traffic
+ 
+--API Gateway(Spring Cloud API Gateway)-->Entry point for all microservices. Any request coming to backend services should go through API Gateway. In API Gateway, Filter logic and 
+Routing logic available.(Mediator between UI and BackEnd)
+ Filter-->stopping unwanted requests, valid request allowed
+ Routing-->From API Gateway, where it should go
+-In API Gateway-->we will have 3 types of logics
+    Route,Predicate(if path matched, request directed to that uri),Filters
+-To Create API GateWay, add following dependencies
+            Web-Starter
+			eureka-client
+			cloud-gateway
+			devtools
+-Routing-->Whenever request comes with '/welcome' url pattern, you go to welcome api, handle that request so on...It can have one url or multiple instances. 
+Routing used to distribute request from one app to other app
+
+-application.yml
+-----------------
+spring:
+  application:
+    name: 44-SBMS-API-GATEWAY
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true              # Enable service discovery integration
+          lower-case-service-id: true # Convert service names to lowercase
+          predicates:
+            - name: Path
+              args:
+                pattern: "'/'+serviceId+'/**'"
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "'/' + serviceId + '/(?<remaining>.*)'"
+                replacement: "'/${remaining}'"
+      
+      # Optional: Manual route configuration for specific services
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE      # Uses service discovery with load balancing
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+            - name: CircuitBreaker
+              args:
+                name: userService
+                fallbackUri: forward:/fallback/user
+        
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - StripPrefix=1
+
+# Service Discovery Configuration (Eureka example)
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+	
+Example:
+spring:
+  application:
+    name: 44-SBMS-API-GATEWAY
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true              # Enable service discovery integration
+          lower-case-service-id: true # Convert service names to lowercase
+      # Optional: Manual route configuration for specific services
+      routes:
+        - id: greet-api
+          uri: lb://GREET-API      # Uses service discovery with load balancing
+          predicates:
+            - Path=/greet
+        
+        - id: welcoome-service
+          uri: lb://WELCOME-API
+          predicates:
+            - Path=/welcome
+server:
+  port: 2222
+  
+-Routing Flow
+  Client Request → Gateway (Port 2222) → Route Matching → Service Discovery → Load Balancing → Target Service
+     ↓
+http://localhost:2222/welcome → Gateway → WELCOME-API service instance

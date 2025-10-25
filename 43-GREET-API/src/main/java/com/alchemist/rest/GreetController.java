@@ -16,5 +16,4 @@ public class GreetController {
 		String port = env.getProperty("server.port");
 		return "Good Morning("+port+")";
 	}
-
 }
