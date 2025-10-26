@@ -3060,12 +3060,14 @@ Note: With RestTemplate,only one url so no load balancing.
  i.e Scalability-->Without stopping any instance, creating new instance
  Autoscaling---->System will decide how much servers it needed, based on traffic
  
---API Gateway(Spring Cloud API Gateway)-->Entry point for all microservices. Any request coming to backend services should go through API Gateway. In API Gateway, Filter logic and 
+---API Gateway(Spring Cloud API Gateway)-->Entry point for all microservices. Any request coming to backend services should go through API Gateway. In API Gateway, Filter logic and 
 Routing logic available.(Mediator between UI and BackEnd)
  Filter-->stopping unwanted requests, valid request allowed
  Routing-->From API Gateway, where it should go
 -In API Gateway-->we will have 3 types of logics
     Route,Predicate(if path matched, request directed to that uri),Filters
+
+--Servelet based
 -To Create API GateWay, add following dependencies
             Web-Starter
 			eureka-client
@@ -3133,3 +3135,92 @@ logging:
   Client Request → Gateway (Port 2222) → Route Matching → Service Discovery → Load Balancing → Target Service
      ↓
 http://localhost:2222/welcome → Gateway → WELCOME-API service instance
+
+                    +-----------------+
+                    |       UI        |
+                    +--------+--------+
+                             |
+                             v
+         +-------------------------------------------+
+         |        API Gateway (Spring Cloud Gateway) |
+         |-------------------------------------------|
+         |  Port: 2222                               |
+         |  - Routing                                |
+         |  - Filters                                |
+         |  - Authentication/Authorization           |
+         +------------------+------------------------+
+                             |
+                             v
+             +-----------------------------------+
+             |  Service Registry (Eureka Server)  |
+             |  Port: 8761                        |
+             |  - Registers all microservices     |
+             |  - Enables load balancing          |
+             +------------------+-----------------+
+                             |
+     -------------------------------------------------------------
+     |                           |                               |
+     v                           v                               v
++-------------+          +----------------+           +-----------------+
+|  API-1      |          |    API-2       |           |   Config Server |
+|-------------|          |----------------|           |-----------------|
+| Port: 9090  |          | Ports: 8081,   |           | Port: 8888      |
+|             |          | 8082, 8083     |           | - Centralized   |
+| @EnableEurekaClient |  | @EnableEurekaClient |      |   config mgmt   |
+| @EnableFeignClients  |  | Feign client to 3rd API   |                 |
++----------+------------+  +-----------+--------------+-----------------+
+           |                           |               
+           |                           v
+           |                  +------------------+
+           |                  | 3rd Party API(s) |
+           |                  +------------------+
+           |
+   ------------------------------
+   |            |              |
+   v            v              v
++------+    +---------+    +----------------+
+|Redis |    |  Kafka  |    | Admin Server   |
+|Port: |    |Port:9092|    | Port: 1111     |
+|Cache |    |Message Q|    | Monitors Apps  |
++------+    +---------+    +----------------+
+                             |
+                             v
+                      +---------------+
+                      | Zipkin Server |
+                      | Port: 9411    |
+                      | Distributed   |
+                      | Tracing       |
+                      +---------------+
+
+-Filter-->If we want to perform operation before processing your request then we use filer
+
+@Component
+public class MyFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        System.out.println(">>> Request Info <<<");
+        System.out.println("Method: " + request.getMethod());
+        System.out.println("URI: " + request.getRequestURI());
+        System.out.println("Headers:");
+
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            System.out.println(headerName + ": " + request.getHeader(headerName));
+        }
+
+        // Continue the chain
+        chain.doFilter(request, response);
+
+        System.out.println("<<< Response Status: " + response.getStatus());
+    }
+}
+
+
+--Reactive Based API Gateway
