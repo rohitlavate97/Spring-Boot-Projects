@@ -3,13 +3,22 @@ server:
 
 spring:
   application:
-    name: 45-sbms-api-gateway
+    name: 46-sbms-reactive-apigateway
 
   main:
-    web-application-type: reactive
+    web-application-type: reactive  # ✅ WebFlux for reactive gateway
 
   cloud:
     gateway:
+      routes:
+        - id: greet-api
+          uri: lb://43-GREET-API
+          predicates:
+            - Path=/greet/**
+        - id: welcome-api
+          uri: lb://44-WELCOMEAPI-INTERSERVICECOMMUNICATION-MONITOR
+          predicates:
+            - Path=/welcome/**
       discovery:
         locator:
           enabled: true
@@ -21,12 +30,17 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     register-with-eureka: true
     fetch-registry: true
+  instance:
+    prefer-ip-address: true
 
 management:
   endpoints:
     web:
       exposure:
         include: '*'
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:

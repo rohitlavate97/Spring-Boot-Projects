@@ -21,7 +21,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request =exchange.getRequest();
         RequestPath path = request.getPath();
         System.out.println(">> Pre Filter: "+path);
-        
+        System.out.println("--------------------------------------------");
         HttpHeaders headers = request.getHeaders();
         Set<String> keySet = headers.keySet();
         for(String key: keySet) {

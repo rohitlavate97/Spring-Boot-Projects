@@ -3289,13 +3289,22 @@ server:
 
 spring:
   application:
-    name: 45-sbms-api-gateway
+    name: 46-sbms-reactive-apigateway
 
   main:
-    web-application-type: reactive
+    web-application-type: reactive  # ✅ WebFlux for reactive gateway
 
   cloud:
     gateway:
+      routes:
+        - id: greet-api
+          uri: lb://43-GREET-API
+          predicates:
+            - Path=/greet/**
+        - id: welcome-api
+          uri: lb://44-WELCOMEAPI-INTERSERVICECOMMUNICATION-MONITOR
+          predicates:
+            - Path=/welcome/**
       discovery:
         locator:
           enabled: true
@@ -3307,30 +3316,22 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     register-with-eureka: true
     fetch-registry: true
+  instance:
+    prefer-ip-address: true
 
 management:
   endpoints:
     web:
       exposure:
         include: '*'
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
     org.springframework.cloud.gateway: TRACE
-	
-package com.alchemist.filter;
-
-import java.util.Set;
-
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.Ordered;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.server.RequestPath;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
+---------------------------------------------
 
 @Component
 public class CustomGlobalFilter implements GlobalFilter, Ordered {
@@ -3341,7 +3342,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request =exchange.getRequest();
         RequestPath path = request.getPath();
         System.out.println(">> Pre Filter: "+path);
-        
+        System.out.println("--------------------------------------------");
         HttpHeaders headers = request.getHeaders();
         Set<String> keySet = headers.keySet();
         for(String key: keySet) {
@@ -3361,3 +3362,4 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         return -1; // Precedence, lower = higher priority
     }
 }
+
