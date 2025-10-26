@@ -21,8 +21,8 @@ public class RedisConfig {
 	}
 	
 	@Bean
-	public RedisTemplate<Integer, Country> redisTemplate(){         //kind of data stored in redis i.e Country type
-		RedisTemplate<Integer, Country> rt = new RedisTemplate<>();    
+	public RedisTemplate<String, Country> redisTemplate(){         //kind of data stored in redis i.e Country type
+		RedisTemplate<String, Country> rt = new RedisTemplate<>();    
 		rt.setConnectionFactory(jedisconn());             //Injecting JedisConnectionFactory object here
 		return rt;
 	}
