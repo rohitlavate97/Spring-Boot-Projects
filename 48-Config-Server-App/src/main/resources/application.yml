@@ -5,5 +5,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/rohitlavate97/config_server_properties.git
+          uri: https://github.com/rohitlavate97/config_server_properties
           clone-on-start: true
+server:
+  port: 9090

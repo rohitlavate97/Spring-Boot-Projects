@@ -3643,7 +3643,38 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/rohitlavate97/config_server_properties.git
+          uri: https://github.com/rohitlavate97/config_server_properties
           clone-on-start: true
+server:
+  port: 9090
 
 --Config-server-client app
+dependencies--> web-starter
+                config-client
+				dev-tools
+				spring-cloud-starter-config
+				
+
+
+@RestController
+public class WelcomeRestController {
+	
+	@Value("${msg}")
+	private String msg;
+	
+	@GetMapping
+	public String getWelcomeMsg() {
+		return msg;
+	}
+
+}
+
+application.yml
+----------------
+spring:
+  application:
+    name: 49-Config-Server-Client-App   # 👈 The name used to fetch the correct YAML file from Config Server
+  config:
+    import: optional:configserver:http://localhost:9090  # 👈 URL of your Config Server
+server:
+  port: 9091  # 👈 Local port where this client (microservice) will run
