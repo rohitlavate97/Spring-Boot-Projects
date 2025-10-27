@@ -3577,7 +3577,7 @@ public class RedisConfig {
 @RestController
 public class CountryRestController {
 	
-	HashOperations<String, Integer, Country> opsForHash = null;
+	HashOperations<String, Integer, Country> opsForHash = null;       -----> HashOperations<key, key from table, value > opsForHash
 	
 	@Autowired
 	public CountryRestController(RedisTemplate<String, Country> rt) {
@@ -3598,3 +3598,22 @@ public class CountryRestController {
 	}
 
 }
+
+--Cloud Config Server-->When package jar/war, application.prooperties/application.yml also part of it. If property changed, need to package again(Tightly coupled)
+We can externalize configuration properties by using config server. We will keep .yml in github and to load it create one app{Config server app}. When run api it 
+will connect with config server and load properties(yml should match with our api/app name)
+steps-->Maintain application configuration yml in github repo(app name and yml file should be same)
+        Config server app will connect with GitHub repo to load all ymls
+		Our APIs(Microservices) will connect with config server to load yml data based on application name.
+Note: If we use config server, then we no need to repackage our application when we make some changes in properties
+
+┌────────────────────────────┐         ┌───────────────────────────┐         ┌──────────────────────┐
+│        GitHub Repo         │  --->   │     Config Server App     │  --->   │      greet-api       │
+│────────────────────────────│         │───────────────────────────│         └──────────────────────┘
+│  greet.yml                 │         │  (Fetches configs from    │
+│  welcome.yml               │         │   GitHub and serves to    │         ┌──────────────────────┐
+│  admin.yml                 │         │   microservices)          │  --->   │    welcome-api       │
+└────────────────────────────┘         └───────────────────────────┘         └──────────────────────┘
+                                                                               ┌──────────────────────┐
+                                                                               │     admin-api        │
+                                                                               └──────────────────────┘
