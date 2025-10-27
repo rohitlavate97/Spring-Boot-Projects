@@ -3678,3 +3678,274 @@ spring:
     import: optional:configserver:http://localhost:9090  # 👈 URL of your Config Server
 server:
   port: 9091  # 👈 Local port where this client (microservice) will run
+  
+We also can add profile also--->spring.profiles.active = dev
+
+---Apache kafka
+-Event Streaming is practice of capturing data in real time from event sources(Sources-->db,sensors,mobile devices,cloud services and software applications)
+Using Event Streams, we can keep right information at right place at right time.
+-Uses of Data-->Application data can be used to run analytics in real time serving various purposes like
+               delivery advertisements
+			   tracing abnormal user behaviors
+			   displaying search based on relevance
+			   showing recommendations based on previous activities
+Ex: when we search product on amazon, we can see product in their apps i.e amzaon sales data to those apps(To promote business)
+To share data between two applications, we need to establish pipeline between these apps(difficult)-->so we use message broker(Data stored in message queue and fb,youtube etc will take data from it)
+Here webservices call is not possible, as every second data is generating
+
+┌─────────────────────────────────────────────────────────────────┐
+│                     Amazon.in E-commerce Platform               │
+└─────────────────────────────────────────────────────────────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         │                   │                   │
+         ▼                   ▼                   ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│   Event         │ │   Product       │ │   Order         │
+│   Producers     │ │   Catalog       │ │   Service       │
+│                 │ │   Producer      │ │   Producer      │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+         │                   │                   │
+         └───────────────────┼───────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Apache Kafka Cluster                         │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
+│  │ user_events │  │product_updates│ │order_events │  │email_events││
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────┘ │
+│         │                │                │             │       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────┐ │
+│  │ Partitions  │  │ Partitions  │  │ Partitions  │  │Partitions││
+│  │    P0-P7    │  │    P0-P5    │  │    P0-P5    │  │  P0-P3  │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         │                   │                   │
+         ▼                   ▼                   ▼
+    ┌─────────┐         ┌─────────┐         ┌─────────┐
+    │Consumer │         │Consumer │         │Consumer │
+    │ Groups  │         │ Groups  │         │ Groups  │
+    └─────────┘         └─────────┘         └─────────┘
+         │                   │                   │
+    ┌────┼────┐         ┌────┼────┐         ┌────┼────┐
+    │    │    │         │    │    │         │    │    │
+    ▼    ▼    ▼         ▼    ▼    ▼         ▼    ▼    ▼
+┌────┐┌────┐┌────┐ ┌────┐┌────┐┌────┐ ┌────┐┌────┐┌────┐
+│YouTube││Facebook││LinkedIn││Gmail ││Naukri││Others││Analytics│
+└────┘└────┘└────┘ └────┘└────┘└────┘ └────┘└────┘└────┘
+
+--Types of applications by Message Flow Role
+-Publishers-->Applications which store data into Apache kafka
+-subscribers-->Application takes data from message queue
+Note: One producer can have multiple subscribers
+
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Rider     │    │   Uber      │    │   Driver    │
+│   App       │    │  Backend    │    │   App       │
+└─────────────┘    └─────────────┘    └─────────────┘
+      │                   │                  │
+      │ 1. Book Cab       │                  │
+      │──────────────────▶│                  │
+      │                   │                  │
+      │                   │ 2. Publish to    │
+      │                   │    Kafka         │
+      │                   │───────┐          │
+      │                   │       │          │
+      │                   │       ▼          │
+      │                   │ ┌─────────────┐  │
+      │                   │ │   KAFKA     │  │
+      │                   │ │  - ride_requests│
+      │                   │ └─────────────┘  │
+      │                   │       │          │
+      │                   │       │ 3. Notify│
+      │                   │       │   Drivers│
+      │                   │       └─────────▶│
+      │                   │                  │
+      │                   │ 4. Driver Accepts│
+      │                   │◀─────────────────│
+      │                   │                  │
+      │ 5. Driver Assigned│                  │
+      │◀──────────────────│                  │
+      │                   │                  │
+      │ 6. Ride in Progress                  │
+      │──────────────────────────────────────▶│
+      │                   │                  │
+	  
+-Why messaging system?--->Messaging system provide a seamless integration between distributed applications with help of messages(i.e data is treated as messages means message in stream of data), 
+collecting data from different sources in different format becomes easy.
+Model-->Publish and Subscribe model
+
+--Apache Kafka-->Distributed straming platform, used to process real time data feeds with high throughput and low latency(ex-->Flights data ,sensors data , news data etc...)
+It works based on Publish and Subscribe model-->It allows Producers generate data/persist data in Apache kafka topics, and that topic can be read by any number of systems who need that data(Consumers)
+
+Event driven microservices-->Within the project we can use 'Message Queues'
+example-->While booking in uber, it will send nearest driver-->booking api generated an event, msg saved-->Listner for other api-->once event generated other api takes data
+         api continuously listening to msg queue-->when message comes it takes for processing immediately(Listeners listen event, they take that message and process that msg)-->all the listeners for project
+
++-------------------+        +------------------------+        +----------------------+
+|    Swiggy / App     | --->   |  Orchestrator Service  | --->   |     Message Queue    |
+| (Places Order)    |        | (Publishes Event e.g., |        | (Kafka / RabbitMQ)   |
+|                   |        | "OrderPlaced")         |        |                      |
++-------------------+        +------------------------+        +----------------------+
+                                                                /          |            \
+                                                               /           |             \
+                                                              v            v              v
+                                       +----------------+  +----------------+  +---------------------+
+                                       |  db api |  |         Restaurant    |  |  Notification       |
+                                       | (Consumes Msg) |  |  api           |  |  Service            |
+                                       | (Save Order,   |  | (Prepare /     |  | (Sends SMS, Push)   |
+                                       |  Update DB)    |  |  Update Status)|  |                     |
+                                       +----------------+  +----------------+  +---------------------+
+
+Kafka is publish/subscribe system. Behind the scenes, kafka is distributed, scales well, replicates data across brokers(servers), can survive broken downtime and much more--->NEFT Queues, Ticket queue
+
+ +----------------------------------------------------------------------------------------------+
+|                          Data Producers (Sources)                                            |
++----------------------------------------------------------------------------------------------+
+|   Metrics   |     Logs     |   Transaction Data   |   IoT Data   |   App Events   |
++----------------------------------------------------------------------------------------------+
+           \         |             |              |              |              /
+            \        |             |              |              |             /
+             \       |             |              |              |            /
+              \      |             |              |              |           /
+                      v             v              v              v
+                                   +----------------------------+
+                                   |          KAFKA             |
+                                   |  (Distributed Pub/Sub Bus) |
+                                   +----------------------------+
+                      ^             ^              ^              ^
+                     /               \             |               \
++----------------------------------------------------------------------------------------------+
+|      Online Applications      |   Stream Processing Systems   |  Offline Processing Systems  | 
+|  (Apache Solr, OpenTSDB etc.) |  (Samza, Spark, Storm, Flink) |  (Hadoop, Hive, etc.)       |
++----------------------------------------------------------------------------------------------+
+                                        |
+                                        v
+                          +-------------------------------+
+                          |  Analytics / Reporting Tools  |
+                          |  (BI Dashboards, Monitoring)  |
+                          +-------------------------------+
+
+Kafka Advantages-->High Throughput(Support for 100's of messages),scalability(No downtime), No data loss, Durability, Replication(Message can be replicated across clusters, which supports multiple subscribers)
+
+--Kafka Core API-->Producer API
+                   Consumer API
+                   Streams API---------->To create pipeline of streams of data
+                   Connector API-------->If app wants to store data in queue-->1st app should connect to queue(i.e connector api)
+
+--Kafka Installation-->
+   Download and Run zookeeper
+   Download and run apache kafka server
+   Create topic(buckets in message queue) in apache kafka--->used to differentiate messages(everything can't be stored in single topic)
+   
+           ┌────────────────────────────────────────────────────────────┐
+          │                    Kafka Cluster                           │
+          └────────────────────────────────────────────────────────────┘
+                                    │
+         ┌──────────────────────────────────────────────────────────┐
+         │                        Topics                            │
+         └──────────────────────────────────────────────────────────┘
+              │                   │                     │
+              ▼                   ▼                     ▼
+    ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
+    │ Topic: orders  │   │ Topic: payments│   │ Topic: logs    │
+    └────────────────┘   └────────────────┘   └────────────────┘
+          │                    │                    │
+          ▼                    ▼                    ▼
+ ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
+ │ Partition 0    │   │ Partition 0    │   │ Partition 0    │
+ │ Partition 1    │   │ Partition 1    │   │ Partition 1    │
+ └────────────────┘   └────────────────┘   └────────────────┘
+          │                    │                    │
+          ▼                    ▼                    ▼
+ ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
+ │ Consumer Group │   │ Consumer Group │   │ Consumer Group │
+ │ (Order Service)│   │ (Payment App)  │   │ (Logging Tool) │
+ └────────────────┘   └────────────────┘   └────────────────┘
+
+--Spring boot and Apache Kafka application steps to build
+step 1--> Download zookeeper and extract zip(URL: https://zookeeper.apache.org/releases.html)
+step 2--> Download Apache Kafka (URL: https://kafka.apache.org/downloads)
+step 3--> set path to ZOOKEEPER in environment variables upto bin folder(system variables-->path-->%apache-zookeeper-3.8.5-bin\bin)
+step 4--> start ZOOKEEPER server using below command from kafka folder
+       command: zookeeper-server-start.bat zookeeper.properties
+	   Note: Above command is available in kafka/bin/windows folder
+	   Note: zookeeper.properties file will be available in config folder, you can copy zookeeper.properties and server.properties file from kafka/config folder to kafka/bin/windwos folder
+step 5--> start kafka server using below command from kafka folder
+       command: kafka-server-start.bat server.properties   -->starts kafka on zookeeper
+	   Note: server.properties file available in config folder-->copy to windwos folder
+step 6--> create kafka topic using below command from kafka/bin/windows folder
+       command: kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic 03-sbms-topic      --->(2181-->default port for zookeeper server)
+step 7--> View created tipic by below command
+       command: kafka-tipics.bat --list --zookeeper localhost:2181
+step 8-->create spring boot app
+
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+
+ server.port=9090
+
+ 
+(Client Request)
+       │
+       ▼
++-----------------+       publish       +----------------------+       consume       +-----------------+
+| Spring Boot App |  ───────────────▶  |      Apache Kafka     |  ───────────────▶  | Spring Boot App |
+| (Publisher)     |                    | (Broker + Topics)     |                    | (Subscriber)    |
+| PORT: 9090      |                    |                      ▼                     | PORT: 7070      |
++-----------------+                    |     +-------------+                        +-----------------+
+                                       |     |  Zookeeper  |                       
+                                       |     |-------------|                       
+                                       |     | - Manages   |                       
+                                       |     |   Brokers   |                       
+                                       |     | - Metadata  |                       
+                                       |     | - Election  |                       
+                                       |     +-------------+                       
+                                       +----------------------+
+
+public class KafkaConstants {
+	public static final String TOPIC = "CUSTOMER";            //need to create this topic in the kafka
+	public static final String GROUP_ID = "GROUP_CUSTOMERS";
+	public static final String HOST = "localhost:9092";
+}
+--------------------------
+@Data
+public class Customer {
+	private Integer customerId;
+	private String customerName;
+	private String customerEmail;
+}
+----------------------------
+@Service("CustomerService")
+public class CustomerService {
+	@Autowired
+	private KafkaTemplate<String, Customer> kafkaTemplate;
+	
+	public String add(List<Customer> customers) {
+		if(!customers.isEmpty()) {
+			for(Customer c : customers) {
+				kafkaTemplate.send(KafkaConstants.TOPIC, c);
+				System.out.println("*****Message is published to kafka topic*****");
+			}
+		}
+		return "Customer record is added to the Kafka-Queue successfully";
+	}
+}
+------------------------------
+@Configuration
+public class KafkaProduceConfig {
+	
+	public ProducerFactory<String,Customer> producerFactory(){
+		Map<String, Object> configProp = new HashMap<>();
+		configProp.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
+		configProp.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);    //key-->TopicName
+		configProp.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);    //value-->customerdata
+		return new DefaultKafkaProducerFactory<>(configProp);
+	}
+
+}
