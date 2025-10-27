@@ -3881,7 +3881,7 @@ step 6--> create kafka topic using below command from kafka/bin/windows folder
        command: kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic 03-sbms-topic      --->(2181-->default port for zookeeper server)
 step 7--> View created tipic by below command
        command: kafka-tipics.bat --list --zookeeper localhost:2181
-step 8-->create spring boot app
+step 8-->create spring boot producer app
 
 <dependency>
     <groupId>org.springframework.kafka</groupId>
@@ -3971,3 +3971,112 @@ private KafkaTemplate<String, Customer> kafkaTemplate;
 
 You can now publish Customer objects to Kafka topics like:
 kafkaTemplate.send(KafkaConstants.TOPIC, customer);
+-----------------------
+step 9-->create spring boot consumer app
+
+<dependencies>
+    <!-- Spring Boot Kafka -->
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+    </dependency>
+
+    <!-- JAXB for XML binding -->
+    <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+    </dependency>
+
+    <!-- Lombok (optional) -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+</dependencies>
+
+
+server.port=7070
+
+public class KafkaConstants {
+	public static final String TOPIC ="CUSTOMER";
+	public static final String GROUP_ID = "GROUP_CUSTOMER";
+	public static final String HOST ="localhost:9092";
+
+}
+-----------------
+@XmlRootElement(name = "customer")
+@XmlAccessorType(XmlAccessType.FIELD)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer {
+	private Integer customerId;
+	private String customerName;
+	private String customerEmail;
+}
+-----------------
+@EnableKafka
+@Configuration
+public class KafkaListenerConfig {
+	
+	@Bean
+	public ConsumerFactory<String, Customer> consumerFactory(){
+		Map<String, Object> props = new HashMap<>();
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
+		props.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.GROUP_ID);
+		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+		return new DefaultKafkaConsumerFactory<>(props);
+	}
+	
+	public ConcurrentKafkaListenerContainerFactory<String, Customer> kafkaListenerContainerFactory(){
+		ConcurrentKafkaListenerContainerFactory<String, Customer> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(consumerFactory());
+		return factory;
+	}
+}
+------------------
+@Service("CustomerService")
+public class CustomerService {
+	private Customer lastReceivedCustomer;
+
+	
+	@KafkaListener(topics = KafkaConstants.TOPIC, groupId = KafkaConstants.GROUP_ID)
+	public void listener(Customer c) {
+		System.out.println("****Message received form kafka-topic::"+c);
+		//return c;
+		this.lastReceivedCustomer = c;
+	}
+	
+    public Customer getLastReceivedCustomer() {
+        return lastReceivedCustomer;
+    }
+}
+
+----------------------
+@RestController
+public class ConsumerRestController {
+
+    @Autowired
+    private CustomerService customerService;
+
+    @GetMapping("/lastCustomer")
+    public Customer getLastReceivedCustomer() {
+        Customer c = customerService.getLastReceivedCustomer();
+        if (c == null)
+            throw new RuntimeException("No message received yet from Kafka topic.");
+        return c;
+    }
+
+    @GetMapping("/status")
+    public String getStatus() {
+        return "✅ Kafka Consumer Application is running and ready to receive messages.";
+    }
+}
+---------------------------
