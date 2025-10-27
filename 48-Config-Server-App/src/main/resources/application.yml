@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: 48-Config-Server-App
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/rohitlavate97/config_server_properties.git
+          clone-on-start: true
