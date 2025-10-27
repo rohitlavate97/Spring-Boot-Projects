@@ -3939,7 +3939,7 @@ public class CustomerService {
 ------------------------------
 @Configuration
 public class KafkaProduceConfig {
-	
+	@Bean
 	public ProducerFactory<String,Customer> producerFactory(){
 		Map<String, Object> configProp = new HashMap<>();
 		configProp.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
@@ -3947,5 +3947,27 @@ public class KafkaProduceConfig {
 		configProp.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);    //value-->customerdata
 		return new DefaultKafkaProducerFactory<>(configProp);
 	}
+	
+	@Bean(name = "KafkaTemplate")
+	public KafkaTemplate<String, Customer> kafkaTemplate(){
+		return new KafkaTemplate<>(producerFactory());
+	}
 
 }
+------------------
+🧠 What Happens
+
+ProducerFactory:
+Creates Kafka producers using the given configuration (host, serializers, etc.).
+Serializers ensure that String (topic key) and Customer (JSON message) are correctly sent to Kafka.
+
+KafkaTemplate
+Provides a high-level API to send messages easily from your CustomerService.
+Autowired into your service like this:
+
+@Autowired
+private KafkaTemplate<String, Customer> kafkaTemplate;
+
+
+You can now publish Customer objects to Kafka topics like:
+kafkaTemplate.send(KafkaConstants.TOPIC, customer);
