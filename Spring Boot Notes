@@ -3876,11 +3876,13 @@ step 4--> start ZOOKEEPER server using below command from kafka folder
 	   Note: zookeeper.properties file will be available in config folder, you can copy zookeeper.properties and server.properties file from kafka/config folder to kafka/bin/windwos folder
 step 5--> start kafka server using below command from kafka folder
        command: kafka-server-start.bat server.properties   -->starts kafka on zookeeper
-	   Note: server.properties file available in config folder-->copy to windwos folder
+	   Note: server.properties file available in config folder-->copy to windwos folders
 step 6--> create kafka topic using below command from kafka/bin/windows folder
-       command: kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic 03-sbms-topic      --->(2181-->default port for zookeeper server)
+       command: kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic 03-sbms-topic      --->(2181-->default port for zookeeper server) --->deprecated command
+	   new commadn: kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic CUSTOMER
 step 7--> View created tipic by below command
-       command: kafka-tipics.bat --list --zookeeper localhost:2181
+       command(deprecated): kafka-tipic.bat --list --zookeeper localhost:2181
+	   new command: kafka-topics.bat --list --bootstrap-server localhost:9092
 step 8-->create spring boot producer app
 
 <dependency>

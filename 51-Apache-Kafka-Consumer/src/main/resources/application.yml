@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: 51-Apache-Kafka-Consumer
+  kafka:
+    consumer:
+      group-id: GROUP_CUSTOMER
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.alchemist.model"
+server:
+  port: 7070
