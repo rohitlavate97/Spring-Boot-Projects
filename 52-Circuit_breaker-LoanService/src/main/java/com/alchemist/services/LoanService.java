@@ -14,7 +14,7 @@ public class LoanService {
 	@Autowired
 	private RestTemplate restTemplate;
 	private static final String SERVICE_NAME = "loan-service";
-	private static final String RATE_SERVICE_URL ="";
+	private static final String RATE_SERVICE_URL ="http://localhost:9091/rate/{type}";
 	
 	@CircuitBreaker(name =SERVICE_NAME, fallbackMethod = "getDefaultLoan")
 	public InterestRate getAllLoansByType(String type) {
