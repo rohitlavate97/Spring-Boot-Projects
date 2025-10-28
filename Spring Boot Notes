@@ -4125,3 +4125,230 @@ spring:
         spring.json.trusted.packages: "com.alchemist.model"
 server:
   port: 7070
+---------------------------
+
+---Circuit Breaker in MicroServices--> Design Pattern for fault tolerence(Fault tolerent applications are called Resillience applications)
+
+Client/API  ────▶  Circuit Breaker  ────▶  Remote Service
+                      │
+                      │ (When Open/Failed)
+                      ▼
+                Fallback/Error Message
+				
+				
+				
+┌──────────────┐     Request     ┌──────────────────┐
+│   Client     │ ──────────────▶ │ Circuit Breaker   │
+│    / API     │                 └─────────┬─────────┘
+└──────────────┘                           │
+                     ┌─────────────────────┼────────────────────┐
+                     │                     │                    │
+                     │ (State: CLOSED)     │ (State: OPEN)       │ (State: HALF-OPEN)
+                     │ Normal Operation    │ Fast Fail           │ Test Limited Requests
+                     ▼                     ▼                    ▼
+            ┌─────────────────┐     ┌─────────────────┐   ┌─────────────────┐
+            │ Remote Service  │     │ Fallback / Error │   │ Remote Service  │ (Test Call)
+            │ (Healthy)       │     │ Message Response │   │ (If Recovers)   │
+            └─────────────────┘     └─────────────────┘   └─────────────────┘					  
+
+
+
+ CLOSED  ---- errors threshold ---->  OPEN
+   ^                                    |
+   |                                    | wait → try
+   +------------ HALF-OPEN <------------+
+                 |  success → CLOSED
+                 |  failure → OPEN
+
+
+
+					  
+┌──────────────┐     Failure     ┌──────────────┐     Timeout     ┌──────────────┐
+│    CLOSED    │ ──────────────▶ │     OPEN     │ ──────────────▶ │  HALF-OPEN  │
+│              │                 │              │                 │              │
+│ • Normal     │                 │ • Fast Fail  │                 │ • Test       │
+│ • Requests   │                 │ • No Requests│                 │   Requests   │
+│   Allowed    │                 │   Allowed    │                 │ • Limited    │
+└──────────────┘                 └──────────────┘                 └──────┬───────┘
+       Ａ                                                                    │
+       │                              Success                         Failure│
+       │                              (All Test Requests Pass)         (Any Test Fails)
+       └─────────────────────────────────────────────────────────────────────┘
+	   
+-If service A(m1 method) communicates with service B(m2 method)-->
+
+UI/Client → Service A → Service B → Database
+    │           │           │           │
+    │           │           │           │
+ Frontend   API Layer  Business    Data
+           Gateway     Logic      Persistence
+		   
+    If Service B is down-->Exception, we can use try and catch block for handling the Exception. but, if 1000's of requests-->not recommended approach
+	So, we should go for Circuit breaker(Used to develop fault tolerence)---->configure Circuit breaker for service B(m2 method)--->If request failing consecutively(ex-->5 times)-->then on 6th time call m3 method
+	Ex-->
+	@CircuitBreaker(name="", fallbackmethod="m3")
+	public String m2(){
+	//logic to call Service-B using RestTemplate
+	return str;
+	}
+	public String m3(){
+	//alternate logic
+	}
+	
+-circuit-breaker-config-properties-->when to execute m2() and m3()
+                                    For how many requests we need to monitor
+-Circuit breaker will have below 3 states-->CLOSED,OPEN,HALF-OPEN
+| State         | Meaning                                  | Behavior                                                      |
+| ------------- | ---------------------------------------- | ------------------------------------------------------------- |
+| **CLOSED**    | System is working normally               | Requests flow normally to downstream service                  |
+| **OPEN**      | Downstream service is failing repeatedly | Requests are *blocked immediately* and fallback logic is used |
+| **HALF-OPEN** | Testing if service has recovered         | Sends **limited trial requests** to check service health      |
+
+--What is Resilience4j-->Lightweight, easy to use fault tolerence library inspired by NetFlix Hystrix.It provides various features.
+        Circuit Breaker-->Fault Tolerence
+		Rate Limiter-->Block too many requests
+		Time Limiter-->Limit time while calling remote operations
+		Retry Mechanism-->Automatic retry for failed operations
+		Bulkhead-->limit number of concurrent requests
+		Cache-->Store results of costly remote operations
+		
+--Develop applications with circuit-breaker
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+--------------------------------------------
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class InterestRate {
+	Integer id;
+	String type;
+	Double rateValue;
+}
+---------------------------------------------
+@Service
+public class LoanService {
+	@Autowired
+	private RestTemplate restTemplate;
+	private static final String SERVICE_NAME = "loan-service";
+	private static final String RATE_SERVICE_URL ="";
+	
+	@CircuitBreaker(name =SERVICE_NAME, fallbackMethod = "getDefaultLoan")
+	public InterestRate getAllLoansByType(String type) {
+		System.out.println("*****Original Method called...*****");
+		ResponseEntity<InterestRate> response = restTemplate.getForEntity(RATE_SERVICE_URL, InterestRate.class, type);
+		return response.getBody();
+	}
+	
+	public InterestRate getDefaultLoan(Exception e) {
+		System.out.println("*****Fallback method called.....****");
+		return new InterestRate();      //returning dummy response instead of error response to the client
+	}
+
+}
+---------------------------------------
+@RestController
+public class LoanController {
+	@Autowired
+	private LoanService loanService;
+	
+	@GetMapping(path ="/loans")
+	public ResponseEntity<InterestRate> getLoansByType(@RequestParam("type") String type){
+		return ResponseEntity.ok().body(loanService.getAllLoansByType(type.toUpperCase()));
+	}
+}
+---------------------------------------
+@SpringBootApplication
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+	
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+
+}
+---------------------------------------------
+application.yml
+---------------------------------------------
+server:
+  port: 9090
+
+spring:
+  application:
+    name: 52-Circuit_breaker-LoanService
+  datasource:
+    url: jdbc:h2:mem:cb-loan-db
+    username: root
+    password: 123
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      loan-service:
+        register-health-indicator: true
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5            #After sending 5 calls it evaluates how many failed
+        sliding-window-type: COUNT_BASED      # COUNT_BASED or TIME_BASED
+        sliding-window-size: 10              # Evaluate last 10 calls
+        wait-duration-in-open-state: 10s     # Stay OPEN for 10 sec → then go HALF-OPEN
+        permitted-number-of-calls-in-half-open-state: 3  # Allow 3 test calls in HALF-OPEN
+        automatic-transition-from-open-to-half-open-enabled: true
+---------------------------------------------------------------------------
+

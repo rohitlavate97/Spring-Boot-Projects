@@ -1,0 +1,43 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: 52-Circuit_breaker-LoanService
+  datasource:
+    url: jdbc:h2:mem:cb-loan-db
+    username: root
+    password: 123
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      loan-service:
+        register-health-indicator: true
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        sliding-window-type: COUNT_BASED      # COUNT_BASED or TIME_BASED
+        sliding-window-size: 10              # Evaluate last 10 calls
+        wait-duration-in-open-state: 10s     # Stay OPEN for 10 sec → then go HALF-OPEN
+        permitted-number-of-calls-in-half-open-state: 3  # Allow 3 test calls in HALF-OPEN
+        automatic-transition-from-open-to-half-open-enabled: true
