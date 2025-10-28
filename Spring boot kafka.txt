@@ -1,0 +1,259 @@
+--Spring boot and Apache Kafka application steps to build
+step 1--> Download zookeeper and extract zip(URL: https://zookeeper.apache.org/releases.html)
+step 2--> Download Apache Kafka (URL: https://kafka.apache.org/downloads)
+step 3--> set path to ZOOKEEPER in environment variables upto bin folder(system variables-->path-->%apache-zookeeper-3.8.5-bin\bin)
+step 4--> start ZOOKEEPER server using below command from kafka folder
+       command: zookeeper-server-start.bat zookeeper.properties
+	   Note: Above command is available in kafka/bin/windows folder
+	   Note: zookeeper.properties file will be available in config folder, you can copy zookeeper.properties and server.properties file from kafka/config folder to kafka/bin/windwos folder
+step 5--> start kafka server using below command from kafka folder
+       command: kafka-server-start.bat server.properties   -->starts kafka on zookeeper
+	   Note: server.properties file available in config folder-->copy to windwos folders
+step 6--> create kafka topic using below command from kafka/bin/windows folder
+       command: kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic 03-sbms-topic      --->(2181-->default port for zookeeper server) --->deprecated command
+	   new commadn: kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic CUSTOMER
+step 7--> View created tipic by below command
+       command(deprecated): kafka-tipic.bat --list --zookeeper localhost:2181
+	   new command: kafka-topics.bat --list --bootstrap-server localhost:9092
+step 8-->create spring boot producer app
+
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+
+ server.port=9090
+
+ 
+(Client Request)
+       │
+       ▼
++-----------------+       publish       +----------------------+       consume       +-----------------+
+| Spring Boot App |  ───────────────▶  |      Apache Kafka     |  ───────────────▶  | Spring Boot App |
+| (Publisher)     |                    | (Broker + Topics)     |                    | (Subscriber)    |
+| PORT: 9090      |                    |                      ▼                     | PORT: 7070      |
++-----------------+                    |     +-------------+                        +-----------------+
+                                       |     |  Zookeeper  |                       
+                                       |     |-------------|                       
+                                       |     | - Manages   |                       
+                                       |     |   Brokers   |                       
+                                       |     | - Metadata  |                       
+                                       |     | - Election  |                       
+                                       |     +-------------+                       
+                                       +----------------------+
+
+public class KafkaConstants {
+	public static final String TOPIC = "CUSTOMER";            //need to create this topic in the kafka
+	public static final String GROUP_ID = "GROUP_CUSTOMERS";
+	public static final String HOST = "localhost:9092";
+}
+--------------------------
+@Data
+public class Customer {
+	private Integer customerId;
+	private String customerName;
+	private String customerEmail;
+}
+----------------------------
+@Service("CustomerService")
+public class CustomerService {
+	@Autowired
+	private KafkaTemplate<String, Customer> kafkaTemplate;
+	
+	public String add(List<Customer> customers) {
+		if(!customers.isEmpty()) {
+			for(Customer c : customers) {
+				kafkaTemplate.send(KafkaConstants.TOPIC, c);
+				System.out.println("*****Message is published to kafka topic*****");
+			}
+		}
+		return "Customer record is added to the Kafka-Queue successfully";
+	}
+}
+------------------------------
+@Configuration
+public class KafkaProduceConfig {
+	@Bean
+	public ProducerFactory<String,Customer> producerFactory(){
+		Map<String, Object> configProp = new HashMap<>();
+		configProp.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
+		configProp.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);    //key-->TopicName
+		configProp.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);    //value-->customerdata
+		return new DefaultKafkaProducerFactory<>(configProp);
+	}
+	
+	@Bean(name = "KafkaTemplate")
+	public KafkaTemplate<String, Customer> kafkaTemplate(){
+		return new KafkaTemplate<>(producerFactory());
+	}
+
+}
+------------------
+🧠 What Happens
+
+ProducerFactory:
+Creates Kafka producers using the given configuration (host, serializers, etc.).
+Serializers ensure that String (topic key) and Customer (JSON message) are correctly sent to Kafka.
+
+KafkaTemplate
+Provides a high-level API to send messages easily from your CustomerService.
+Autowired into your service like this:
+
+@Autowired
+private KafkaTemplate<String, Customer> kafkaTemplate;
+
+
+You can now publish Customer objects to Kafka topics like:
+kafkaTemplate.send(KafkaConstants.TOPIC, customer);
+-----------------------
+step 9-->create spring boot consumer app
+
+<dependencies>
+    <!-- Spring Boot Kafka -->
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+    </dependency>
+
+    <!-- JAXB for XML binding -->
+    <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+    </dependency>
+
+    <!-- Lombok (optional) -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+</dependencies>
+
+
+public class KafkaConstants {
+	public static final String TOPIC ="CUSTOMER";
+	public static final String GROUP_ID = "GROUP_CUSTOMER";
+	public static final String HOST ="localhost:9092";
+
+}
+-----------------
+@XmlRootElement(name = "customer")
+@XmlAccessorType(XmlAccessType.FIELD)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer {
+	private Integer customerId;
+	private String customerName;
+	private String customerEmail;
+}
+-----------------
+@EnableKafka
+@Configuration
+public class KafkaListenerConfig {
+	
+	@Bean
+	public ConsumerFactory<String, Customer> consumerFactory() {
+		/*
+		 * JsonDeserializer<Customer> deserializer = new
+		 * JsonDeserializer<>(Customer.class); deserializer.addTrustedPackages("*"); //
+		 * allow deserialization from all packages
+		 */
+	    Map<String, Object> props = new HashMap<>();
+	    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
+	    props.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.GROUP_ID);
+	    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+	    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+	    props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+	    return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Customer.class));
+	}
+
+	
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, Customer> kafkaListenerContainerFactory() {
+	    ConcurrentKafkaListenerContainerFactory<String, Customer> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	    factory.setConsumerFactory(consumerFactory());
+	    return factory;
+	}
+}
+------------------
+@Component
+public class KafkaMessageListener {
+
+    @Autowired
+    private CustomerService customerService;
+
+    @KafkaListener(topics = KafkaConstants.TOPIC, groupId = KafkaConstants.GROUP_ID,
+                   containerFactory = "kafkaListenerContainerFactory")
+    public void consume(Customer customer) {
+        System.out.println("✅ Received Customer: " + customer);
+        customerService.setLastCustomer(customer);
+    }
+}
+
+------------------
+import com.alchemist.model.Customer;
+
+public interface CustomerService {
+    void setLastCustomer(Customer c);
+    Customer getLastCustomer();
+}
+----------------
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+    private Customer lastCustomer;
+
+    @Override
+    public void setLastCustomer(Customer c) {
+        this.lastCustomer = c;
+    }
+
+    @Override
+    public Customer getLastCustomer() {
+        return lastCustomer;
+    }
+}
+
+
+----------------------
+
+@RestController
+public class ConsumerRestController {
+
+    @Autowired
+    private CustomerService customerService;
+
+    @GetMapping("/lastCustomer")
+    public Customer getLastReceivedCustomer() {
+        Customer c = customerService.getLastCustomer();
+        if (c == null)
+            throw new RuntimeException("No message received yet from Kafka topic.");
+        return c;
+    }
+
+    @GetMapping("/status")
+    public String getStatus() {
+        return "✅ Kafka Consumer is running on port 7070";
+    }
+}
+
+---------------------------
+spring:
+  application:
+    name: 51-Apache-Kafka-Consumer
+  kafka:
+    consumer:
+      group-id: GROUP_CUSTOMER
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.alchemist.model"
+server:
+  port: 7070

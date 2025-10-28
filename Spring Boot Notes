@@ -4003,8 +4003,6 @@ step 9-->create spring boot consumer app
 </dependencies>
 
 
-server.port=7070
-
 public class KafkaConstants {
 	public static final String TOPIC ="CUSTOMER";
 	public static final String GROUP_ID = "GROUP_CUSTOMER";
@@ -4028,40 +4026,71 @@ public class Customer {
 public class KafkaListenerConfig {
 	
 	@Bean
-	public ConsumerFactory<String, Customer> consumerFactory(){
-		Map<String, Object> props = new HashMap<>();
-		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
-		props.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.GROUP_ID);
-		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-		return new DefaultKafkaConsumerFactory<>(props);
+	public ConsumerFactory<String, Customer> consumerFactory() {
+		/*
+		 * JsonDeserializer<Customer> deserializer = new
+		 * JsonDeserializer<>(Customer.class); deserializer.addTrustedPackages("*"); //
+		 * allow deserialization from all packages
+		 */
+	    Map<String, Object> props = new HashMap<>();
+	    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.HOST);
+	    props.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.GROUP_ID);
+	    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+	    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+	    props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+	    return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Customer.class));
 	}
+
 	
-	public ConcurrentKafkaListenerContainerFactory<String, Customer> kafkaListenerContainerFactory(){
-		ConcurrentKafkaListenerContainerFactory<String, Customer> factory = new ConcurrentKafkaListenerContainerFactory<>();
-		factory.setConsumerFactory(consumerFactory());
-		return factory;
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, Customer> kafkaListenerContainerFactory() {
+	    ConcurrentKafkaListenerContainerFactory<String, Customer> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	    factory.setConsumerFactory(consumerFactory());
+	    return factory;
 	}
 }
 ------------------
-@Service("CustomerService")
-public class CustomerService {
-	private Customer lastReceivedCustomer;
+@Component
+public class KafkaMessageListener {
 
-	
-	@KafkaListener(topics = KafkaConstants.TOPIC, groupId = KafkaConstants.GROUP_ID)
-	public void listener(Customer c) {
-		System.out.println("****Message received form kafka-topic::"+c);
-		//return c;
-		this.lastReceivedCustomer = c;
-	}
-	
-    public Customer getLastReceivedCustomer() {
-        return lastReceivedCustomer;
+    @Autowired
+    private CustomerService customerService;
+
+    @KafkaListener(topics = KafkaConstants.TOPIC, groupId = KafkaConstants.GROUP_ID,
+                   containerFactory = "kafkaListenerContainerFactory")
+    public void consume(Customer customer) {
+        System.out.println("✅ Received Customer: " + customer);
+        customerService.setLastCustomer(customer);
     }
 }
 
+------------------
+import com.alchemist.model.Customer;
+
+public interface CustomerService {
+    void setLastCustomer(Customer c);
+    Customer getLastCustomer();
+}
+----------------
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+    private Customer lastCustomer;
+
+    @Override
+    public void setLastCustomer(Customer c) {
+        this.lastCustomer = c;
+    }
+
+    @Override
+    public Customer getLastCustomer() {
+        return lastCustomer;
+    }
+}
+
+
 ----------------------
+
 @RestController
 public class ConsumerRestController {
 
@@ -4070,7 +4099,7 @@ public class ConsumerRestController {
 
     @GetMapping("/lastCustomer")
     public Customer getLastReceivedCustomer() {
-        Customer c = customerService.getLastReceivedCustomer();
+        Customer c = customerService.getLastCustomer();
         if (c == null)
             throw new RuntimeException("No message received yet from Kafka topic.");
         return c;
@@ -4078,7 +4107,21 @@ public class ConsumerRestController {
 
     @GetMapping("/status")
     public String getStatus() {
-        return "✅ Kafka Consumer Application is running and ready to receive messages.";
+        return "✅ Kafka Consumer is running on port 7070";
     }
 }
+
 ---------------------------
+spring:
+  application:
+    name: 51-Apache-Kafka-Consumer
+  kafka:
+    consumer:
+      group-id: GROUP_CUSTOMER
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.alchemist.model"
+server:
+  port: 7070
