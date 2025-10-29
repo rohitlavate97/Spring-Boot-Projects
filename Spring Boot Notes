@@ -4263,22 +4263,24 @@ public class InterestRate {
 public class LoanService {
 	@Autowired
 	private RestTemplate restTemplate;
+
 	private static final String SERVICE_NAME = "loan-service";
 	private static final String RATE_SERVICE_URL ="http://localhost:9091/rate/{type}";
 	
-	@CircuitBreaker(name =SERVICE_NAME, fallbackMethod = "getDefaultLoan")
+	@CircuitBreaker(name = SERVICE_NAME, fallbackMethod = "getDefaultLoan")
 	public InterestRate getAllLoansByType(String type) {
 		System.out.println("*****Original Method called...*****");
 		ResponseEntity<InterestRate> response = restTemplate.getForEntity(RATE_SERVICE_URL, InterestRate.class, type);
 		return response.getBody();
 	}
 	
-	public InterestRate getDefaultLoan(Exception e) {
+	// ✅ Correct fallback: Same params + Exception
+	public InterestRate getDefaultLoan(String type, Exception e) {
 		System.out.println("*****Fallback method called.....****");
-		return new InterestRate();      //returning dummy response instead of error response to the client
+		return new InterestRate(0, type, 7.5);  // return safe default response
 	}
-
 }
+
 ---------------------------------------
 @RestController
 public class LoanController {
@@ -4341,7 +4343,7 @@ management:
 resilience4j:
   circuitbreaker:
     instances:
-      loan-service:                           #name is the link between code and properties
+      loan-service:                           #name is the link between code and properties(must match with SERVICE_NAME)
         register-health-indicator: true
         failure-rate-threshold: 50
         minimum-number-of-calls: 5            #After sending 5 calls it evaluates how many failed
@@ -4350,9 +4352,21 @@ resilience4j:
         wait-duration-in-open-state: 10s     # Stay OPEN for 10 sec → then go HALF-OPEN
         permitted-number-of-calls-in-half-open-state: 3  # Allow 3 test calls in HALF-OPEN
         automatic-transition-from-open-to-half-open-enabled: true
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Property Name                                               | Meaning                                             | Example                                                                |
+| ----------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| `failure-rate-threshold: 50`                                | If **50% calls fail**, breaker will **OPEN**        | Out of 10 calls, if 5 fail → OPEN state                                |
+| `minimum-number-of-calls: 5`                                | Evaluate failures **only after at least 5 calls**   | Before 5 calls → always CLOSED                                         |
+| `sliding-window-type: COUNT_BASED`                          | Evaluate based on **last N calls**                  | Here N = 10                                                            |
+| `sliding-window-size: 10`                                   | Looks at **last 10 calls** to decide                | If 6/10 fail → failure rate = 60% → OPEN                               |
+| `wait-duration-in-open-state: 10s`                          | Stay in **OPEN state for 10 seconds**               | During this time → **no calls go to actual service**, fallback is used |
+| `permitted-number-of-calls-in-half-open-state: 3`           | While HALF-OPEN, allow **3 test calls**             | If they succeed → go to **CLOSED**                                     |
+| `automatic-transition-from-open-to-half-open-enabled: true` | Automatically move to HALF-OPEN after wait duration | After 10 seconds, allow 3 test calls                                   |
+
 ---------------------------------------------------------------------------
----------------------------------------------------------------------------\
 --Develop rate-service
+---------------------------------------------------------------------------
+
 
 <dependencies>
 		<dependency>
@@ -4418,3 +4432,92 @@ spring:
   application:
     name: 52-Rate-Service
 --------------------------
+
+
+--Spring Security-->
+-----------------
+-Authentication(Verifying Credentials) + Authorization(User Access specific functionality)
+Note:
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+-When we add this dependency in pom.xml file, then by default our application will be secured with basic authentication. It will generate random password to access our application.When we access our application url in browser then,it 
+will display 'Login Form' to authenticate our request.In order to access Secured REST API from Postman, we need to set Auth values in postman to send request.
+    Auth: Basic Auth
+	UserName: User
+	Password: <Copy-from-console>
+	
+-When Secured REST-API available, we need to pass credentials in the Header(key-value) of Client.
+-To override default credentials, we can configure security credentials in applicaion.properties/application.yml like below,
+spring.security.user.name=admin
+spring.security.user.password=password
+#spring.security.user.roles=USER,ADMIN
+-->Enter above username and password in Postman header to access the REST API
+
+--Securing specific URL Pattern-->
+-------------------------------
+When we add securiry-starter--> it will apply security filter to all HTTP methods of our application. But in reality, we need to secure only few methods not all methods in our app-->Cusotmize security configuration
+Ex: For banking application
+    /login---> Security not needed
+	/transfer--> Security required
+	/balance---> Security required
+	/about-us---> Security not required
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurer{
+     @Bean
+	 public SecurityFilterChain securityFilter(HttpSecurity http) throws Exception{
+	   http.authorizeHttpRequests(request)->request
+	                             .antMatchers("/","/login","/about","/swagger-ui.html")
+								 .permitAll()
+								 ).formLogin();
+	   return http.build();
+	}
+}
+
+-Develop app
+@RestController
+public class SecurityRestController {
+	@GetMapping("/hi")
+	public String sayHi() {
+		return "Hi, How are you?";
+	}
+	
+	@GetMapping("/hello")
+	public String sayHello() {
+		return "Hello, how are you?";
+	}
+	
+	@GetMapping("/contact")
+	public String getContact() {
+		return "Call us::+918600852978";
+	}
+}
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurer {
+	@Bean                                                                           //called when application is started
+	public SecurityFilterChain securityFilter(HttpSecurity http) throws Exception{
+		System.out.println("Security Filter Called.....");
+		//Customize Security
+		http.authorizeHttpRequests((req) ->
+		//req.antMatchers("/contact").permitAll()       //deprecated
+		req.requestMatchers("/contact").permitAll()                         //any request matches with this pattern will be permited
+		.anyRequest().authenticated()                                       //else authenticated by user form login 
+		).formLogin();
+		return http.build();
+	}
+}
+
+application.properties
+spring.application.name=54-Spring-Securiry-App
+spring.security.user.name=admin
+spring.security.user.password=admin@123
+server.port=9090
+----------------------
+-Database Authentication-->Hardcode values in application.properties not recommended, but real time app will be available in db,internally code is executed by spring security. Only if right credentials provided,
+then it will allow to access the page
+-Their is predefined class in the spring security named User. So whatever credetials in application.properties, loaded to User Object by Spring Security.
