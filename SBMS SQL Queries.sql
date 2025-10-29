@@ -34,3 +34,25 @@ create database prodDb;
 
 select * from product
 
+CREATE TABLE `users` (
+  `username` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(120) NOT NULL,
+  `enabled` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`username`)
+);
+
+select * from users;
+
+CREATE TABLE `authorities` (
+  `username` VARCHAR(50) NOT NULL,
+  `authority` VARCHAR(50) NOT NULL,
+  KEY `username` (`username`),
+  CONSTRAINT `authorities_ibfk_1` FOREIGN KEY (`username`)
+    REFERENCES `users` (`username`)
+);
+
+select * from authorities;
+
+insert into users values('admin','$2a$12$LlOKsem5HNKzdI.xjycFRebyRjzdIhVrdXuehk8du7272j1ILl1Ki',1); <----decrypt --password=admin@123--->
+insert into users values('user','$2a$12$9Y5BFUvctEQj5jPtAX5NIuH1AUr0AROiklwjUjuI8yC0d1O2d3nQC',1);
+

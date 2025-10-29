@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: 55-JDBC-Authentication-App
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sbms?createDatabaseIfNotExist=true
+    username: root
+    password: admin@123   # 🔹 Add your MySQL password
+#    hikari:
+#      maximum-pool-size: 10        # Optional: for better performance
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 9090

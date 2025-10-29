@@ -4521,3 +4521,168 @@ server.port=9090
 -Database Authentication-->Hardcode values in application.properties not recommended, but real time app will be available in db,internally code is executed by spring security. Only if right credentials provided,
 then it will allow to access the page
 -Their is predefined class in the spring security named User. So whatever credetials in application.properties, loaded to User Object by Spring Security.
+
+
++-----------------------------------+                   +---------------------------------------------------------------+                    +--------------------------------------------+
+|  Login Page                       | --------------->  |                     SPRING SECURITY FLOW                     | --------------->    |      application.properties                |
+|                                   |                   |---------------------------------------------------------------|                    |--------------------------------------------|
+| Username: [__________]            |                   |  +-------------+       +--------------------+     +----------+|                    | user.name = abhi                           |
+| Password: [__________]            |                   |  |    User     | --->  | UserDetailsService | --> |AuthManager||                    | user.pwd  = abc@123                        |
+| [ Login Button ]                  |                   |  +-------------+       +--------------------+     +----------+|                    +--------------------------------------------+
++-----------------------------------+                   +---------------------------------------------------------------+
+
+
+
+                +---------------------------+
+                |   User Sends Login Data   |
+                |  (username + password)    |
+                +------------+--------------+
+                             |
+                             v
+             +-------------------------------------+
+             | UsernamePasswordAuthenticationFilter|
+             | (Intercepts login request)          |
+             +----------------+--------------------+
+                              |
+                              v
+              +--------------------------------+
+              | AuthenticationManager.authenticate() |
+              +----------------+-----------------+
+                               |
+                               v
+                 +---------------------------------+
+                 | AuthenticationProvider (DAO)    |
+                 |   -> DaoAuthenticationProvider  |
+                 +----------------+----------------+
+                                  |
+                                  v
+                 +----------------------------------+
+                 | UserDetailsService.loadUserByUsername() |
+                 |  (Loads User from DB)                    |
+                 +----------------+-------------------------+
+                                  |
+                                  v
+                  +----------------------------------+
+                  | UserDetails (Wrapper of User)    |
+                  | Provides username, password, roles|
+                  +----------------+-----------------+
+                                  |
+                                  v
+               +-------------------------------------+
+               | PasswordEncoder.matches(raw, hash)  |
+               | Verifies password from DB           |
+               +----------------+--------------------+
+                                |
+                                v
+              +-------------------------------------+
+              | If success → returns Authentication  |
+              | object (contains principal + roles)  |
+              +----------------+--------------------+
+                               |
+                               v
+             +--------------------------------------+
+             | SecurityContextHolder.setContext()   |
+             | (Stores authenticated user globally)  |
+             +----------------+---------------------+
+                              |
+                              v
+               +-----------------------------------+
+               | User is now Authenticated ✅       |
+               | Can access protected endpoints     |
+               +-----------------------------------+
+Authmanager(Predefined interface)-->to load data User Object, it will use UserDetailsService, which acts as a mediator between User Object and Authmanager
+so we have to configure AuthManager, so that it can check credentials in db, not in properties file
+
+--Spring boot app with JDBC Authentication:-->
+-------------------------------------------
+step 1--> create user and authorities table
+    
+CREATE TABLE `users` (
+  `username` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(120) NOT NULL,
+  `enabled` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`username`)
+);
+
+CREATE TABLE `authorities` (
+  `username` VARCHAR(50) NOT NULL,
+  `authority` VARCHAR(50) NOT NULL,
+  KEY `username` (`username`),
+  CONSTRAINT `authorities_ibfk_1` FOREIGN KEY (`username`)
+    REFERENCES `users` (`username`)
+);
+-->contains user roles data
+
+step 2--> insert record into tables
+
+insert into users values('admin','$2a$12$LlOKsem5HNKzdI.xjycFRebyRjzdIhVrdXuehk8du7272j1ILl1Ki',1);     <----decrypt --password=admin@123--->
+insert into users values('user','$2a$12$9Y5BFUvctEQj5jPtAX5NIuH1AUr0AROiklwjUjuI8yC0d1O2d3nQC',1);
+
+insert into authorities values('admin','ROLE_ADMIN');
+insert into authorities values('admin','ROLE_USER');
+insert into authorities values('user','ROLE_USER');
+
+step 3--> Configure application.yml
+spring:
+  application:
+    name: 55-JDBC-Authentication-App
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/sbms?createIfNotExists
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+step 4-->create REST controller
+
+@RestController
+public class UserController {
+	@GetMapping("/admin")                //method accessed by admin only
+	public String admin() {
+		return "<h3>Welcome Admin:)</h3>";
+	}
+	
+	@GetMapping("/user")                //method accessed by User only
+	public String user() {
+		return "<h3>Hello User:)</h3>";
+	}
+	@GetMapping(value="/")              //Anybody can access this method
+	public String welcome() {
+		return "Welcome:)";
+	}
+}
+
+step 5--> create SecurityConfiguration class with JDBC Authentication manager
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurator {
+	
+	private static final String ADMIN = "ADMIN";
+	private static final String USER ="USER";
+	
+	@Autowired
+	private DataSource dataSource;          //To get credentials from db
+	
+	@Autowired
+	public void authManager(AuthenticationManagerBuilder auth) throws Exception{
+		auth.jdbcAuthentication()
+		  .dataSource(dataSource)
+		  .passwordEncoder(new BCryptPasswordEncoder())
+		  .usersByUsernameQuery("select username.password,enabled from users where username=?")
+		  .authoritiesByUsernameQuery("select username,authority from authorities where username=?");	  
+	}
+	
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests((req) ->
+		             req.requestMatchers("/admin/**").hasRole(ADMIN)
+		             .requestMatchers("/user/**").hasAnyRole(ADMIN,USER)
+		             .requestMatchers("/").permitAll()
+		             .anyRequest().authenticated()
+		             ).formLogin();
+		return http.build();
+	}
+
+}
