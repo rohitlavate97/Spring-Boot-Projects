@@ -4622,6 +4622,49 @@ insert into authorities values('admin','ROLE_ADMIN');
 insert into authorities values('admin','ROLE_USER');
 insert into authorities values('user','ROLE_USER');
 
+--Add dependency in pom.xml
+<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 step 3--> Configure application.yml
 spring:
   application:
@@ -4671,10 +4714,10 @@ public class SecurityConfigurator {
 		auth.jdbcAuthentication()
 		  .dataSource(dataSource)
 		  .passwordEncoder(new BCryptPasswordEncoder())
-		  .usersByUsernameQuery("select username.password,enabled from users where username=?")
+		  .usersByUsernameQuery("select username,password,enabled from users where username=?")
 		  .authoritiesByUsernameQuery("select username,authority from authorities where username=?");	  
 	}
-	
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((req) ->
 		             req.requestMatchers("/admin/**").hasRole(ADMIN)
@@ -4686,3 +4729,101 @@ public class SecurityConfigurator {
 	}
 
 }
+
+Note : For Authentication Manager, we have given datasource, password encoder and query to load the data. It will retrieve data from db and authenticate
+
+--InMemory Authentication
+-------------------------
+<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+</dependencies>
+	
+@RestController
+public class MsgRestController {
+	
+	@GetMapping("/greet")
+	public String greetMsg() {
+		return "Good Evening--> :)";
+	}
+	
+	@GetMapping("/welcome")
+	public String welcomeMsg() {
+		return "Welcome to our Application... :)";
+	}
+	
+	@GetMapping("/contact")
+	public String getContact() {
+		return "Contact: +918600852978";
+	}
+	
+	@GetMapping("/")
+	public String homePage() {
+		return "Hi";
+	}
+
+}
+
+
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurer {
+	
+	@Bean
+	public InMemoryUserDetailsManager configureUsers() {
+		UserDetails adminUser = User.withDefaultPasswordEncoder()
+				                    .username("Rohit")
+				                    .password("admin@123")
+				                    .authorities("ADMIN")
+				                    .build();
+		
+		UserDetails normalUser = User.withDefaultPasswordEncoder()
+                .username("Pramod")
+                .password("pramod@123")
+                .authorities("USER")
+                .build();
+		return new InMemoryUserDetailsManager(adminUser,normalUser);
+	}
+	
+	  @Bean
+	  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	        http.authorizeHttpRequests((req) -> req
+	                .requestMatchers("/", "/contact")
+	                .permitAll()
+	                .anyRequest().authenticated()
+	            )
+	            .formLogin();  // enables Spring Security login form
+	        
+	        return http.build();
+	    }
+}
+----------------------------

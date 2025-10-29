@@ -3,6 +3,7 @@ package com.alchemist.config;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,10 +26,11 @@ public class SecurityConfigurator {
 		auth.jdbcAuthentication()
 		  .dataSource(dataSource)
 		  .passwordEncoder(new BCryptPasswordEncoder())
-		  .usersByUsernameQuery("select username.password,enabled from users where username=?")
+		  .usersByUsernameQuery("select username,password,enabled from users where username=?")
 		  .authoritiesByUsernameQuery("select username,authority from authorities where username=?");	  
 	}
 	
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((req) ->
 		             req.requestMatchers("/admin/**").hasRole(ADMIN)
