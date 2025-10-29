@@ -4827,3 +4827,121 @@ public class SecurityConfigurer {
 	    }
 }
 ----------------------------
+-How to work with UserDetailsService in Spring Security
+----------------------------
+AuthManager is responsible to perform authentication in spring security, to perform authentication we need to load User data. To load User data UserDetailsService class method. loadUseryByName() is available,
+which laods data from db or properties file 
+
+
+[1] Login Form (Username + Password)
+        |
+        v
+        →→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→
+        |  User submits credentials to Spring Security filter chain
+        |
+        v
+[2] UsernamePasswordAuthenticationFilter
+        |
+        | Extracts username & password → sends to AuthenticationManager.authenticate()
+        v
+[3] AuthenticationManager
+        |
+        | Delegates authentication to AuthenticationProvider (e.g., DaoAuthenticationProvider)
+        v
+[4] DaoAuthenticationProvider
+        |
+        | Calls → UserDetailsService.loadUserByUsername(username)
+        v
+[5] UserDetailsService
+        |
+        | Fetches user from DB via UserRepository
+        v
+[6] UserRepository --------------> [7] Database (users, authorities tables)
+                                      |
+                                      | Returns User entity (username, password, roles)
+                                      v
+        <----------------------------- User entity returned to UserDetailsService
+        |
+        v
+[8] UserDetails (Wrapper object around User)
+        |
+        | Returned to DaoAuthenticationProvider
+        v
+[9] DaoAuthenticationProvider
+        |
+        | Compares raw password with encrypted password via PasswordEncoder.matches()
+        | If match → creates Authentication object (Principal + Authorities)
+        v
+[10] AuthenticationManager
+        |
+        | Returns fully authenticated Authentication object
+        v
+[11] SecurityContextHolder.setContext(Authentication)
+        |
+        v
+[12] ✅ Authentication Successful — User logged in
+        |
+        v
+[13] User can now access protected endpoints based on roles (e.g., /admin, /user)
+
+
+
+                     ----------------------
+       2             |        3            |
+   AuthManager <---->| UserDetailsService  | 4
+      ^            6 | (loadUserByName())  |---------------------> UserRepo --> DB
+      |              -----------------------                         
+      |                        |                                       
+      |                        v 5                                      
+   -------                 +--------+                                  
+  |   1   |                |  User  |                                  
+  | Form  |                +--------+                                  
+  |       |                                              
+   -------   
+   
+-UserDetailsService is a predefined interface which contains loadUserByName(String name) method. This is used to load User record for Authentication purpose.
+We can implement UserDetailsService interface and we can write the logic to retrieve User record for Authentication purpose. If we give UserDetailsService object to
+AuthenticationManagerBuilder, then AuthManager will call this method for every login request.
+
+--Custom UserDetailsService
+------------------------------
+@RestController
+public class MsgController {
+	@GetMapping("/")
+	public String welcomeMsg() {
+		return "Welcome";
+	}
+	@GetMapping("/hi")
+	public String hiMsg() {
+		return "Hi";
+	}
+	@GetMapping("/hello")
+	public String helloMsg() {
+		return "Hello";
+	}
+}
+
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+		/*
+		 * // Here you can later add logic to fetch user from DB if
+		 * (username.equals("Rohit")) { return new User( "Rohit", "{noop}admin@123", //
+		 * {noop} means no password encoding Collections.singletonList(() ->
+		 * "ROLE_ADMIN") // Authority ); } else { throw new
+		 * UsernameNotFoundException("User not found: " + username); }
+		 */
+    	System.out.println("......Called.........");
+    	if (username.equals("Rohit")) {
+    	  return new User("Rohit",
+    			  "{noop}admin@123",         //{noop} means no password encoder
+    			  Collections.emptyList());  //Use Collections.emptyList() when role based security not implemented
+    	}else {
+    	 throw new UsernameNotFoundException("User not found: " + username);
+    	}
+    }
+}
