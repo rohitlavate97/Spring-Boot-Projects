@@ -13,17 +13,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("......Called......... Username: " + username);
-
-        // ✅ Must match exactly (case sensitive by default)
-        if (username.equals("Rohit")) {
-            return User
-                    .withUsername("Rohit")
-                    .password("{noop}admin@123") // No password encoder
-                    .authorities(Collections.emptyList()) // no roles yet
-                    .build();
-        } else {
-            throw new UsernameNotFoundException("User not found: " + username);
-        }
+        System.out.println("......Called.........");
+        
+        // Encode password with BCrypt
+        String encodedPassword = "$2a$12$.TWaQyWEMQ9y3CK7r.alauD97fF2d/rsgNhrhd2H8m5YgnPH4SYYO"; // encoded "admin@123"
+        
+        return new User("Rohit", encodedPassword, Collections.emptyList());
     }
 }
