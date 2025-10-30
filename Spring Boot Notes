@@ -4921,27 +4921,349 @@ public class MsgController {
 	}
 }
 
-
+------
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-		/*
-		 * // Here you can later add logic to fetch user from DB if
-		 * (username.equals("Rohit")) { return new User( "Rohit", "{noop}admin@123", //
-		 * {noop} means no password encoding Collections.singletonList(() ->
-		 * "ROLE_ADMIN") // Authority ); } else { throw new
-		 * UsernameNotFoundException("User not found: " + username); }
-		 */
-    	System.out.println("......Called.........");
-    	if (username.equals("Rohit")) {
-    	  return new User("Rohit",
-    			  "{noop}admin@123",         //{noop} means no password encoder
-    			  Collections.emptyList());  //Use Collections.emptyList() when role based security not implemented
-    	}else {
-    	 throw new UsernameNotFoundException("User not found: " + username);
-    	}
+        System.out.println("......Called.........");
+        
+        // Encode password with BCrypt
+        String encodedPassword = "$2a$12$.TWaQyWEMQ9y3CK7r.alauD97fF2d/rsgNhrhd2H8m5YgnPH4SYYO"; // encoded "admin@123"---->https://bcrypt-generator.com/
+        
+        return new User("Rohit", encodedPassword, Collections.emptyList());
     }
 }
+-------
+import static org.springframework.security.config.Customizer.withDefaults;
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurer {
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/").permitAll()  // Allow root without authentication
+                .anyRequest().authenticated()
+            )
+            .formLogin(withDefaults())   // enables form-based login with default login page
+            .httpBasic(withDefaults());  // enables basic authentication with default settings
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {      // needed for Custom login controller / JWT / manual authentication
+        return config.getAuthenticationManager();
+    }
+
+    // Use BCrypt instead of NoOpPasswordEncoder
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        
+        // Add debug prints
+        System.out.println("Authentication Provider Setup:");
+        System.out.println("UserDetailsService: " + userDetailsService);
+        System.out.println("PasswordEncoder: " + passwordEncoder());
+        
+        return provider;
+    }
+}
+------
+--At start of application, @Configuration classes will be loaded and methods will be executed when @Bean is mentioned
+SecurityFilterChain → contains multiple filters
+     ↓
+SecurityContextPersistenceFilter → manages SecurityContext lifecycle
+     ↓
+SecurityContext → holds Authentication (the logged-in user)
+
+
+                ┌──────────────────────┐
+                │ SecurityFilterChain  │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+Loging Form--->│     AuthManager      │------------------> ┌────────────────────────────────────────────────────────┐
+               |                                           │      Authentication Sources (any one or combination)   │i.e default or yml file or InMemory auth or JdbcAuth or UserDtlsvc
+                                                           │────────────────────────────────────────────────────────│
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ UserDetailsService   │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                      ┌────────┐
+                      │  User  │
+                      └────────┘
+					  
+1️⃣ SecurityFilterChain
+
+Every HTTP request first passes through the SecurityFilterChain.It decides whether the request needs authentication or can be accessed publicly.If it needs authentication, the request is forwarded to the AuthenticationManager.
+
+2️⃣ Login Form → AuthManager
+
+When the user enters their username and password in the login form and submits it,the credentials are sent to the AuthenticationManager.The AuthManager acts like a central brain that decides how to validate those credentials.
+
+3️⃣ AuthManager → Authentication Sources
+
+The AuthManager checks where authentication information should come from:A default user auto-generated by Spring Boot,A username/password defined in application.yml or application.properties,
+
+An in-memory configuration (like your InMemoryUserDetailsManager),A database using JDBC authentication,Or a custom implementation of UserDetailsService.
+
+4️⃣ UserDetailsService
+
+If using a database or custom logic, the AuthManager delegates to the UserDetailsService.UserDetailsService.loadUserByUsername(username) retrieves the user’s record.It returns a UserDetails object containing:
+
+username,
+
+password (usually encrypted),
+
+roles/authorities (e.g., ROLE_ADMIN, ROLE_USER).
+
+5️⃣ User
+
+The actual user data object that represents authenticated identity.If the password matches and account is enabled, Spring Security authenticates the user.
+UsernamePasswordAuthenticationToken is created and stored in the SecurityContext.After that, the user can access protected endpoints.
+--------------------------------------------------------------------
+--OAuth 2.0
+-------------
+Register a User--->Use 3rd party like Google account,Facebook account,GitHub Account etc
+-It is industry standard protocol for Authentication. OAuth 2.0 focus on client developer simplicity, while providing specific authorization flows for web applicationss, desktop apps, mobile phones and living rooms devices. 
+This specification and its extensions are being developed within the IETF OAuth working group(OAuth.net/2)
+
+                          ┌──────────────────────────┐
+                          │        User (Client)     │
+                          │   (Wants to access app)  │
+                          └─────────────┬────────────┘
+                                        │
+                                        ▼
+                     ┌────────────────────────────────────┐
+                     │ 1️⃣ Authorization Request           │
+                     │ User tries to log in via Google,   │
+                     │ GitHub, etc.                       │
+                     └─────────────┬──────────────────────┘
+                                   │
+                                   ▼
+                     ┌────────────────────────────────────┐
+                     │ 2️⃣ Authorization Server (e.g. Google) │
+                     │ Shows "Allow access?" consent screen │
+                     └─────────────┬──────────────────────┘
+                                   │
+                                   ▼
+                     ┌────────────────────────────────────┐
+                     │ 3️⃣ User Grants Permission           │
+                     │ Authorization Code sent back to     │
+                     │ Client Application (Redirect URI)   │
+                     └─────────────┬──────────────────────┘
+                                   │
+                                   ▼
+                     ┌────────────────────────────────────┐
+                     │ 4️⃣ Client App Exchanges Code        │
+                     │ Sends Authorization Code + Secret   │
+                     │ to Token Endpoint                   │
+                     └─────────────┬──────────────────────┘
+                                   │
+                                   ▼
+                     ┌────────────────────────────────────┐
+                     │ 5️⃣ Authorization Server verifies     │
+                     │ and responds with Access Token      │
+                     └─────────────┬──────────────────────┘
+                                   │
+                                   ▼
+                     ┌────────────────────────────────────┐
+                     │ 6️⃣ Client App uses Access Token     │
+                     │ to call Resource Server API         │
+                     └─────────────┬──────────────────────┘
+                                   │
+                                   ▼
+                     ┌────────────────────────────────────┐
+                     │ 7️⃣ Resource Server verifies token    │
+                     │ and returns protected data          │
+                     └────────────────────────────────────┘
+
+| Step                          | Actor                                                  | Description                                                                              |
+| ----------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **1️⃣ Authorization Request** | **Client App → Authorization Server**                  | The user clicks "Login with Google". The app redirects to Google’s OAuth login endpoint. |
+| **2️⃣ Login & Consent**       | **User → Authorization Server**                        | The user logs in and allows the app to access their profile/email.                       |
+| **3️⃣ Authorization Code**    | **Authorization Server → Client App**                  | The server sends an **authorization code** (short-lived) to the app’s redirect URI.      |
+| **4️⃣ Token Request**         | **Client App → Authorization Server (Token Endpoint)** | The app exchanges the authorization code + client secret for an **access token**.        |
+| **5️⃣ Access Token Issued**   | **Authorization Server → Client App**                  | The server returns an **access token** (and optionally a refresh token).                 |
+| **6️⃣ Access Resource**       | **Client App → Resource Server (API)**                 | The app calls a protected resource API using the **Bearer token**.                       |
+| **7️⃣ Data Returned**         | **Resource Server → Client App**                       | The API verifies the token and returns user data.                                        |
+
+
+
+     ┌───────────────┐            ┌──────────────────────────────┐            ┌───────────────────────┐            ┌────────────────────────┐
+     │               │            │                              │            │                       │            │                        │
+     │     User      │            │     Client Application        │            │  Authorization Server  │            │    Resource Server      │
+     │ (Resource     │            │  (e.g., your web/mobile app)  │            │ (e.g., Google, Auth0)  │            │   (API hosting data)    │
+     │  Owner)       │            │                              │            │                       │            │                        │
+     └──────┬────────┘            └────────────┬─────────────────┘            └──────────┬────────────┘            └────────────┬───────────┘
+            │                                  │                                         │                                 │
+            │                                  │                                         │                                 │
+            │ 1️⃣ Click "Login with Google"     │                                         │                                 │
+            │─────────────────────────────────►│                                         │                                 │
+            │                                  │                                         │                                 │
+            │                                  │ 2️⃣ Redirect to Auth Server (Login Page) │                                 │
+            │                                  │────────────────────────────────────────►│                                 │
+            │                                  │                                         │                                 │
+            │                                  │            3️⃣ User logs in, grants access                              │
+            │                                  │◄────────────────────────────────────────│                                 │
+            │                                  │                                         │                                 │
+            │                                  │ 4️⃣ Auth Server sends Authorization Code │                                 │
+            │                                  │◄────────────────────────────────────────│                                 │
+            │                                  │                                         │                                 │
+            │                                  │ 5️⃣ Client exchanges Code for Access Token                               │
+            │                                  │────────────────────────────────────────►│                                 │
+            │                                  │                                         │                                 │
+            │                                  │             6️⃣ Access Token returned    │                                 │
+            │                                  │◄────────────────────────────────────────│                                 │
+            │                                  │                                         │                                 │
+            │                                  │ 7️⃣ Client calls API using Bearer Token  │────────────────────────────────►│
+            │                                  │                                         │                                 │
+            │                                  │                                         │         8️⃣ API verifies token   │
+            │                                  │                                         │                                 │
+            │                                  │                                         │◄────────────────────────────────│
+            │                                  │                                         │   Returns Protected Resource ✅  │
+            │                                  │                                         │                                 │
+
+| Step | Flow                              | Description                                                           |
+| ---- | --------------------------------- | --------------------------------------------------------------------- |
+| 1️⃣  | User → Client App                 | User clicks “Login with Google”.                                      |
+| 2️⃣  | Client App → Authorization Server | Redirect to Google’s OAuth endpoint.                                  |
+| 3️⃣  | User → Authorization Server       | User logs in and grants consent.                                      |
+| 4️⃣  | Authorization Server → Client App | Authorization **Code** returned to app.                               |
+| 5️⃣  | Client App → Authorization Server | App exchanges code for **Access Token** (and optional Refresh Token). |
+| 6️⃣  | Authorization Server → Client App | Token is issued.                                                      |
+| 7️⃣  | Client App → Resource Server      | Token used to request protected resource.                             |
+| 8️⃣  | Resource Server → Client App      | Token validated and resource returned. ✅                              |
+
+
+     ┌─────────────┐client-id + ┌──────────────────────────────┐        
+     │             │----------->│                              │           
+     │HackerRank   │ client-secret                             │ 
+	 │             │            │                              │ 
+     │ (Resource   │<-----------│             GitHub           │           
+     │  Owner)     │ Token      │                              │     
+     └─────────────┘            │                              │
+       │    ^                   │                              │------>DB	 
+	   │ 	│ 					│                              │
+	   │	│				    │                              │
+	   │ 	│	Login Page	    │                              │
+	   V	│   <---------------│                              │
+		End User--------------->│                              │
+				 Login creds	│                              │
+								└──────────────────────────────┘
+        
+ 
+✅Explanation
+
+When a user clicks “Sign up with GitHub” on HackerRank:
+-Redirect to GitHub (Authorization Server):HackerRank redirects the user to GitHub’s authorization page, including parameters like
+client_id (assigned to HackerRank by GitHub),
+redirect_uri,
+scope,
+and response_type=code.
+These tell GitHub that the request comes from a registered third-party app (HackerRank).
+-GitHub verifies the request:
+GitHub checks the client_id and ensures this request comes from a valid registered application (HackerRank).It now understands this is not a direct user login, but a login on behalf of HackerRank.
+-GitHub shows login page:
+GitHub displays its own login page (or consent page if already logged in).The end user enters their GitHub credentials here.
+GitHub (as the Authorization Server) validates the user using its own Resource Server (database).
+-Authorization code returned to HackerRank:
+Once authentication succeeds, GitHub asks for user consent (if needed).After approval, GitHub redirects the user back to HackerRank’s predefined redirect_uri —
+including an Authorization Code in the URL.
+-HackerRank exchanges code for Access Token:
+HackerRank’s backend (not the user’s browser) sends:
+client_id
+client_secret
+the received authorization_code
+to GitHub’s token endpoint.GitHub validates these and returns an Access Token (and optionally a Refresh Token).
+-HackerRank uses the Access Token:
+HackerRank uses this Access Token to request user profile data (like email, username) from GitHub’s Resource Server APIs — e.g. https://api.github.com/user.
+-User Dashboard Displayed:
+Once HackerRank receives valid data, it creates or updates the user’s local account and shows the user dashboard (logged-in state).
+----------------------------------------------------------------
+---Develop Spring Boot OAuth2 app
+-Add Dependencies
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+-Create OAuth app in GitHub
+   Login-->Settings-->Developer Setting-->OAuth Apps-->Create App-->Copy client_Id and client_secret(callback URL-->After receiving token from github which endpoint should be executed i.e which page should be displayed which method should be executed)
+   set Authorization callback URL= http://localhost:9090/login/oauth2/code/github
+
+@RestController
+public class WelcomeRestController {
+	
+	
+	@GetMapping("/")
+	public String welcomeMsg() {
+		return "Welcome to the Home Page...!";
+	}
+	
+	@GetMapping("/greet")
+	public String greetMsg() {
+		return "Greeting to all of you.....!";
+	}
+
+}
+
+spring:
+  application:
+    name: 58-OAuth2-GithubApp
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: mentionhere
+            client-secret: mentionhere
+server:
+  port: 9090
+---------------------------------------------------------------------

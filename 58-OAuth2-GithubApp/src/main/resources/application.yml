@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: 58-OAuth2-GithubApp
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: mentionhere
+            client-secret: mentionhere
+server:
+  port: 9090
