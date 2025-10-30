@@ -54,7 +54,7 @@ public class WebSecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // ❌ Disable CSRF for stateless APIs
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/authenticate", "/register").permitAll() // ✅ Public endpoints
+            	.requestMatchers("/api/authenticate", "/api/register").permitAll()   // ✅ Public endpoints
                 .anyRequest().authenticated() // 🔒 All other endpoints need JWT
             )
             .sessionManagement(session -> 

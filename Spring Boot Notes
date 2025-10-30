@@ -5503,22 +5503,19 @@ public class AuthenticationResponse implements Serializable{
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private Map<String, String> users = Map.of(
-            "rohit", "{noop}rohit@123",  // {noop} means no password encoding
-            "admin", "{noop}admin@123"
-    );
+	private Map<String, String> users = Map.of(
+			"rohit", new BCryptPasswordEncoder().encode("rohit@123"),
+			"admin", new BCryptPasswordEncoder().encode("admin@123")
+			);
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (!users.containsKey(username))
-            throw new UsernameNotFoundException("User not found: " + username);
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		if (!users.containsKey(username))
+			throw new UsernameNotFoundException("User not found: " + username);
 
-        String password = users.get(username);
-        return User.withUsername(username)
-                .password(password)
-                .roles("USER")
-                .build();
-    }
+		String password = users.get(username);
+		return User.withUsername(username).password(password).roles("USER").build();
+	}
 }
 
 -step 4: JwtUtil class---->Code is used to generate the token
@@ -5777,3 +5774,14 @@ public class HelloRestController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 }
+
+--Go to Postman
+
+POST http://localhost:9090/api/authenticate
+
+{
+  "username": "rohit",
+  "password": "rohit@123"
+}
+
+GET → http://localhost:8080/api/hello
