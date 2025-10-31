@@ -5528,10 +5528,10 @@ public class JwtUtil {
 
     // 🔹 Extract all claims from JWT
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
+        return Jwts.parserBuilder()                 //object helps to decode and verify JWT tokens//
+                .setSigningKey(getSigningKey())     //tells Use this key to verify the token’s signature.
+                .build()                            //Builds the actual JWT parser instance.
+                .parseClaimsJws(token)              //Parses the JWT token string you pass in. Performs signature verification using the secret key. If valid, it returns a Jws<Claims> object
                 .getBody();
     }
 
@@ -5785,3 +5785,237 @@ POST http://localhost:9090/api/authenticate
 }
 
 GET → http://localhost:8080/api/hello
+
+Headers:
+Authorization: Bearer <your-jwt-token>
+
+| Class Name**             | **Purpose / Responsibility**                                           | **Key Methods / Functionality**                                            | **Flow Role**                                                         |
+| -------------------------| ---------------------------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| AuthenticationRequest    | DTO for capturing login input from user                                | Fields: `username`, `password`                                             | Receives credentials from client during login (`/authenticate`)       |
+| AuthenticationResponse   | DTO for returning JWT token as JSON response                           | Constructor + `getJwt()`                                                   | Sends generated token back to client                                  |
+| CustomUserDetailsService | Implements Spring Security’s `UserDetailsService` for authentication   | `loadUserByUsername()` — loads user and encoded password from map          | Verifies user credentials and roles during authentication             |
+| JwtUtil                  | Handles all **JWT generation**, **parsing**, and **validation** logic  | `generateToken()`, `extractUsername()`, `validateToken()`                  | Creates JWT after login and validates JWT in subsequent requests      |
+| JwtRequestFilter         | A `OncePerRequestFilter` that intercepts requests and validates tokens | `doFilterInternal()` — extracts, verifies JWT, and sets `SecurityContext`  | Ensures only authenticated users can access protected routes          |
+| WebSecurityConfig        | Core Spring Security configuration                                     | Defines `PasswordEncoder`, `AuthenticationProvider`, `SecurityFilterChain` | Configures authentication rules, JWT filter, disables sessions & CSRF |
+| HelloRestController      | REST API controller handling login and secure endpoints                | `/authenticate` → generates JWT <br> `/hello` → secured test endpoint      | Provides login entry point and protected endpoint                     |
+
+--Spring BATCH-->To develop Robust batch applications
+--------------
+-Batch is used to process bulk operations(ex: sending monthly salary to all employees )
+-We can process millions of records in fraction of seconds(ex Reads csv data and store into DB)
+-Spring Batch Terminology--->
+
+| **Term**                                   | **Description / Purpose**                                               | **Example / Analogy**                                                          |
+| ------------------------------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Job**                                    | A *container for steps* — represents the entire batch process.          | “Payroll Processing Job” that runs multiple steps (read, process, write).      |
+| **Step**                                   | A single, independent *phase* of a job.                                 | Reading CSV → Processing data → Writing to DB.                                 |
+| **JobInstance**                            | Represents a *logical run* of a job (based on job name and parameters). | Running “PayrollJob” for January 2025 vs. February 2025 creates two instances. |
+| **JobExecution**                           | Represents a *specific execution* attempt of a JobInstance.             | If a job fails and is restarted, a new JobExecution is created.                |
+| **StepExecution**                          | Represents execution metadata for a specific step.                      | Tracks start time, end time, read/write count, etc., for each step run.        |
+| **JobRepository**                          | Stores metadata about jobs, steps, and their executions.                | Think of it as Spring Batch’s internal database for tracking progress.         |
+| **JobLauncher**                            | Used to *trigger job execution* with specific parameters.               | `jobLauncher.run(job, jobParameters)`                                          |
+| **JobParameters**                          | Input values passed to a job to differentiate instances.                | `date=2025-10-30` or `file=input.csv`                                          |
+| **ItemReader**                             | Reads input data from a source (file, DB, API, etc.).                   | Reads 1000 employee records from a CSV.                                        |
+| **ItemProcessor**                          | Applies business logic or transformation to each item.                  | Converts salary to USD or filters invalid records.                             |
+| **ItemWriter**                             | Writes processed data to the output (DB, file, etc.).                   | Saves valid employee records into database.                                    |
+| **Chunk**                                  | A *group of items* processed together in one transaction.               | Read 10 → Process 10 → Write 10 (commit).                                      |
+| **ExecutionContext**                       | Stores state between job/step restarts.                                 | Saves “last processed record ID” for restart recovery.                         |
+| **JobBuilderFactory / StepBuilderFactory** | Helper classes for defining jobs and steps fluently.                    | `jobBuilderFactory.get("myJob").start(step).build()`                           |
+| **JobParametersIncrementer**               | Automatically creates new JobParameters for each run.                   | Adds a timestamp parameter for every new execution.                            |
+| **SkipListener / RetryListener**           | Handles skip/retry logic for fault tolerance.                           | Skips invalid records or retries on transient DB errors.                       |
+| **JobExplorer**                            | Used to *query job metadata* (read-only view).                          | Check job status or history programmatically.                                  |
+
+
+                ┌────────────────────────┐
+                │      JobLauncher       │
+                └──────────┬─────────────┘
+                           │
+                           ▼
+                ┌────────────────────────┐
+                │         Job            │
+                └──────────┬─────────────┘
+                           │
+                ┌──────────▼─────────────┐
+                │       Step(s)          │
+                │  (One or Multiple)     │
+                └──────────┬─────────────┘
+                           │
+                           ▼
+            ┌────────────────────────────┐
+            │        ItemReader          │
+            │  (Reads data source: DB,   │
+            │   CSV, XML, etc.)          │
+            └──────────┬─────────────────┘
+                       │
+                       ▼
+            ┌────────────────────────────┐
+            │       ItemProcessor        │
+            │ (Processes / transforms    │
+            │  the read data)            │
+            └──────────┬─────────────────┘
+                       │
+                       ▼
+            ┌────────────────────────────┐
+            │        ItemWriter          │
+            │ (Writes processed data to  │
+            │  target: DB, File, etc.)   │
+            └──────────┬─────────────────┘
+                       │
+                       ▼
+             ┌──────────────────────────┐
+             │  Step Execution Listener  │
+             │  (Before/After Step)      │
+             └──────────┬───────────────┘
+                       │
+                       ▼
+             ┌──────────────────────────┐
+             │    Job Execution Listener │
+             │    (Before/After Job)     │
+             └──────────────────────────┘
+
+
+
+                ┌────────────────────┐
+                │   JobLauncher      │
+                │  (Starts the Job)  │
+                └─────────┬──────────┘
+                          │
+                          ▼
+                ┌────────────────────┐
+                │       Job          │
+                │ (1..N Steps)       │
+                └─────────┬──────────┘
+                          │
+                          ▼
+                ┌────────────────────┐
+                │       Step         │
+                │ (Read–Process–Write)│
+                └─────────┬──────────┘
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+        ▼                 ▼                 ▼
+ ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+ │ ItemReader   │  │ ItemProcessor│  │ ItemWriter   │
+ │ (Reads data) │  │ (Transforms) │  │ (Writes data)│
+ └──────────────┘  └──────────────┘  └──────────────┘
+                          │
+                          ▼
+                ┌────────────────────┐
+                │   JobRepository    │
+                │ (Stores metadata:  │
+                │  Job/Step status)  │
+                └────────────────────┘
+
+
+Explanation:
+-JobLauncher: Entry point that starts a batch job.
+-Job: Represents the whole batch process.
+-Step: A phase inside the job (each with reader–processor–writer).
+-ItemReader: Fetches data.
+-ItemProcessor: Processes/transforms data.
+-ItemWriter: Writes processed data.
+-Listeners: Handle pre/post logic for jobs and steps.
+-JobRepository: Stores metadata about jobs, steps, and their executions.
+
+--Create Batch application
+----------------------------
+<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-batch</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+</dependencies>
+
+application.yml
+---------------
+spring:
+  application:
+    name: 60-Spring-BatchApp
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sbms
+    username: root
+    password: admin@123
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  batch:
+    jdbc:
+      initialize-schema: always       #schema required for batch operation intialize always
+	  
+--keep csv file in the src/main/resources folder
+ CUSTOMER_ID,firsname,lastname,email,gender,contactNum,country,dob
+1,Rohit,Lavate,rohit.lavate@example.com,Male,9876543210,India,1995-06-15
+2,Ananya,Sharma,ananya.sharma@example.com,Female,8765432109,India,1998-09-22
+3,Michael,Smith,michael.smith@example.com,Male,7456123987,USA,1990-02-12
+4,Sophia,Johnson,sophia.johnson@example.com,Female,7890654321,UK,1992-11-30
+5,Arjun,Patel,arjun.patel@example.com,Male,9123456780,India,1996-04-05
+6,Lisa,Wong,lisa.wong@example.com,Female,8523697410,China,1993-08-17
+7,David,Kim,david.kim@example.com,Male,9632587410,South Korea,1988-01-25
+8,Nina,Lopez,nina.lopez@example.com,Female,7410258963,Mexico,1997-05-10
+9,Ali,Khan,ali.khan@example.com,Male,8521479630,Pakistan,1994-12-02
+10,Emma,Brown,emma.brown@example.com,Female,7894561230,Australia,1991-07-18
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "CUSTOMER_INFO")
+public class Customer {
+	@Id
+	@Column(name = "CUSTOMER_ID")
+	private int id;
+	private String firsname;
+	private String lastname;
+	private String email;
+	private String gender;
+	private String contactNum;
+	private String country;
+	private String dob;
+}
+
+
+public interface CustomerRepository extends JpaRepository<Customer, Integer>{
+
+}
+    
+	  
