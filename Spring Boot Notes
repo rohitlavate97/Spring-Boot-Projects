@@ -6331,4 +6331,185 @@ public class CustomerRestController {
         }
     }
 }
+----------------
+Spring Scheduler---> @EnableScheduling(Class level) and @Scheduled(Method level)
+----------------
+-Spring Scheduling-->Allows you to schedule tasks or methods to be executed at specific times or intervals, provides a convinient way to automate repetitive tasks, background processing or any operation that
+needed executition periodically. Tasks like( perform at regular intervals)
+ex --> Generate reports or performing data backups at specific time
+       sending periodic notification or reminders
+	   Running background jobs or batch processing
+-Achieved by using @Scheduled annotation-->By adding it and configuring the scheduling properties, you can specify when and how often the method should be executed
+-Attributes
+  fixedRate-->interval between start times and consecutive task executions. It means the task will be executed at a fixed rate, regardless of the duration of previous task execution
+             ex:- fixedRate=5000ms-->task will be executed every 5 seconds, regardless of how long previous execution.(if dalay in any task, task may overlap)
+  fixedDelay-->delay between completion of previous task execution and the start of next execution, regardless of how long the task execution takes.
+-CRON Expression--> To define Scheduling pattern for tasks or methods, provide powerful way to specify the timing of task execution
+ ┌────────────── second (0–59)
+ │ ┌──────────── minute (0–59)
+ │ │ ┌────────── hour (0–23)
+ │ │ │ ┌──────── day of month (1–31)
+ │ │ │ │ ┌────── month (1–12 or JAN–DEC)
+ │ │ │ │ │ ┌──── day of week (0–6 or SUN–SAT)
+ │ │ │ │ │ │
+ * * * * * *
+ 
+ | Cron Expression     | Meaning                  |
+| ------------------- | ------------------------ |
+| `0 0 2 * * ?`       | Every day at 2:00 AM     |
+| `0 0/10 * * * ?`    | Every 10 minutes         |
+| `0 0 9 ? * MON-FRI` | Every weekday at 9:00 AM |
+| `0 */5 * * * *`     | Every 5 minutes          |
+| `0 15 10 * * ?`     | Every day at 10:15 AM    |
 
+// 🕒 Every minute
+EVERY_MINUTE = "0 * * * * ?";
+    // 🕐 Every hour (at minute 0)
+EVERY_HOUR = "0 0 * * * ?";
+    // 🌞 Every day at noon
+EVERY_DAY_AT_NOON = "0 0 12 * * ?";
+    // 🕗 Every minute between 8 AM and 6 PM
+BETWEEN_8AM_AND_6PM = "0 * 8-18 * * ?";
+    // 📆 On the 1st day of every month at midnight
+	
+FIRST_DAY_OF_MONTH = "0 0 0 1 * ?";
+| Expression         | Meaning                                 |
+| ------------------ | --------------------------------------- |
+| `0/5 * * * * ?`    | Every **5 seconds**                     | / → “step” or “every nth”, It specifies increments (steps) of time.
+| `0 0/10 * * * ?`   | Every **10 minutes**                    |
+| `0 0 9-17/2 * * ?` | Every **2 hours between 9 AM and 5 PM** |  So / means “start at X, then repeat every N units”.
+
+| Symbol | Meaning           | Example             | Description                  |
+| ------ | ----------------- | ------------------- | ---------------------------- |
+| `*`    | Any value         | `* * * * * ?`       | Every second/minute/hour/day |
+| `/`    | Step              | `0/10 * * * * ?`    | Every 10 seconds             |
+| `?`    | No specific value | `0 0 12 * * ?`      | Every day at noon            |
+| `-`    | Range             | `0 0 9-17 * * ?`    | Every hour from 9 AM to 5 PM |
+| `,`    | List              | `0 0 9,12,15 * * ?` | At 9 AM, 12 PM, and 3 PM     |
+
+
+	
+	
+
+                  ┌──────────────────────────┐
+                  │     Application Start     │
+                  │   (Spring Boot Context)   │
+                  └─────────────┬─────────────┘
+                                │
+                                ▼
+                  ┌──────────────────────────┐
+                  │   Scheduler Component     │
+                  │  @Scheduled(cron = "...") │
+                  └─────────────┬─────────────┘
+                                │ triggers
+                                ▼
+                  ┌──────────────────────────┐
+                  │      JobLauncher          │
+                  │ jobLauncher.run(job, params) │
+                  └─────────────┬─────────────┘
+                                │ launches
+                                ▼
+                  ┌──────────────────────────┐
+                  │         Job               │
+                  │ (e.g. "customer-import")  │
+                  └─────────────┬─────────────┘
+                                │
+                                ▼
+        ┌──────────────────────────────────────────┐
+        │                 Step                     │
+        │ (e.g. read-process-write chunk = 10)     │
+        ├──────────────────────────────────────────┤
+        │ FlatFileItemReader → CustomerProcessor → │
+        │ RepositoryItemWriter                    │
+        └──────────────────────────────────────────┘
+                                │
+                                ▼
+                  ┌──────────────────────────┐
+                  │     JobRepository DB      │
+                  │   (stores batch metadata) │
+                  └─────────────┬─────────────┘
+                                │
+                                ▼
+                  ┌──────────────────────────┐
+                  │  Job Completion Listener  │
+                  │   Logs Success / Failure  │
+                  └──────────────────────────┘
+
+
+<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+</dependencies>
+
+
+@Component
+public class TaskSchedulerService {
+
+	// 1️⃣ Every minute
+	@Scheduled(cron = "0 * * * * ?")
+	public void runEveryMinute() {
+		System.out.println("⏱ Every minute: " + LocalTime.now());
+	}
+
+	// 2️⃣ Every hour
+	@Scheduled(cron = "0 0 * * * ?")
+	public void runEveryHour() {
+		System.out.println("🕐 Every hour: " + LocalTime.now());
+	}
+
+	// 3️⃣ Every day at noon
+	@Scheduled(cron = "0 0 12 * * ?")
+	public void runAtNoon() {
+		System.out.println("🌞 Noon task: " + LocalTime.now());
+	}
+
+	// 4️⃣ Every day between 8 AM and 6 PM, every hour
+	@Scheduled(cron = "0 0 8-18 * * ?")
+	public void runBetween8and6() {
+		System.out.println("💼 Working hours task: " + LocalTime.now());
+	}
+
+	// 5️⃣ 1st day of every month at 1 AM
+	@Scheduled(cron = "0 0 1 1 * ?")
+	public void runOnFirstDayOfMonth() {
+		System.out.println("📅 First day of month task: " + LocalTime.now());
+	}
+
+	// 🔥 Manual trigger method
+	public void runManualTask() {
+		System.out.println("🚀 Manual trigger executed at: " + LocalTime.now());
+	}
+}
+
+
+@RestController
+@RequestMapping("/api/scheduler")
+public class SchedulerController {
+
+    @Autowired
+    private TaskSchedulerService schedulerService;
+
+    // ✅ Manual trigger endpoint
+    @GetMapping("/trigger-now")
+    public String triggerNow() {
+        schedulerService.runManualTask();
+        return "✅ Manual scheduler triggered successfully!";
+    }
+}
