@@ -6513,3 +6513,93 @@ public class SchedulerController {
         return "✅ Manual scheduler triggered successfully!";
     }
 }
+
+--Mono or Flux Objects(Reactive programming-->Non Blocking execution based on events)
+-----------------------
+Spring WebFlux is the reactive web framework in Spring (parallel to Spring MVC), designed for non-blocking, asynchronous, and event-driven applications.
+It is built on Project Reactor, which introduces two core types:
+| Type        | Emits              | Example Use Case                                       |
+| ----------- | ------------------ | ------------------------------------------------------ |
+| **Mono<T>** | **0 or 1** element | Fetch a single record from DB, return one API response |
+| **Flux<T>** | **0…N** elements   | Fetch multiple records, stream data to clients         |
+
+| Use Case                                      | Type                            |
+| --------------------------------------------- | ------------------------------- |
+| Fetch or process one record                   | `Mono<T>`                       |
+| Fetch or stream multiple records              | `Flux<T>`                       |
+| Error handling or empty response              | `Mono.error()` / `Mono.empty()` |
+| Continuous data stream (e.g., WebSocket, SSE) | `Flux<T>`                       |
+
+Think of:
+Mono → “A promise of a single value”
+Flux → “A stream of many values”
+Both represent asynchronous pipelines (like Java’s Stream, but reactive and async).
+
+👉 Mono.just() emits one item and completes.
+You can also use:
+Mono.empty() – emits nothing, completes.
+Mono.error() – emits an error.
+
+| Operator          | Description              |
+| ----------------- | ------------------------ |
+| `map()`           | Transform value          |
+| `flatMap()`       | Asynchronously transform |
+| `filter()`        | Conditional filtering    |
+| `zip()`           | Combine publishers       |
+| `concatWith()`    | Combine sequentially     |
+| `delayElements()` | Emit with delay          |
+| `onErrorResume()` | Fallback on error        |
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CustomerEvent {
+	private String name;
+	private Date eventDate;
+}
+
+
+@RestController
+public class ReactiveRestController {
+	@GetMapping("/single")
+	public Mono<String> sigleResponse(){
+		String msg ="Hello World";
+		return Mono.just("Hello world");
+		//return Mono.justOrEmpty(msg);   //To avoid NullPointerException-->if object available it pass or return empty value
+	}
+	
+	@GetMapping("/multiple")
+	public Flux<Integer> multipleResponses(){
+		return Flux.range(1, 10);
+	}
+	
+	@GetMapping(value = "/stream", produces = "text/event-stream")
+    public Flux<Integer> streamMultiResponses() {
+        // Emits numbers 1–10, one every 10 seconds
+        return Flux.range(1, 10)
+                   .delayElements(Duration.ofSeconds(10));
+    }
+	
+	@GetMapping(value = "/event", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<CustomerEvent> getEvent() {
+		CustomerEvent event = new CustomerEvent("John",new Date());
+		return Mono.justOrEmpty(event);
+	}
+	
+	@GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<CustomerEvent> getCustomerStream(){
+		CustomerEvent event = new CustomerEvent("Rohit", new Date());
+		CustomerEvent[] eventArray = {event};
+		//Creating data flux
+		Flux<CustomerEvent> dataFlux = Flux.fromArray(eventArray);
+		//setting response internal
+		Flux<Long> internalFlux = Flux.interval(Duration.ofSeconds(5));
+		Flux<Tuple2<Long,CustomerEvent>> zip = Flux.zip(internalFlux, dataFlux);
+		//getting Flux value from the zip
+		Flux<CustomerEvent> fluxMap = zip.map(Tuple2::getT2);
+		return fluxMap;
+	}
+
+}
+
+Netty started on port 9090 (http)
