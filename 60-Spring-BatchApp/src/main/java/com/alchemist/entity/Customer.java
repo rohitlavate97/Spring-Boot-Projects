@@ -1,5 +1,7 @@
 package com.alchemist.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +19,7 @@ public class Customer {
 	@Id
 	@Column(name = "CUSTOMER_ID")
 	private Integer id;
-	private String firsname;
+	private String firstname;
 	private String lastname;
 	private String email;
 	private String gender;

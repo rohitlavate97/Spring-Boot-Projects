@@ -8,7 +8,7 @@ public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
     @Override
     public Customer process(Customer customer) throws Exception {
         // Example transformation: capitalize first name
-        customer.setFirsname(customer.getFirsname().toUpperCase());
+        customer.setFirstname(customer.getFirstname().toUpperCase());
         return customer;
     }
 }
