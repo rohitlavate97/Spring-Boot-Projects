@@ -30,7 +30,7 @@ public class BatchConfig {
 
     // --- Item Reader ---
     @Bean
-    public FlatFileItemReader<Customer> customerReader() {
+    public FlatFileItemReader<Customer> customerReader() {   //Reads data line by line from a CSV file.Each line → converted into a Customer object using lineMapper().The first line (header) is skipped.
         FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
         itemReader.setResource(new FileSystemResource("src/main/resources/customers.csv"));
         itemReader.setName("customer-item-reader");
@@ -39,7 +39,7 @@ public class BatchConfig {
         return itemReader;
     }
 
-    private LineMapper<Customer> lineMapper() {
+    private LineMapper<Customer> lineMapper() {  //DelimitedLineTokenizer → splits each line into fields using commas.The fields are assigned by name (id, firstname, etc.).BeanWrapperFieldSetMapper → automatically binds those field names to your Customer entity’s properties.
         DefaultLineMapper<Customer> lineMapper = new DefaultLineMapper<>();
 
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
@@ -58,7 +58,7 @@ public class BatchConfig {
 
     // --- Item Processor ---
     @Bean
-    public CustomerProcessor customerProcessor() {
+    public CustomerProcessor customerProcessor() {  //Used for:Cleaning data,Converting formats,Filtering invalid records
         return new CustomerProcessor();
     }
 
@@ -73,7 +73,7 @@ public class BatchConfig {
 
     // --- Step ---
     @Bean
-    public Step step(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step step(JobRepository jobRepository, PlatformTransactionManager transactionManager) {  //Each chunk of 10 records is read → processed → written in one transaction.If any record in the chunk fails, the entire chunk rolls back.JobRepository and TransactionManager are provided by Spring Batch automatically.
         return new StepBuilder("step-1", jobRepository)
                 .<Customer, Customer>chunk(10, transactionManager)
                 .reader(customerReader())
@@ -84,7 +84,7 @@ public class BatchConfig {
 
     // --- Job ---
     @Bean
-    public Job job(JobRepository jobRepository, Step step) {
+    public Job job(JobRepository jobRepository, Step step) {  //Defines a Job named "customer-import".Contains a single Step (step-1).You can later add more steps (e.g., validation, reporting).
         return new JobBuilder("customer-import", jobRepository)
                 .start(step)
                 .build();
