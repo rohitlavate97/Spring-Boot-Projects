@@ -1,4 +1,4 @@
-CUSTOMER_ID,firsname,lastname,email,gender,contactNum,country,dob
+CUSTOMER_ID,firstname,lastname,email,gender,contactNum,country,dob
 1,Rohit,Lavate,rohit.lavate@example.com,Male,9876543210,India,1995-06-15
 2,Ananya,Sharma,ananya.sharma@example.com,Female,8765432109,India,1998-09-22
 3,Michael,Smith,michael.smith@example.com,Male,7456123987,USA,1990-02-12

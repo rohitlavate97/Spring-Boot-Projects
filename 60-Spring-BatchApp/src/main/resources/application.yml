@@ -15,4 +15,5 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
-      
+server:
+  port: 9090

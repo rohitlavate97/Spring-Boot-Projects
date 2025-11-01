@@ -63,4 +63,6 @@ insert into authorities values('admin','ROLE_ADMIN');
 insert into authorities values('admin','ROLE_USER');
 insert into authorities values('user','ROLE_USER');
 
+
+
 commit;

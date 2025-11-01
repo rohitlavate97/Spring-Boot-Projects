@@ -6019,3 +6019,199 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer>{
 }
     
 	  
+public class CustomerProcessor implements ItemProcessor<Customer, Customer> {
+
+    @Override
+    public Customer process(Customer customer) throws Exception {
+        // Example transformation: capitalize first name
+        customer.setFirsname(customer.getFirsname().toUpperCase());
+        return customer;
+    }
+}
+
+
+| **Version**      | **Classes Used**                             | **Status**  | **Notes**                                                    |
+| ---------------- | -------------------------------------------- | ----------- | ------------------------------------------------------------ |
+| Spring Batch 4.x | `JobBuilderFactory`, `StepBuilderFactory`    | ✅ Supported | Works automatically with `@EnableBatchProcessing`            |
+| Spring Batch 5.x | `JobRepository`, `StepBuilder`, `JobBuilder` | 🚫 Replaced | You must define repositories & transaction managers manually |
+
+-----------
+Old way
+
+@Configuration
+@EnableBatchProcessing
+public class BatchConfig {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
+
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
+
+    // --- Item Reader ---
+    @Bean
+    public FlatFileItemReader<Customer> customerReader() {
+        FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
+        itemReader.setResource(new FileSystemResource("src/main/resources/customers.csv"));
+        itemReader.setName("customer-item-reader");
+        itemReader.setLinesToSkip(1); // skip header row
+        itemReader.setLineMapper(lineMapper());
+        return itemReader;
+    }
+
+    private LineMapper<Customer> lineMapper() {
+        DefaultLineMapper<Customer> lineMapper = new DefaultLineMapper<>();
+
+        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+        lineTokenizer.setDelimiter(",");
+        lineTokenizer.setStrict(false);
+        lineTokenizer.setNames("id", "firstname", "lastname", "email", "gender", "contactNum", "country", "dob");
+
+        BeanWrapperFieldSetMapper<Customer> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(Customer.class);
+
+        lineMapper.setLineTokenizer(lineTokenizer);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
+
+        return lineMapper;
+    }
+
+    // --- Item Processor ---
+    @Bean
+    public CustomerProcessor customerProcessor() {
+        return new CustomerProcessor();
+    }
+
+    // --- Item Writer ---
+    @Bean
+    public RepositoryItemWriter<Customer> customerWriter() {
+        RepositoryItemWriter<Customer> writer = new RepositoryItemWriter<>();
+        writer.setRepository(customerRepository);
+        writer.setMethodName("save");
+        return writer;
+    }
+
+    // --- Step ---
+    @Bean
+    public Step step() {
+        return stepBuilderFactory.get("step-1")
+                .<Customer, Customer>chunk(10)
+                .reader(customerReader())
+                .processor(customerProcessor())
+                .writer(customerWriter())
+                .build();
+    }
+
+    // --- Job ---
+    @Bean
+    public Job job() {
+        return jobBuilderFactory.get("customer-import")
+                .flow(step())
+                .end()
+                .build();
+    }
+}
+--------
+New Ways
+
+
+@Configuration
+@EnableBatchProcessing
+public class BatchConfig {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    // --- Item Reader ---
+    @Bean
+    public FlatFileItemReader<Customer> customerReader() {
+        FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
+        itemReader.setResource(new FileSystemResource("src/main/resources/customers.csv"));
+        itemReader.setName("customer-item-reader");
+        itemReader.setLinesToSkip(1);
+        itemReader.setLineMapper(lineMapper());
+        return itemReader;
+    }
+
+    private LineMapper<Customer> lineMapper() {
+        DefaultLineMapper<Customer> lineMapper = new DefaultLineMapper<>();
+
+        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+        lineTokenizer.setDelimiter(",");
+        lineTokenizer.setStrict(false);
+        lineTokenizer.setNames("id", "firstname", "lastname", "email", "gender", "contactNum", "country", "dob");
+
+        BeanWrapperFieldSetMapper<Customer> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(Customer.class);
+
+        lineMapper.setLineTokenizer(lineTokenizer);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
+
+        return lineMapper;
+    }
+
+    // --- Item Processor ---
+    @Bean
+    public CustomerProcessor customerProcessor() {
+        return new CustomerProcessor();
+    }
+
+    // --- Item Writer ---
+    @Bean
+    public RepositoryItemWriter<Customer> customerWriter() {
+        RepositoryItemWriter<Customer> writer = new RepositoryItemWriter<>();
+        writer.setRepository(customerRepository);
+        writer.setMethodName("save");
+        return writer;
+    }
+
+    // --- Step ---
+    @Bean
+    public Step step(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("step-1", jobRepository)
+                .<Customer, Customer>chunk(10, transactionManager)
+                .reader(customerReader())
+                .processor(customerProcessor())
+                .writer(customerWriter())
+                .build();
+    }
+
+    // --- Job ---
+    @Bean
+    public Job job(JobRepository jobRepository, Step step) {
+        return new JobBuilder("customer-import", jobRepository)
+                .start(step)
+                .build();
+    }
+}
+
+
+@RestController
+public class CustomerRestController {
+
+    @Autowired
+    private JobLauncher jobLauncher;
+
+    @Autowired
+    private Job job;
+
+    @GetMapping("/load")
+    public String loadData() {
+        try {
+            // Build job parameters with unique timestamp (to prevent "Job already completed" errors)
+            JobParameters jobParams = new JobParametersBuilder()
+                    .addLong("startAt", System.currentTimeMillis())
+                    .toJobParameters();
+
+            JobExecution execution = jobLauncher.run(job, jobParams);
+            return "✅ Batch Job Status: " + execution.getStatus();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "❌ Job failed: " + e.getMessage();
+        }
+    }
+}
