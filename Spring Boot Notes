@@ -6619,3 +6619,62 @@ public class ReactiveRestController {
 }
 
 Netty started on port 9090 (http)
+
+--Unit Testing(JUnit5 and Mockito)
+--------------
+It is the process of testing individual components of software application, used to identify the bugs available in our code.
+-JUnit-->It is Java based framework, used to implement unit testing for java application(Open Source)--> junit.org/junit5/
+JUnit5 = JUnit Platform + JUnit Jupiter +JUnit vintage
+JUnit Platform-->Provide runtime to run junit unit test
+JUnit Jupiter--> Provided Annotation to implement JUnit testCases-->@Test,@ParameterizedTest,@ValueSource,@BeforeAll.@AfterAll,@BeforeEach,@AfterEach
+Vintage-->Provides backward compatibility(JUnit3, JUnit4 tests support)
+-In unit testing, we have to implement with Isolation # isolated Unit testing-->Testing component independently
+-When you are going for unit testing first you have to understand what is your target.--->Understand does this method have dependency on other method, 
+if independent-->easy for unit testing
+if dependent method(e.g RestController method have dependency on the Service class methods)-->so while unit testing restcontroller method,service method should not be executed
+-By using 'Mocking' we can perform unit testing with isolation, instead of injecting real service to RestController inject MockService to RestController
+-'Mocking'-->Process of Creating subtitute object for the real object is called as Mocking
+     Mock Object = Real Object 
+     isolated testing-->testing only target method
+	 
+	               ┌─────────────────────────────┐
+                   │         Test Class          │
+                   │e.g., CustomerControllerTest)│
+                   └──────────────┬──────────────┘
+                                  │
+                                  │  (creates fake behavior)
+                                  ▼
+                      ┌──────────────────────┐
+                      │      Mock Object     │
+                      │ (e.g., CustomerService mock)│
+                      └──────────────┬──────────────┘
+                                     │
+             ┌───────────────────────┘
+             │  (Injects mock instead of real bean)
+             ▼
+  ┌─────────────────────────────┐
+  │     Class Under Test        │
+  │ (e.g., CustomerController)  │
+  └──────────────┬──────────────┘
+                 │
+                 │ Calls method on mock
+                 ▼
+      ┌─────────────────────────────┐
+      │        Mocked Method        │
+      │  (predefined fake behavior) │
+      └──────────────┬──────────────┘
+                     │
+                     ▼
+           Returns fake data instantly
+                     │
+                     ▼
+       ┌─────────────────────────────┐
+       │      Test Assertions        │
+       │ (StepVerifier / Assertions) │
+       └─────────────────────────────┘
+
+Code Coverage-->identifying how many lines of code is tested as part of unit testing(As per industry standard-->80%)
+  Form binding,entity Classes,Getter,Setter,Constants Class--->Unit testing not required
+  target/site/jococo/index.html--->Code coverage reportDAO
+  example-->Jococo,SonarQube, Cobertura etc
+  by adding plugin in pom.xml-->ex-->Jococo plugin
